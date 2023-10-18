@@ -38,7 +38,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<UserAnalytic> UserAnalytics { get; set; } = null!;
         public virtual DbSet<WishList> WishLists { get; set; } = null!;
         public virtual DbSet<WorkExperience> WorkExperiences { get; set; } = null!;
-        public virtual DbSet<training> training { get; set; } = null!;
+        public virtual DbSet<Training> Training { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -659,7 +659,7 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__WorkExper__Profi__3B75D760");
             });
 
-            modelBuilder.Entity<training>(entity =>
+            modelBuilder.Entity<Training>(entity =>
             {
                 entity.ToTable("Training");
 
@@ -696,7 +696,7 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.StartDate).HasColumnType("date");
 
                 entity.HasOne(d => d.Profile)
-                    .WithMany(p => p.training)
+                    .WithMany(p => p.Training)
                     .HasForeignKey(d => d.ProfileId)
                     .HasConstraintName("FK__Training__Profil__0D7A0286");
             });

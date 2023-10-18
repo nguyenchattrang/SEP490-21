@@ -15,7 +15,7 @@ namespace RecruitXpress_BE.Models
             MaritalStatuses = new HashSet<MaritalStatus>();
             ScheduleDetails = new HashSet<ScheduleDetail>();
             WorkExperiences = new HashSet<WorkExperience>();
-            training = new HashSet<training>();
+            Training = new HashSet<Training>();
         }
 
         public int ProfileId { get; set; }
@@ -41,6 +41,6 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<MaritalStatus> MaritalStatuses { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
         public virtual ICollection<WorkExperience> WorkExperiences { get; set; }
-        public virtual ICollection<training> training { get; set; }
+        public virtual ICollection<Training> Training { get; set; }
     }
 }
