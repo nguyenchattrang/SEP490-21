@@ -18,8 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IRepository\" />
-    <Folder Include="Repository\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>
