@@ -50,10 +50,10 @@ namespace RecruitXpress_BE.Controllers
         [HttpPut("id")]
         public async Task<ActionResult<MaritalStatus>> UpdateMaritalStatus(int id, MaritalStatus maritalStatus)
         {
-            if (id != maritalStatus.StatusId)
-            {
-                return BadRequest();
-            }
+            //if (id != maritalStatus.StatusId)
+            //{
+            //    return BadRequest();
+            //}
             try
             {
                 var result = await _maritalStatusRepository.UpdateMaritalStatus(id, maritalStatus);
