@@ -1,6 +1,6 @@
 ﻿using RecruitXpress_BE.Models;
 
-namespace RecruitXpress_BE.IRepository;
+namespace RecruitXpress_BE.IRepositories;
 
 public interface IJobPostingManagementRepository
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RecruitXpress_BE.IRepository;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
-namespace RecruitXpress_BE.Repository;
+namespace RecruitXpress_BE.Repositories;
 
 public class JobPostingManagementRepository : IJobPostingManagementRepository
 {
