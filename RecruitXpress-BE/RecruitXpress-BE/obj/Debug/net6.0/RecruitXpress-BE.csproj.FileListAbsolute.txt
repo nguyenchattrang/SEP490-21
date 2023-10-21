@@ -72,3 +72,9 @@ C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\Recru
 C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\RecruitXpress-BE.pdb
 C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\RecruitXpress-BE.genruntimeconfig.cache
 C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\ref\RecruitXpress-BE.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.Extensions.Identity.Core.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.Extensions.Identity.Stores.dll
