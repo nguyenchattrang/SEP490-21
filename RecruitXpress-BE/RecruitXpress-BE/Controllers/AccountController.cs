@@ -16,19 +16,11 @@ namespace RecruitXpress_BE.Controllers
 
         //GET: api/AccountManagement
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount(int offset, int limit, bool? status = null, int? catId = 0, int? supId = 0, string? search = "")
+        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount(   )
         {
              var result =  await _accountRepository.GetListAccount();
            return Ok(result);
-            return Ok(new ResponseData<Models.Account>
-            {
-
-                Data = result.Skip(offset).Take(result.Count()).ToList(),
-                Offset = offset,
-                Limit = limit,
-                Total = result.Count()
-
-            });
+           
         }
 
         //GET: api/AccountManagement/{id}
