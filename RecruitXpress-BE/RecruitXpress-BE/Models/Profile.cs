@@ -12,13 +12,14 @@ namespace RecruitXpress_BE.Models
             FamilyInformations = new HashSet<FamilyInformation>();
             JobApplications = new HashSet<JobApplication>();
             LanguageProficiencies = new HashSet<LanguageProficiency>();
-            MaritalStatuses = new HashSet<MaritalStatus>();
             ScheduleDetails = new HashSet<ScheduleDetail>();
             WorkExperiences = new HashSet<WorkExperience>();
             Training = new HashSet<Training>();
         }
 
         public int ProfileId { get; set; }
+        public int? AccountId { get; set; }
+        public int? StatusId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
@@ -33,12 +34,13 @@ namespace RecruitXpress_BE.Models
         public string? ResearchWork { get; set; }
         public string? Article { get; set; }
 
+        public virtual Account? Account { get; set; }
+        public virtual MaritalStatus? Status { get; set; }
         public virtual ICollection<ComputerProficiency> ComputerProficiencies { get; set; }
         public virtual ICollection<EducationalBackground> EducationalBackgrounds { get; set; }
         public virtual ICollection<FamilyInformation> FamilyInformations { get; set; }
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<LanguageProficiency> LanguageProficiencies { get; set; }
-        public virtual ICollection<MaritalStatus> MaritalStatuses { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
         public virtual ICollection<WorkExperience> WorkExperiences { get; set; }
         public virtual ICollection<Training> Training { get; set; }

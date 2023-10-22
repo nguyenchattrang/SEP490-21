@@ -26,79 +26,79 @@ namespace RecruitXpress_BE.Controllers
 
 
 
-
-        /*        [HttpPost("Login")]
-                public async Task<IActionResult> Login(LoginModel model)
+/*
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            try
+            {
+                Account u = new Account();
+                if (model.Account == null)
                 {
-                    try
-                    {
-                        Account u = new Account();
-                        if (model.Account == null)
-                        {
-                            u = await _context.Accounts.SingleOrDefaultAsync(u => u.Token == model.Token);
-                        }
-                        else
-                        {
-                            u = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == model.Account);
-                        }
-                        if (u != null && HashHelper.Decrypt(u.Password, _configuration) == model.Password)
-                        {
-                            return Ok(new
-                            {
-                                Token = GenerateToken(u),
-                                UserName = u.Account1,
-                                RoleId = u.RoleId
-                            });
-                        }
-                        else
-                        {
-                            return BadRequest("InvalidCredential");
-                        }
-                    }
-                    catch
-                    {
-                        return StatusCode(500);
-                    }
-
+                    u = await _context.Accounts.SingleOrDefaultAsync(u => u.Token == model.Token);
                 }
-
-
-
-
-                private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+                else
                 {
-                    using (var hmac = new HMACSHA512())
-                    {
-                        passwordSalt = hmac.Key;
-                        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                    }
+                    u = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == model.Account);
                 }
-
-                private TokenModel GenerateToken(Account user)
+                if (u != null && HashHelper.Decrypt(u.Password, _configuration) == model.Password)
                 {
-                    var access = GenerateAccessToken(user);
-                    var refresh = TokenHelper.GenerateRandomToken();
-                    var tokenhandler = new JwtSecurityTokenHandler();
-                    var refreshEntity = new RefreshToken
+                    return Ok(new
                     {
-                        UserId = user.UserId,
-                        Token = refresh,
-                        Created = DateTime.UtcNow,
-                        JwtId = tokenhandler.ReadJwtToken(access).Id,
-                        ExpiredAt = DateTime.UtcNow.AddMonths(1)
-                    };
-                    if (_context.RefreshTokens.SingleOrDefault(x => x.UserId == user.UserId) != null)
-                    {
-                        _context.Update(refreshEntity);
-                    }
-                    else
-                    {
-                        _context.Add(refreshEntity);
-                    }
-                    _context.SaveChanges();
-                    return new TokenModel(access, refresh);
-                }*/
+                        Token = GenerateToken(u),
+                        UserName = u.Account1,
+                        RoleId = u.RoleId
+                    });
+                }
+                else
+                {
+                    return BadRequest("InvalidCredential");
+                }
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
 
+        }
+
+
+
+
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        private TokenModel GenerateToken(Account user)
+        {
+            var access = GenerateAccessToken(user);
+            var refresh = TokenHelper.GenerateRandomToken();
+            var tokenhandler = new JwtSecurityTokenHandler();
+            var refreshEntity = new RefreshToken
+            {
+                UserId = user.UserId,
+                Token = refresh,
+                Created = DateTime.UtcNow,
+                JwtId = tokenhandler.ReadJwtToken(access).Id,
+                ExpiredAt = DateTime.UtcNow.AddMonths(1)
+            };
+            if (_context.RefreshTokens.SingleOrDefault(x => x.UserId == user.UserId) != null)
+            {
+                _context.Update(refreshEntity);
+            }
+            else
+            {
+                _context.Add(refreshEntity);
+            }
+            _context.SaveChanges();
+            return new TokenModel(access, refresh);
+        }
+*/
         [HttpGet("get")]
         public async Task<IActionResult> ListAccount()
         {
@@ -119,7 +119,7 @@ namespace RecruitXpress_BE.Controllers
 
             if (user != null && CheckPassword(user.Password, model.Password))
             {
-            
+
                 // Retrieve the secret key from appsettings.json
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
@@ -155,5 +155,5 @@ namespace RecruitXpress_BE.Controllers
             else return false;
         }
 
-}
+    }
 }
