@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.IRepository;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repository;
 using System.Collections.Generic;
+using System.Security.Principal;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -51,19 +53,29 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/ProfileManagement
         [HttpPost]
-        public async Task<ActionResult<Profile>> AddProfile(Profile Profile, int accountId)
+        public async Task<IActionResult> AddProfile(Profile Profile, int accountId)
         {
             try
             {
-                var profile = Profile;
-                profile.AccountId = accountId;
-                await _context.Profiles.AddAsync(Profile);
-                await _context.SaveChangesAsync();
-                return Ok("Thành công");
+               
+                if(Profile != null && accountId != null)
+                {
+                    var profile = Profile;
+                    profile.AccountId = accountId;
+                    _context.Profiles.Add(Profile);
+                    await _context.SaveChangesAsync();
+                    return Ok("Thành công");
+                }
+                else
+                {
+                    return BadRequest("Không có dữ liệu");
+                }
+                
             }
             catch (Exception e)
             {
-                return StatusCode(500);
+                Console.WriteLine(e);
+                return Ok(e);
             }
 
         }
@@ -72,23 +84,21 @@ namespace RecruitXpress_BE.Controllers
         [HttpPut("id")]
         public async Task<IActionResult> UpdateProfile(int accountId, Profile Profile)
         {
-            //if (id != Profile.StatusId)
-            //{
-            //    return BadRequest();
-            //}
             try
             {
-                var profile = await _context.Profiles.FindAsync(accountId);
+              
+                var profile = await _context.Profiles.SingleOrDefaultAsync(x => x.ProfileId == Profile.ProfileId && x.AccountId == accountId);
                 if(profile != null)
                 {
-                    _context.Update(profile);
+                    _context.Entry(profile).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
+                    return Ok("Thành công");
                 }
                 else
                 {
                         return BadRequest("Không có dữ liệu");
                 }
-                return Ok("Thành công");
+              
             }
             catch (Exception e)
             {

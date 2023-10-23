@@ -34,6 +34,7 @@ public class MaritalStatusRepository : IMaritalStatusRepository
 
     public async Task<MaritalStatus> UpdateMaritalStatus(int id, MaritalStatus maritalStatus)
     {
+
         _context.Entry(maritalStatus).State = EntityState.Modified;
         try
         {

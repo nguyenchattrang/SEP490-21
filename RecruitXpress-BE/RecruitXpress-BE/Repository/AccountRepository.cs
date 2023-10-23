@@ -19,44 +19,44 @@ public class AccountRepository : IAccountRepository
         return await _context.Accounts.FindAsync(id);
     }
 
-    //public async Task<Account> AddAccount(Account account)
-    //{
-    //    try
-    //    {
-    //        _context.Entry(account).State = EntityState.Added;
-    //        await _context.SaveChangesAsync();
-    //        return account;
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Console.WriteLine(e);
-    //        throw;
-    //    }
-    //}
+    public async Task<Account> AddAccount(Account account)
+    {
+        try
+        {
+            _context.Entry(account).State = EntityState.Added;
+            await _context.SaveChangesAsync();
+            return account;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 
-   // public async Task<Account> UpdateAccount(int id, Account account)
-    //{
-    //    _context.Entry(account).State = EntityState.Modified;
-    //    try
-    //    {
-    //      var editAccount = await _context.Accounts.SingleOrDefaultAsync(x => x.AccountId == account.AccountId );
-    //        if(editAccount != null)
-    //        {
-    //            var result = account;
-    //            _context.Update(result);
-    //            await _context.SaveChangesAsync();
-    //            return result;
-    //        }
-    //        else
-    //        {
-    //            return null;
-    //        }
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        throw;
-    //    }
-    //}
+    public async Task<Account> UpdateAccount(int id, Account account)
+    {
+        _context.Entry(account).State = EntityState.Modified;
+        try
+        {
+            var editAccount = await _context.Accounts.SingleOrDefaultAsync(x => x.AccountId == account.AccountId);
+            if (editAccount != null)
+            {
+                var result = account;
+                _context.Update(result);
+                await _context.SaveChangesAsync();
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
+    }
 
     public void DeleteAccount(int AccountId)
     {

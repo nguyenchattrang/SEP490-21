@@ -36,41 +36,41 @@ namespace RecruitXpress_BE.Controllers
             return account;
         }
 
-        ////POST: api/AccountManagement
-        //[HttpPost]
-        //public async Task<ActionResult<Account>> AddAccount(Account account)
-        //{
-        //    try
-        //    {
-        //        var result = await _accountRepository.AddAccount(account);
-        //        return CreatedAtAction(nameof(AddAccount), result);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest();
-        //    }
+        //POST: api/AccountManagement
+        [HttpPost]
+        public async Task<ActionResult<Account>> AddAccount(Account account)
+        {
+            try
+            {
+                var result = await _accountRepository.AddAccount(account);
+                return CreatedAtAction(nameof(AddAccount), result);
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
 
-        //}
+        }
 
-        ////PUT: api/AccountManagement/{id}
-        //[HttpPut("id")]
-        //public async Task<ActionResult<Account>> UpdateAccount(int id, Account account)
-        //{
-        //    //if (id != account.StatusId)
-        //    //{
-        //    //    return BadRequest();
-        //    //}
-        //    try
-        //    {
-        //        var result = await _accountRepository.UpdateAccount(id, account);
-        //        return CreatedAtAction(nameof(UpdateAccount), result);
-        //    }
-        //    catch (Exception e)
-        //    {
+        //PUT: api/AccountManagement/{id}
+        [HttpPut("id")]
+        public async Task<ActionResult<Account>> UpdateAccount(int id, Account account)
+        {
+            //if (id != account.StatusId)
+            //{
+            //    return BadRequest();
+            //}
+            try
+            {
+                var result = await _accountRepository.UpdateAccount(id, account);
+                return CreatedAtAction(nameof(UpdateAccount), result);
+            }
+            catch (Exception e)
+            {
 
-        //        return NotFound("Không kết quả");
-        //    }
-        //}
+                return NotFound("Không kết quả");
+            }
+        }
 
         //DELETE: api/AccountManagement
         [HttpDelete("id")]
