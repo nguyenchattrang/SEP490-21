@@ -11,6 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using System.Net.Mail;
+using System.Net;
+using System.Reflection.Metadata;
+using Constant = RecruitXpress_BE.Helper.Constant;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -24,81 +28,45 @@ namespace RecruitXpress_BE.Controllers
             _configuration = configuration;
         }
 
-
-
-/*
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginModel model)
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> SignUp(SignUpModel model)
         {
             try
             {
-                Account u = new Account();
-                if (model.Account == null)
+
+                var user = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == model.Email);
+                if ((user == null) && Constant.validateGuidRegex.IsMatch(model.Password))
                 {
-                    u = await _context.Accounts.SingleOrDefaultAsync(u => u.Token == model.Token);
-                }
-                else
-                {
-                    u = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == model.Account);
-                }
-                if (u != null && HashHelper.Decrypt(u.Password, _configuration) == model.Password)
-                {
-                    return Ok(new
+                    SendEmail();
+
+        user = new Account
                     {
-                        Token = GenerateToken(u),
-                        UserName = u.Account1,
-                        RoleId = u.RoleId
-                    });
+                        Account1 = model.Email,
+                        Password = HashHelper.Encrypt(model.Password, _configuration),
+                        RoleId = 2,
+                    };
+                    _context.Accounts.Add(user);
+                    await _context.SaveChangesAsync();
+                    return Ok();
                 }
                 else
                 {
-                    return BadRequest("InvalidCredential");
+                    return BadRequest("This Email is already existed");
                 }
             }
             catch
             {
                 return StatusCode(500);
             }
-
         }
 
 
-
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    public async Task<IActionResult> SendEmail()
         {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
+            return Ok();
         }
 
-        private TokenModel GenerateToken(Account user)
-        {
-            var access = GenerateAccessToken(user);
-            var refresh = TokenHelper.GenerateRandomToken();
-            var tokenhandler = new JwtSecurityTokenHandler();
-            var refreshEntity = new RefreshToken
-            {
-                UserId = user.UserId,
-                Token = refresh,
-                Created = DateTime.UtcNow,
-                JwtId = tokenhandler.ReadJwtToken(access).Id,
-                ExpiredAt = DateTime.UtcNow.AddMonths(1)
-            };
-            if (_context.RefreshTokens.SingleOrDefault(x => x.UserId == user.UserId) != null)
-            {
-                _context.Update(refreshEntity);
-            }
-            else
-            {
-                _context.Add(refreshEntity);
-            }
-            _context.SaveChanges();
-            return new TokenModel(access, refresh);
-        }
-*/
+
         [HttpGet("get")]
         public async Task<IActionResult> ListAccount()
         {
@@ -117,7 +85,7 @@ namespace RecruitXpress_BE.Controllers
 
             var user = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == model.Username);
 
-            if (user != null && CheckPassword(user.Password, model.Password))
+            if (user != null && CheckPassword(user, model))
             {
 
                 // Retrieve the secret key from appsettings.json
@@ -148,10 +116,14 @@ namespace RecruitXpress_BE.Controllers
         }
 
 
-        private bool CheckPassword(string? user, string? login)
+        private bool CheckPassword(Account? user, LoginModel? login)
         {
-            if (user.Equals(login))
+            if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
+            {
                 return true;
+            }
+
+             
             else return false;
         }
 
