@@ -34,6 +34,7 @@ public class JobPostingManagementRepository : IJobPostingManagementRepository
 
     public async Task<JobPosting> UpdateJobPostings(int id, JobPosting jobPosting)
     {
+        jobPosting.JobId = id;
         _context.Entry(jobPosting).State = EntityState.Modified;
         try
         {
