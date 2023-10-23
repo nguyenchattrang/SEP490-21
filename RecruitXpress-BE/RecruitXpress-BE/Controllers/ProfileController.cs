@@ -42,13 +42,21 @@ namespace RecruitXpress_BE.Controllers
         [HttpGet("id")]
         public async Task<IActionResult> GetProfile(int id)
         {
-            var profile = await _context.Profiles.FindAsync(id);
+            try
+            {
+
+            var profile = await _context.Profiles.SingleOrDefaultAsync(x => x.ProfileId == id);
             if (profile == null)
             {
                 return NotFound("Không kết quả");
             }
 
             return Ok(profile);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
         //POST: api/ProfileManagement
@@ -86,11 +94,12 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-              
+                _context.Entry(Profile).State = EntityState.Modified;
                 var profile = await _context.Profiles.SingleOrDefaultAsync(x => x.ProfileId == Profile.ProfileId && x.AccountId == accountId);
                 if(profile != null)
                 {
-                    _context.Entry(profile).State = EntityState.Modified;
+                    var result = profile;
+                    _context.Update(result);
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }
