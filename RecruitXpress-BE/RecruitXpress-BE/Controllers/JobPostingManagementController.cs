@@ -49,10 +49,6 @@ public class JobPostingManagementController : ControllerBase
     [HttpPut("id")]
     public async Task<ActionResult<JobPosting>> UpdateJobPosting(int id, JobPosting jobPosting)
     {
-        if (id != jobPosting.JobId)
-        {
-            return BadRequest();
-        }
         try
         {
             var result = await _jobPostingManagementRepository.UpdateJobPostings(id, jobPosting);

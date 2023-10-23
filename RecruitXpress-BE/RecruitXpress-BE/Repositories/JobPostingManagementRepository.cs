@@ -37,6 +37,7 @@ public class JobPostingManagementRepository : IJobPostingManagementRepository
         _context.Entry(jobPosting).State = EntityState.Modified;
         try
         {
+            jobPosting.JobId = id;
             await _context.SaveChangesAsync();
             return jobPosting;
         }
