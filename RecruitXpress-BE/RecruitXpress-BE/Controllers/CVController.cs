@@ -17,7 +17,6 @@ namespace RecruitXpress_BE.Controllers
     public class CVController : ControllerBase
     {
         private readonly RecruitXpressContext _context;
-
         public CVController(RecruitXpressContext context)
         {
             _context = context;
@@ -27,6 +26,18 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
+                if (accountId != null)
+                {
+                    var check = await _context.Cvtemplates.SingleOrDefaultAsync(x => x.AccountId == accountId);
+                    if(check != null)
+                    {
+                        await DeleteCVExit(accountId);
+                    }
+                }else
+                {
+                    return BadRequest("Invalid AccountId");
+                }
+
                 if(fileData == null)
                 {
                     return BadRequest("Please upload file");
@@ -72,15 +83,22 @@ namespace RecruitXpress_BE.Controllers
                 throw new Exception(ex.Message);
             }
         }
-        [HttpGet("cvtemplate")]
-        public IActionResult DownloadMaterial(string fileName)
+        [HttpGet("cvtemplateId")]
+        public async Task<IActionResult> DownloadMaterial(int cvId)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "CVTemplates", fileName);
+            var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.TemplateId == cvId);
+            if (result == null)
+            {
+                return NotFound("File not found!");
+            }
+            var filePath = result.Url;
+           
             if (!System.IO.File.Exists(filePath))
             {
-                return NotFound("File not found!" + fileName);
+                return NotFound("File not found!" + filePath);
             }
             var fileContent = System.IO.File.ReadAllBytes(filePath);
+            string fileName = Path.GetFileName(filePath);
             var contentType = "application/octet-stream";
             return File(fileContent, contentType, fileName);
         }
@@ -105,6 +123,26 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
             
+        }
+        private async Task<IActionResult> DeleteCVExit(int accountId)
+        {
+            try
+            {
+                var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == accountId);
+                if (result == null)
+                {
+                    return BadRequest("Xoa CV fail");
+                }
+                var filePath = result.Url;
+                System.IO.File.Delete(filePath);
+                _context.Cvtemplates.Remove(result);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
