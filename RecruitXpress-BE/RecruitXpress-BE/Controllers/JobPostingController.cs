@@ -2,6 +2,7 @@
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
+using RecruitXpress_BE.Repositories;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -9,30 +10,12 @@ namespace RecruitXpress_BE.Controllers
     [ApiController]
     public class JobPostingController : ControllerBase
     {
-        private readonly IJobPostingRepository _jobPostingRepository;
-
-        // Inject the repository through constructor
-        public JobPostingController(IJobPostingRepository jobPostingRepository)
-        {
-            _jobPostingRepository = jobPostingRepository;
-        }
-
+        private readonly IJobPostingRepository _jobPostingRepository = new JobPostingRepository();
+        
         //GET: api/JobPosting
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobPosting>>> GetListJobPostings()
-        {
-            var jobPostings = await _jobPostingRepository.GetListJobPostings();
-            return Ok(jobPostings);
-        }
-
-        //GET: api/JobPosting?page={page}&size={size}
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobPosting>>> GetListJobPostings(int page, int size)
-        {
-            var jobPostings = await _jobPostingRepository.GetListJobPostings(page, size);
-            return Ok(jobPostings);
-        }
-
+        public async Task<ActionResult<IEnumerable<JobPosting>>> GetListJobPostings(string? searchString, string? orderBy, bool? isSortAscending, int page, int size) => await _jobPostingRepository.GetListJobPostings(searchString, orderBy, isSortAscending, page, size);
+        
         //POST: api/JobPosting/AdvancedSearch?page={page}&size={size}
         [HttpPost("AdvancedSearch")]
         public async Task<ActionResult<IEnumerable<JobPosting>>> GetListJobPostingsAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int page, int size)
@@ -48,7 +31,7 @@ namespace RecruitXpress_BE.Controllers
             var jobPosting = await _jobPostingRepository.GetJobPosting(id);
             if (jobPosting == null)
             {
-                return NotFound();
+                return NotFound("Job posting not found!");
             }
 
             return jobPosting;
@@ -66,7 +49,7 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 

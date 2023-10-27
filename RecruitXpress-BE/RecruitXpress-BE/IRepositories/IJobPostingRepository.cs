@@ -6,7 +6,7 @@ namespace RecruitXpress_BE.IRepositories;
 public interface IJobPostingRepository
 {
     Task<List<JobPosting>> GetListJobPostings();
-    Task<List<JobPosting>> GetListJobPostings(int page, int size);
+    Task<List<JobPosting>> GetListJobPostings(string? searchString, string? orderBy, bool? isSortAscending, int? page, int? size);
     Task<List<JobPosting>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int page, int size);
     Task<JobPosting?> GetJobPosting(int id);
     Task<JobPosting> AddJobPosting(JobPosting jobPosting);
