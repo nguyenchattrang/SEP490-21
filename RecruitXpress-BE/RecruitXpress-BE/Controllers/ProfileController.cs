@@ -45,7 +45,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
 
-            var profile = await _context.Profiles.SingleOrDefaultAsync(x => x.ProfileId == id);
+            var profile = await _context.Profiles.SingleOrDefaultAsync(x => x.AccountId == id);
             if (profile == null)
             {
                 return NotFound("Không kết quả");

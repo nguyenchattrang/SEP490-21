@@ -24,7 +24,7 @@
     <Folder Include="Contracts\" />
     <Folder Include="Upload\CVTemplates\" />
     <Folder Include="Repositories\" />
-    <Folder Include="Upload\JobApplication\" />
+    <Folder Include="Upload\JobApplications\" />
   </ItemGroup>
 
 </Project>
