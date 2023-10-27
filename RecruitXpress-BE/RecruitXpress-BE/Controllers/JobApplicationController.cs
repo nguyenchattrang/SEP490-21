@@ -63,13 +63,37 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var listJob = await _context.JobApplications.Where(x=> x.Status ==1 ).ToListAsync();
+                var listJob = await _context.JobApplications.Include(x => x.Profile).Where(x=> x.Status ==1 ).ToListAsync();
+                if (listJob == null) return NotFound("Khong tim thay ban ghi ");
                 return Ok(listJob);
 
             }
             catch (Exception ex)
             {
                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("GetSumited")]
+        public async Task<IActionResult>getJobApplicationSubmitted(int accountId)
+        {
+            try
+            {
+                var account = await _context.Profiles.SingleOrDefaultAsync(x=> x.AccountId== accountId);
+                if(account == null)
+                {
+                    return BadRequest("Account khong co profile");
+                }
+                var listJob = await _context.JobApplications.Include(x=> x.Job).Where(x => x.ProfileId == account.ProfileId).ToListAsync();
+                if(listJob == null)
+                {
+                    return NotFound("Khong co thong tin");
+                }
+                return Ok(listJob);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet("GetDetail")]
@@ -129,23 +153,22 @@ namespace RecruitXpress_BE.Controllers
                 var account = _context.Profiles.FirstOrDefaultAsync(x => x.ProfileId == profileId);
                 if(account == null)
                 {
-                    return BadRequest("Account khonog co profile ");
+                    return BadRequest("Account khong co profile ");
                 }
                 var check = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == account.Id);
                 if (check == null)
                 {
                     if(check.TemplateId == detailJob.TemplateId)
                     {
-                        return BadRequest("Ban da submit job nay roi, de submit lai voi CV moi hay update CV cua ban")
+                        return BadRequest("Ban da submit job nay roi, de submit lai voi CV moi hay update CV cua ban");
                     }
                     else
                     {
-
                         await submitJobApplication(jobApplyId, account.Id);
                         return Ok("Cap nhat CV cho job thanh cong");
                     }
                 }
-
+                return Ok("Cap nhat CV cho job thanh cong");
             }
             catch (Exception ex)
             {
