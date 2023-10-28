@@ -43,7 +43,7 @@ namespace RecruitXpress_BE.Controllers
                     {
                         Account1 = model.Email,
                         Password = HashHelper.Encrypt(model.Password, _configuration),
-                        RoleId = 2,
+                        RoleId = 1,
                     };
                     _context.Accounts.Add(user);
                     await _context.SaveChangesAsync();
@@ -54,9 +54,9 @@ namespace RecruitXpress_BE.Controllers
                     return BadRequest("This Email is already existed");
                 }
             }
-            catch
+            catch (Exception e)
             {
-                return StatusCode(500);
+                return Ok(e.Message);
             }
         }
 

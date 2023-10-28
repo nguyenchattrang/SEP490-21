@@ -70,7 +70,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         //DELETE: api/JobPosting/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("id")]
         public async Task<IActionResult> DeleteJobPosting(int id)
         {
             try
