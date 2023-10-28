@@ -15,6 +15,7 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<Option, OptionDTO>();
             CreateMap<Question, QuestionDTO>()
                 .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options));
+           
 
         }
     }

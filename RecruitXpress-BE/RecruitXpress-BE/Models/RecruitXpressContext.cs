@@ -595,6 +595,12 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.Question1).HasColumnName("Question");
 
                 entity.Property(e => e.Type).HasMaxLength(100);
+                modelBuilder.Entity<Question>()
+                 .HasMany(q => q.Options)
+                    .WithOne(o => o.Question)
+                    .HasForeignKey(o => o.QuestionId)
+                      .OnDelete(DeleteBehavior.Cascade);
+    
             });
 
             modelBuilder.Entity<Role>(entity =>

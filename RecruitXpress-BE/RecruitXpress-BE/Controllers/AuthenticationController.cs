@@ -180,7 +180,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpPost("ChangePasswordWithToken")]
-        public async Task<IActionResult> ResetPassword(string token, string newpwd)
+        public async Task<IActionResult> ResetPassword(string token, string newPassword)
         {
             try
             {
@@ -189,7 +189,7 @@ namespace RecruitXpress_BE.Controllers
                 if (emailtoken != null && (bool)!emailtoken.IsUsed && (bool)!emailtoken.IsRevoked)
                 {
                     var user = await _context.Accounts.SingleOrDefaultAsync(t => t.AccountId == emailtoken.AccountId);
-                    user.Password = HashHelper.Encrypt(newpwd, _configuration);
+                    user.Password = HashHelper.Encrypt(newPassword, _configuration);
                     emailtoken.IsUsed = true;
                     _context.Update(emailtoken);
                     _context.Update(user);

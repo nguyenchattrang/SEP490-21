@@ -8,9 +8,9 @@ namespace RecruitXpress_BE.IRepositories
     {
         Task<IEnumerable<QuestionDTO>> GetAllQuestions(QuestionRequest request);
 
-        Task<Question> CreateQuestion(Question question);
+        Task CreateQuestion(Question question);
 
-        Task<Question> GetQuestionById(int questionId);
+        Task<QuestionDTO> GetQuestionById(int questionId);
 
         Task<Question> UpdateQuestion(Question question);
 

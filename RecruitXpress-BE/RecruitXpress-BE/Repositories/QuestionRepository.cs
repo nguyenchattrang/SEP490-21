@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RecruitXpress_BE.Repositories
@@ -26,18 +27,9 @@ namespace RecruitXpress_BE.Repositories
                 .Include(q => q.Options)
                 .Where(q => q.QuestionId == q.QuestionId);
 
-            var query1 = _context.Questions
-               .Include(q => q.Options)
-               .Where(q => q.Type.Contains(request.Type)).ToList();
-            // Load the associated options
-
-            if (request.QuestionId != 0)
-            {
-                query = query.Where(s => s.QuestionId == request.QuestionId);
-            }
             if (request.Name != null)
             {
-                var list = query1.Where(s => s.Question1.Contains(request.Name)).ToList();
+                query = query.Where(s => s.Question1.Contains(request.Name));
 
             }
             if (request.Type != null)
@@ -54,25 +46,29 @@ namespace RecruitXpress_BE.Repositories
             }
 
 
-            if (request.SortOrder != null)
+            if (request.SortBy != null)
             {
-                switch (request.SortOrder)
+                switch (request.SortBy)
                 {
                     case "name":
-                        query = query.OrderBy(s => s.Question1);
+                        query = request.OrderByAscending
+                            ? query.OrderBy(j => j.Question1)
+                            : query.OrderByDescending(j => j.Question1);
                         break;
-                    case "name_desc":
-                        query = query.OrderByDescending(s => s.Question1);
+
+                    case "questionId":
+                        query = request.OrderByAscending
+                            ? query.OrderBy(j => j.QuestionId)
+                            : query.OrderByDescending(j => j.QuestionId);
                         break;
-                    case "questionId_desc":
-                        query = query.OrderByDescending(s => s.QuestionId);
-                        break;
+
                     default:
-                        query = query.OrderBy(s => s.QuestionId);
+                        query = request.OrderByAscending
+                               ? query.OrderBy(j => j.QuestionId)
+                               : query.OrderByDescending(j => j.QuestionId);
                         break;
                 }
             }
-
 
             var questions = await query
              .Skip(request.Offset)
@@ -88,18 +84,22 @@ namespace RecruitXpress_BE.Repositories
 
 
 
-        public async Task<Question> CreateQuestion(Question question)
+        public async Task CreateQuestion(Question questiondto)
         {
-            _context.Questions.Add(question);
+
+
+            /*var questions = _mapper.Map<Question>(questiondto);*/
+            _context.Questions.Add(questiondto);
             await _context.SaveChangesAsync();
-            return question;
+
         }
 
-        public async Task<Question> GetQuestionById(int questionId)
+        public async Task<QuestionDTO> GetQuestionById(int questionId)
         {
-            return await _context.Questions
-                .Include(q => q.Options)
-                .FirstOrDefaultAsync(q => q.QuestionId == questionId);
+            var question = await _context.Questions
+                     .Include(q => q.Options)
+                     .FirstOrDefaultAsync(q => q.QuestionId == questionId);
+            return _mapper.Map<QuestionDTO>(question);
         }
 
         public async Task<Question> UpdateQuestion(Question question)
@@ -111,6 +111,12 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<bool> DeleteQuestion(int questionId)
         {
+
+            var options = _context.Options.Where(o => o.QuestionId == questionId);
+
+            // Delete options first
+            _context.Options.RemoveRange(options);
+
             var question = await _context.Questions.FindAsync(questionId);
             if (question == null)
             {
