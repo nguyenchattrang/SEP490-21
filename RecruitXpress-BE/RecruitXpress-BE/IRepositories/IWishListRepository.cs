@@ -5,8 +5,8 @@ namespace RecruitXpress_BE.IRepositories;
 
 public interface IWishListRepository
 {
-    Task<List<WishList>> GetListWishLists(string? searchString, string? orderBy, bool? isSortAscending, int? page, int? size);
-    Task<WishList?> GetWishList(int id);
+    Task<List<WishList>> GetListWishLists(int accountId, string? searchString, string? orderBy, bool? isSortAscending, int? page, int? size);
+    Task<List<WishList?>> GetWishList(int accountId);
     Task<WishList> AddWishList(WishList wishList);
     Task<bool> DeleteWishList(int jobId);
 }
