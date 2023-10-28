@@ -11,7 +11,7 @@ public class JobPostingManagementRepository : IJobPostingManagementRepository
     {
         return await _context.JobPostings.ToListAsync();
     }
-    
+
     public async Task<JobPosting?> GetJobPosting(int id)
     {
         return await _context.JobPostings.FindAsync(id);
@@ -34,11 +34,9 @@ public class JobPostingManagementRepository : IJobPostingManagementRepository
 
     public async Task<JobPosting> UpdateJobPostings(int id, JobPosting jobPosting)
     {
-        jobPosting.JobId = id;
         _context.Entry(jobPosting).State = EntityState.Modified;
         try
         {
-            jobPosting.JobId = id;
             await _context.SaveChangesAsync();
             return jobPosting;
         }

@@ -11,11 +11,11 @@ namespace RecruitXpress_BE.Controllers;
 public class JobPostingManagementController : ControllerBase
 {
     private readonly IJobPostingManagementRepository _jobPostingManagementRepository = new JobPostingManagementRepository();
-    
+
     //GET: api/JobPostingManagement
     [HttpGet]
     public async Task<ActionResult<IEnumerable<JobPosting>>> GetListJobPostings() => await _jobPostingManagementRepository.GetListJobPostings();
-    
+
     //GET: api/JobPostingManagement/{id}
     [HttpGet("id")]
     public async Task<ActionResult<JobPosting>> GetJobPosting(int id)
@@ -42,13 +42,17 @@ public class JobPostingManagementController : ControllerBase
         {
             return BadRequest();
         }
-        
+
     }
-    
+
     //PUT: api/JobPostingManagement/{id}
     [HttpPut("id")]
     public async Task<ActionResult<JobPosting>> UpdateJobPosting(int id, JobPosting jobPosting)
     {
+        if (id != jobPosting.JobId)
+        {
+            return BadRequest();
+        }
         try
         {
             var result = await _jobPostingManagementRepository.UpdateJobPostings(id, jobPosting);

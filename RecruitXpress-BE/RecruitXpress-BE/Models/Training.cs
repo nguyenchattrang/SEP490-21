@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RecruitXpress_BE.Models
 {
-    public partial class Training
+    public partial class training
     {
         public int TrainingId { get; set; }
         public int? ProfileId { get; set; }
