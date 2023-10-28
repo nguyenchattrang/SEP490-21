@@ -28,5 +28,18 @@ namespace RecruitXpress_BE.Models
 
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
+
+        public double MinSalary => string.IsNullOrEmpty(SalaryRange) ? double.MaxValue : double.Parse(SalaryRange.Split("-")[0]);
+
+        public double MaxSalary
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(SalaryRange)) return double.MinValue;
+                return SalaryRange.Split("-").Length == 2
+                    ? double.Parse(SalaryRange.Split("-")[1])
+                    : double.Parse(SalaryRange.Split("-")[0]);
+            }
+        }
     }
 }

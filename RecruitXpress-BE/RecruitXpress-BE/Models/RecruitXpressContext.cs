@@ -21,6 +21,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<Cvtemplate> Cvtemplates { get; set; } = null!;
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
         public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
+        public virtual DbSet<EmailToken> EmailTokens { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<FamilyInformation> FamilyInformations { get; set; } = null!;
         public virtual DbSet<GeneralTest> GeneralTests { get; set; } = null!;
@@ -31,6 +32,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<LanguageProficiency> LanguageProficiencies { get; set; } = null!;
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
+        public virtual DbSet<Option> Options { get; set; } = null!;
         public virtual DbSet<Profile> Profiles { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
@@ -39,7 +41,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<UserAnalytic> UserAnalytics { get; set; } = null!;
         public virtual DbSet<WishList> WishLists { get; set; } = null!;
         public virtual DbSet<WorkExperience> WorkExperiences { get; set; } = null!;
-        public virtual DbSet<Training> Training { get; set; } = null!;
+        public virtual DbSet<training> training { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -193,6 +195,27 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.Title)
                     .HasMaxLength(255)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<EmailToken>(entity =>
+            {
+                entity.HasKey(e => e.TokenId)
+                    .HasName("PK__EmailTok__658FEEEAD151D069");
+
+                entity.ToTable("EmailToken");
+
+                entity.Property(e => e.TokenId).ValueGeneratedNever();
+
+                entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
+
+                entity.Property(e => e.IssuedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Token).HasMaxLength(255);
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.EmailTokens)
+                    .HasForeignKey(d => d.AccountId)
+                    .HasConstraintName("FK__EmailToke__Accou__625A9A57");
             });
 
             modelBuilder.Entity<Exam>(entity =>
@@ -490,6 +513,22 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__Notificat__Sende__5FB337D6");
             });
 
+            modelBuilder.Entity<Option>(entity =>
+            {
+                entity.ToTable("Option");
+
+                entity.Property(e => e.OptionId).HasColumnName("OptionID");
+
+                entity.Property(e => e.OptionText).HasMaxLength(255);
+
+                entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
+
+                entity.HasOne(d => d.Question)
+                    .WithMany(p => p.Options)
+                    .HasForeignKey(d => d.QuestionId)
+                    .HasConstraintName("FK_Option_Question");
+            });
+
             modelBuilder.Entity<Profile>(entity =>
             {
                 entity.ToTable("Profile");
@@ -553,13 +592,9 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
-                entity.Property(e => e.Question1)
-                    .HasColumnType("text")
-                    .HasColumnName("Question");
+                entity.Property(e => e.Question1).HasColumnName("Question");
 
-                entity.Property(e => e.Type)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Type).HasMaxLength(100);
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -697,7 +732,7 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__WorkExper__Profi__02084FDA");
             });
 
-            modelBuilder.Entity<Training>(entity =>
+            modelBuilder.Entity<training>(entity =>
             {
                 entity.ToTable("Training");
 
@@ -734,7 +769,7 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.StartDate).HasColumnType("date");
 
                 entity.HasOne(d => d.Profile)
-                    .WithMany(p => p.Training)
+                    .WithMany(p => p.training)
                     .HasForeignKey(d => d.ProfileId)
                     .HasConstraintName("FK__Training__Profil__208CD6FA");
             });

@@ -10,5 +10,7 @@ namespace RecruitXpress_BE.Models
         public string? OptionText { get; set; }
         public bool? IsCorrect { get; set; }
         public int? Status { get; set; }
+
+        public virtual Question? Question { get; set; }
     }
 }

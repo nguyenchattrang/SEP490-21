@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace RecruitXpress_BE.Models
 {
@@ -15,13 +14,11 @@ namespace RecruitXpress_BE.Models
             LanguageProficiencies = new HashSet<LanguageProficiency>();
             ScheduleDetails = new HashSet<ScheduleDetail>();
             WorkExperiences = new HashSet<WorkExperience>();
-            Training = new HashSet<Training>();
+            training = new HashSet<training>();
         }
-      
+
         public int ProfileId { get; set; }
-       
         public int? AccountId { get; set; }
-        [JsonIgnore]
         public int? StatusId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
@@ -38,24 +35,14 @@ namespace RecruitXpress_BE.Models
         public string? Article { get; set; }
 
         public virtual Account? Account { get; set; }
-        [JsonIgnore]
         public virtual MaritalStatus? Status { get; set; }
-        [JsonIgnore]
         public virtual ICollection<ComputerProficiency> ComputerProficiencies { get; set; }
-        [JsonIgnore]
         public virtual ICollection<EducationalBackground> EducationalBackgrounds { get; set; }
-        [JsonIgnore]
         public virtual ICollection<FamilyInformation> FamilyInformations { get; set; }
-        [JsonIgnore]
         public virtual ICollection<JobApplication> JobApplications { get; set; }
-        [JsonIgnore]
         public virtual ICollection<LanguageProficiency> LanguageProficiencies { get; set; }
-        [JsonIgnore]
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
-        [JsonIgnore]
         public virtual ICollection<WorkExperience> WorkExperiences { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<Training> Training { get; set; }
-      
+        public virtual ICollection<training> training { get; set; }
     }
 }
