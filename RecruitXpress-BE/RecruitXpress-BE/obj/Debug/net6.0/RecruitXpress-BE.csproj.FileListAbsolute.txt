@@ -163,3 +163,9 @@ C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\RecruitXpress-BE.pdb
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\RecruitXpress-BE.genruntimeconfig.cache
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\ref\RecruitXpress-BE.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MailKit.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MimeKit.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\NETCore.MailKit.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\BouncyCastle.Crypto.dll

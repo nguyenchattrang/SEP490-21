@@ -3176,19 +3176,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\vutie\\.nuget\\packages\\": {}
+    "C:\\Users\\ADMIN\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\vutie\\OneDrive\\Máy tính\\SEP\\SEP490-21\\RecruitXpress-BE\\RecruitXpress-BE\\RecruitXpress-BE.csproj",
+      "projectUniqueName": "C:\\Users\\ADMIN\\Documents\\Kì 9 Fall 2023\\SEP490\\SEP490-21\\RecruitXpress-BE\\RecruitXpress-BE\\RecruitXpress-BE.csproj",
       "projectName": "RecruitXpress-BE",
-      "projectPath": "C:\\Users\\vutie\\OneDrive\\Máy tính\\SEP\\SEP490-21\\RecruitXpress-BE\\RecruitXpress-BE\\RecruitXpress-BE.csproj",
-      "packagesPath": "C:\\Users\\vutie\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\vutie\\OneDrive\\Máy tính\\SEP\\SEP490-21\\RecruitXpress-BE\\RecruitXpress-BE\\obj\\",
+      "projectPath": "C:\\Users\\ADMIN\\Documents\\Kì 9 Fall 2023\\SEP490\\SEP490-21\\RecruitXpress-BE\\RecruitXpress-BE\\RecruitXpress-BE.csproj",
+      "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ADMIN\\Documents\\Kì 9 Fall 2023\\SEP490\\SEP490-21\\RecruitXpress-BE\\RecruitXpress-BE\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\vutie\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3196,6 +3196,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "http://proget.icomm.vn/nuget/icomm-packages/": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -3268,8 +3269,16 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1803",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "You are running the 'restore' operation with an 'HTTP' source, 'http://proget.icomm.vn/nuget/icomm-packages/'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source."
+    }
+  ]
 }
