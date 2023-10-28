@@ -14,7 +14,7 @@ namespace RecruitXpress_BE.Models
             LanguageProficiencies = new HashSet<LanguageProficiency>();
             ScheduleDetails = new HashSet<ScheduleDetail>();
             WorkExperiences = new HashSet<WorkExperience>();
-            Training = new HashSet<Training>();
+            training = new HashSet<training>();
         }
 
         public int ProfileId { get; set; }
@@ -43,6 +43,6 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<LanguageProficiency> LanguageProficiencies { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
         public virtual ICollection<WorkExperience> WorkExperiences { get; set; }
-        public virtual ICollection<Training> Training { get; set; }
+        public virtual ICollection<training> training { get; set; }
     }
 }

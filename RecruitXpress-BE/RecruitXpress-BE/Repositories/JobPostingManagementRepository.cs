@@ -11,7 +11,7 @@ public class JobPostingManagementRepository : IJobPostingManagementRepository
     {
         return await _context.JobPostings.ToListAsync();
     }
-    
+
     public async Task<JobPosting?> GetJobPosting(int id)
     {
         return await _context.JobPostings.FindAsync(id);
