@@ -123,7 +123,7 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
             
-        }
+        } 
         private async Task<IActionResult> DeleteCVExit(int accountId)
         {
             try
@@ -143,6 +143,18 @@ namespace RecruitXpress_BE.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet("myCV")]
+        private async Task<IActionResult> getMyCV(int accountId)
+        {
+            if (accountId == null) return BadRequest("AccountId dau ?");
+            
+            var cv = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == accountId);
+            if (cv == null)
+            {
+                return BadRequest("Khong tim thay CV");
+            }
+            return Ok(cv);
         }
     }
 }
