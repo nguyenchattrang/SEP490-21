@@ -140,7 +140,7 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("PutJobApp")]
+        [HttpPut("PutJobApp1")]
         public async Task<IActionResult> ResubmitjobApplication(int jobApplyId, int profileId)
         {
             try

@@ -13,21 +13,16 @@ public class WishListController : ControllerBase
 
     //GET: api/WishList
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<WishList>>> GetListWishLists(string? searchString, string? orderBy,
+    public async Task<ActionResult<IEnumerable<WishList>>> GetListWishLists(int accountId, string? searchString, string? orderBy,
         bool? isSortAscending, int page, int size) =>
-        await _WishListRepository.GetListWishLists(searchString, orderBy, isSortAscending, page, size);
+        await _WishListRepository.GetListWishLists(accountId, searchString, orderBy, isSortAscending, page, size);
 
-    //GET: api/WishList/{id}
-    [HttpGet("id")]
-    public async Task<ActionResult<WishList>> GetWishList(int id)
+    //GET: api/WishList/{accountId}
+    [HttpGet("accountId")]
+    public async Task<ActionResult<List<WishList?>>> GetWishList(int accountId)
     {
-        var wishList = await _WishListRepository.GetWishList(id);
-        if (wishList == null)
-        {
-            return NotFound("Preference Job Posting not found!");
-        }
-
-        return wishList;
+        var wishLists = await _WishListRepository.GetWishList(accountId);
+        return wishLists;
     }
 
     //POST: api/WishList
@@ -47,7 +42,7 @@ public class WishListController : ControllerBase
     }
 
     //DELETE: api/WishList/{id}
-    [HttpDelete("{id}")]
+    [HttpDelete("id")]
     public async Task<IActionResult> DeleteWishList(int id)
     {
         try
@@ -65,7 +60,7 @@ public class WishListController : ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return  StatusCode(500);
+            return StatusCode(500);
         }
     }
 }

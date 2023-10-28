@@ -12,9 +12,10 @@ public class WishListRepository : IWishListRepository
     public async Task<List<WishList>> GetListWishLists()
         => await _context.WishLists.ToListAsync();
 
-    public async Task<List<WishList>> GetListWishLists(string? searchString, string? sortBy,
+    public async Task<List<WishList>> GetListWishLists(int accountId, string? searchString, string? sortBy,
         bool? isSortAscending, int? page, int? size)
         => await GetAdvancedSearchWishListQuery(
+            accountId,
             new JobPostingSearchDTO()
             {
                 SearchString = searchString,
@@ -25,14 +26,23 @@ public class WishListRepository : IWishListRepository
             size
         ).ToListAsync();
     
-    public async Task<WishList?> GetWishList(int id)
-        => await _context.WishLists.FindAsync(id);
+    public async Task<List<WishList?>> GetWishList(int accountId)
+        => await _context.WishLists.Where(wishList => wishList.AccountId == accountId).ToListAsync();
 
     public async Task<WishList> AddWishList(WishList wishList)
     {
         try
         {
-            _context.Entry(wishList).State = EntityState.Added;
+            var oldWishList = _context.WishLists.Where(w => w.AccountId == wishList.AccountId)
+                .SingleOrDefault(w => w.JobId == wishList.JobId);
+            if (oldWishList == null)
+            {
+                _context.Entry(wishList).State = EntityState.Added;
+            }
+            else
+            {
+                _context.Entry(oldWishList).State = EntityState.Deleted;
+            }
             await _context.SaveChangesAsync();
             return wishList;
         }
@@ -56,10 +66,10 @@ public class WishListRepository : IWishListRepository
         return true;
     }
 
-    private IQueryable<WishList> GetAdvancedSearchWishListQuery(JobPostingSearchDTO searchDto, int? page, int? size)
+    private IQueryable<WishList> GetAdvancedSearchWishListQuery(int accountId, JobPostingSearchDTO searchDto, int? page, int? size)
     {
         var query = _context.WishLists
-            .Where(wishList => wishList.JobId == wishList.Job.JobId).AsQueryable();
+            .Where(wishList => wishList.JobId == wishList.Job.JobId && wishList.AccountId == accountId).AsQueryable();
 
         if (!string.IsNullOrEmpty(searchDto.SearchString))
         {
