@@ -204,7 +204,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.ToTable("EmailToken");
 
-                entity.Property(e => e.TokenId).ValueGeneratedNever();
+                entity.Property(e => e.TokenId).HasColumnName("TokenId");
 
                 entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
 

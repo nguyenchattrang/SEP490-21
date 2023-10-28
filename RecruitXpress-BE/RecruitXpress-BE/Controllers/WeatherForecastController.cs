@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RecruitXpress_BE.Models;
 
 namespace RecruitXpress_BE.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
