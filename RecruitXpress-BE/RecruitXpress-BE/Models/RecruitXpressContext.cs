@@ -47,8 +47,8 @@ namespace RecruitXpress_BE.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                optionsBuilder.UseSqlServer(config.GetConnectionString("RecruitXpress"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("server =(local)\\SQLEXPRESS01; database = RecruitXpress;uid=sa;pwd=123456; TrustServerCertificate=True ");
             }
         }
 
@@ -200,11 +200,9 @@ namespace RecruitXpress_BE.Models
             modelBuilder.Entity<EmailToken>(entity =>
             {
                 entity.HasKey(e => e.TokenId)
-                    .HasName("PK__EmailTok__658FEEEAD151D069");
+                    .HasName("PK__EmailTok__658FEEEA6548AD56");
 
                 entity.ToTable("EmailToken");
-
-                entity.Property(e => e.TokenId).HasColumnName("TokenId");
 
                 entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
 
@@ -215,7 +213,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.EmailTokens)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__EmailToke__Accou__625A9A57");
+                    .HasConstraintName("FK__EmailToke__Accou__681373AD");
             });
 
             modelBuilder.Entity<Exam>(entity =>
@@ -595,12 +593,11 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.Question1).HasColumnName("Question");
 
                 entity.Property(e => e.Type).HasMaxLength(100);
-                modelBuilder.Entity<Question>()
-                 .HasMany(q => q.Options)
-                    .WithOne(o => o.Question)
-                    .HasForeignKey(o => o.QuestionId)
-                      .OnDelete(DeleteBehavior.Cascade);
-    
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Question_Account");
             });
 
             modelBuilder.Entity<Role>(entity =>

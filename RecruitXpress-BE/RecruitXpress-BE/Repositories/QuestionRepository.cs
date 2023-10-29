@@ -25,6 +25,7 @@ namespace RecruitXpress_BE.Repositories
         {
             var query = _context.Questions
                 .Include(q => q.Options)
+                .Include(q=> q.CreatedByNavigation)
                 .Where(q => q.QuestionId == q.QuestionId);
 
             if (request.Name != null)

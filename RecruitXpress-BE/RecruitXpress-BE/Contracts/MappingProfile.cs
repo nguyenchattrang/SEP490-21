@@ -14,8 +14,12 @@ namespace RecruitXpress_BE.Contracts
         {
             CreateMap<Option, OptionDTO>();
             CreateMap<Question, QuestionDTO>()
-                .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options));
-           
+                .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options))
+                .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation))
+                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.Question1));
+            CreateMap<Account, AccountDTO>()
+            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Account1));
+
 
         }
     }
