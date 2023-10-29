@@ -45,7 +45,9 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.AddDbContext<RecruitXpressContext>(opt
     => opt.UseSqlServer(builder.Configuration.GetConnectionString("RecruitXpress")));
 
-
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 
 builder.Services.AddCors();
 

@@ -12,11 +12,14 @@ public class JobPostingSearchDTO
     
     public string? SortBy { get; set; }
 
-    private bool? _isSortAscending;
+    private readonly bool? _isSortAscending;
 
     public bool IsSortAscending
     {
         get => _isSortAscending ?? false;
-        set => _isSortAscending = value;
+        init => _isSortAscending = value;
     }
+
+    public int Page { get; set; } = 1;
+    public int Size { get; set; } = 10;
 }

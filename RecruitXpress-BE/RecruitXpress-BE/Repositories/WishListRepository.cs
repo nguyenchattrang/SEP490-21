@@ -69,7 +69,9 @@ public class WishListRepository : IWishListRepository
     private IQueryable<WishList> GetAdvancedSearchWishListQuery(int accountId, JobPostingSearchDTO searchDto, int? page, int? size)
     {
         var query = _context.WishLists
-            .Where(wishList => wishList.JobId == wishList.Job.JobId && wishList.AccountId == accountId).AsQueryable();
+            .Include(w => w.Job)
+            .Where(w => w.AccountId == accountId)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(searchDto.SearchString))
         {
