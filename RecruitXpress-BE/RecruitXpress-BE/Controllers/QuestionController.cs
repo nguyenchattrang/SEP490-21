@@ -19,6 +19,8 @@ using RecruitXpress_BE.IRepositories;
 
 namespace RecruitXpress_BE.Controllers
 {
+    [Route("api/Question/")]
+    [ApiController]
     public class QuestionController : ControllerBase
     {
         public IConfiguration _configuration;
@@ -33,8 +35,8 @@ namespace RecruitXpress_BE.Controllers
 
 
         // GET: api/questions/{id}
-        [HttpGet("list")]
-        public async Task<IActionResult> GetQuestion(QuestionRequest request)
+        [HttpGet("ListQuestion")]
+        public async Task<IActionResult> GetQuestion([FromQuery] QuestionRequest request)
         {
             var question = await _repository.GetAllQuestions(request);
 
@@ -46,7 +48,7 @@ namespace RecruitXpress_BE.Controllers
             return Ok(question);
         }
         // GET: api/questions/{id}
-        [HttpGet("{id}")]
+        [HttpGet("GetQuestionById/{id}")]
         public async Task<IActionResult> GetQuestionById(int id)
         {
             var question = await _repository.GetQuestionById(id);
@@ -60,16 +62,16 @@ namespace RecruitXpress_BE.Controllers
         }
 
         // POST: api/questions
-        [HttpPost]
+        [HttpPost("CreateQuestion")]
         public async Task<IActionResult> CreateQuestion(Question question)
         {
-            var createdQuestion = await _repository.CreateQuestion(question);
+            await _repository.CreateQuestion(question);
 
-            return CreatedAtAction(nameof(GetQuestion), new { id = createdQuestion.QuestionId }, createdQuestion);
+            return Ok();
         }
 
         // PUT: api/questions/{id}
-        [HttpPut("{id}")]
+        [HttpPut("UpdateQuestion/{id}")]
         public async Task<IActionResult> UpdateQuestion(int id, Question question)
         {
             if (id != question.QuestionId)
@@ -88,7 +90,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         // DELETE: api/questions/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteQuestion/{id}")]
         public async Task<IActionResult> DeleteQuestion(int id)
         {
             var deleted = await _repository.DeleteQuestion(id);

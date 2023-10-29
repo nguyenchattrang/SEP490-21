@@ -16,6 +16,7 @@ namespace RecruitXpress_BE.Models
         public int? CreatedBy { get; set; }
         public int? Status { get; set; }
 
+        public virtual Account? CreatedByNavigation { get; set; }
         public virtual ICollection<Option> Options { get; set; }
     }
 }

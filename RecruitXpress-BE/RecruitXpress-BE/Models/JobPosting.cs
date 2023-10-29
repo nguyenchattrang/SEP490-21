@@ -30,6 +30,7 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         [JsonIgnore]
         public virtual ICollection<WishList> WishLists { get; set; }
+<<<<<<< HEAD
 
         //public double MinSalary => string.IsNullOrEmpty(SalaryRange) ? double.MaxValue : double.Parse(SalaryRange.Split("-")[0]);
 
@@ -43,5 +44,7 @@ namespace RecruitXpress_BE.Models
         //            : double.Parse(SalaryRange.Split("-")[0]);
         //    }
         //}
+=======
+>>>>>>> main
     }
 }

@@ -14,6 +14,7 @@ namespace RecruitXpress_BE.Models
             NotificationReceivers = new HashSet<Notification>();
             NotificationSenders = new HashSet<Notification>();
             Profiles = new HashSet<Profile>();
+            Questions = new HashSet<Question>();
             WishLists = new HashSet<WishList>();
         }
 
@@ -33,6 +34,7 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<Notification> NotificationReceivers { get; set; }
         public virtual ICollection<Notification> NotificationSenders { get; set; }
         public virtual ICollection<Profile> Profiles { get; set; }
+        public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
     }
 }

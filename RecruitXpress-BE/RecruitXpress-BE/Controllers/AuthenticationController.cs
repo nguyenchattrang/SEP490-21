@@ -131,12 +131,20 @@ namespace RecruitXpress_BE.Controllers
             }
         }
 
-
+        [HttpPost("ResetPasswordByEmail")]
         public async Task<IActionResult> ResetPasswordByEmail(string email)
         {
             try
             {
-                var user = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == email && u.Status == 1);
+                var user = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == email);
+                if (user.Status == 0)
+                {
+                    return StatusCode(403, "Địa chỉ email của bạn chưa được xác thực");
+                }
+                if (user.Status == 2)
+                {
+                    return StatusCode(403, "Tài khoản của bạn đã bị khóa!");
+                }
                 if (user != null)
                 {
                     var token = TokenHelper.GenerateRandomToken(64);
@@ -161,7 +169,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 else
                 {
-                    return BadRequest("Invalid Email");
+                    return BadRequest("Tài khoản không tồn tại.");
                 }
             }
             catch
@@ -171,8 +179,8 @@ namespace RecruitXpress_BE.Controllers
 
         }
 
-        [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(string token, string newpwd)
+        [HttpPost("ChangePasswordWithToken")]
+        public async Task<IActionResult> ResetPassword(string token, string newPassword)
         {
             try
             {
@@ -181,7 +189,7 @@ namespace RecruitXpress_BE.Controllers
                 if (emailtoken != null && (bool)!emailtoken.IsUsed && (bool)!emailtoken.IsRevoked)
                 {
                     var user = await _context.Accounts.SingleOrDefaultAsync(t => t.AccountId == emailtoken.AccountId);
-                    user.Password = HashHelper.Encrypt(newpwd, _configuration);
+                    user.Password = HashHelper.Encrypt(newPassword, _configuration);
                     emailtoken.IsUsed = true;
                     _context.Update(emailtoken);
                     _context.Update(user);
@@ -249,14 +257,14 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            var user = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == model.Username);
+            var user = await _context.Accounts.Include(a=> a.Role).SingleOrDefaultAsync(u => u.Account1 == model.Username);
 
-            if (user != null )
+            if (user != null)
             {
-                if (CheckPassword(user, model)==false)
+                if (CheckPassword(user, model) == false)
                 {
                     return StatusCode(403, "Sai mật khẩu");
-                }    
+                }
                 if (user.Status == 0)
                 {
                     return StatusCode(403, "Địa chỉ email của bạn chưa được xác thực");
@@ -275,7 +283,10 @@ namespace RecruitXpress_BE.Controllers
                     audience: _configuration["Jwt:Issuer"],
                     claims: new List<Claim>()
                     {
-                        new Claim(ClaimTypes.Name, user.Account1)
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                        new Claim("UserId", user.AccountId.ToString()),
+                        new Claim(ClaimTypes.Name, user.Account1),
+                        new Claim(ClaimTypes.Role, user.Role.RoleName),
                     },
                     expires: DateTime.Now.AddHours(6),
                     signingCredentials: signinCredentials
@@ -306,5 +317,30 @@ namespace RecruitXpress_BE.Controllers
             else return false;
         }
 
+        [HttpPost("RevokeToken")]
+        public async Task<IActionResult> RevokeToken(string token)
+        {
+            try
+            {
+
+                var emailtoken = await _context.EmailTokens.SingleOrDefaultAsync(t => t.Token == token);
+                if (emailtoken != null)
+                {
+                    emailtoken.IsRevoked = true;
+                    _context.Update(emailtoken);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Invalid Token");
+                }
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
+        }
     }
 }
