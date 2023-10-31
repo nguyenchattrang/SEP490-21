@@ -20,7 +20,6 @@ namespace RecruitXpress_BE.DTO
         public bool? IsCorrect { get; set; }
         public int? Status { get; set; }
 
-       
     }
 
 
