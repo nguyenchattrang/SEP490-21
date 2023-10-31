@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RecruitXpress_BE.Helper;
@@ -9,8 +10,16 @@ namespace RecruitXpress_BE.Repositories;
 
 public class AccountRepository : IAccountRepository
 {
-    private readonly RecruitXpressContext _context = new();
+  
+    private readonly RecruitXpressContext _context;
+    private readonly IMapper _mapper;
     public IConfiguration _configuration;
+    public AccountRepository(RecruitXpressContext context, IMapper mapper, IConfiguration configuration)
+    {
+        _context = context;
+        _mapper = mapper;
+        _configuration = configuration;
+    }
     public async Task<List<Account>> GetListAccount()
     {
         var result = await _context.Accounts.ToListAsync();

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
@@ -6,7 +7,15 @@ namespace RecruitXpress_BE.Repositories;
 
 public class MaritalStatusRepository : IMaritalStatusRepository
 {
-    private readonly RecruitXpressContext _context = new();
+    private readonly RecruitXpressContext _context;
+    private readonly IMapper _mapper;
+    public IConfiguration _configuration;
+    public MaritalStatusRepository(RecruitXpressContext context, IMapper mapper, IConfiguration configuration)
+    {
+        _context = context;
+        _mapper = mapper;
+        _configuration = configuration;
+    }
     public async Task<List<MaritalStatus>> GetListMaritalStatus()
     {
         return await _context.MaritalStatuses.ToListAsync();
