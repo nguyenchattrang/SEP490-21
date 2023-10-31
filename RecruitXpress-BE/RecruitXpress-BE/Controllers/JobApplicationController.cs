@@ -28,8 +28,8 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 if(accountId == null) return BadRequest("Account is not null");
-                var profile = _context.Profiles.SingleOrDefault(x => x.AccountId == accountId);
-                var CV = _context.Cvtemplates.SingleOrDefault(x => x.AccountId == accountId);
+                var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == accountId);
+                var CV = _context.Cvtemplates.FirstOrDefault(x => x.AccountId == accountId);
                 if (profile == null)
                 {
                     return BadRequest("Hãy cập nhật thông tin cá nhân đầy đủ trước khi nộp hồ sơ");
@@ -38,8 +38,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ ");
                 }
-                else
-                {
+                
                     var jobApp = new JobApplication
                     {
                         JobId = jobId,
@@ -50,7 +49,7 @@ namespace RecruitXpress_BE.Controllers
                      _context.Add(jobApp);
                     await _context.SaveChangesAsync();
                     return Ok("Nộp hồ sơ thành công");
-                }
+                
 
             }
             catch (Exception ex)
@@ -63,7 +62,7 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var listJob = await _context.JobApplications.Include(x => x.Profile).Where(x=> x.Status ==1 ).ToListAsync();
+                var listJob = await _context.JobApplications.Include(x => x.Profile).Include(x => x.Job).Include(x=>x.Template).Where(x=> x.Status ==1 ).ToListAsync();
                 if (listJob == null) return NotFound("Khong tim thay ban ghi ");
                 return Ok(listJob);
 
@@ -78,7 +77,7 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var account = await _context.Profiles.SingleOrDefaultAsync(x=> x.AccountId== accountId);
+                var account = _context.Profiles.FirstOrDefault (x=> x.AccountId== accountId);
                 if(account == null)
                 {
                     return BadRequest("Account khong co profile");
@@ -101,7 +100,7 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x=> x.ApplicationId == jobApplyId);
+                var detailJob = await _context.JobApplications.Include(x => x.Job).Include(x=> x.Template).FirstOrDefaultAsync(x=> x.ApplicationId == jobApplyId);
                 if(detailJob == null)
                 {
                     return NotFound("Khong co ket qua");
