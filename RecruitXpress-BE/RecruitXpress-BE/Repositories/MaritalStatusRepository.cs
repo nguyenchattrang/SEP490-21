@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RecruitXpress_BE.IRepository;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
-namespace RecruitXpress_BE.Repository;
+namespace RecruitXpress_BE.Repositories;
 
 public class MaritalStatusRepository : IMaritalStatusRepository
 {
@@ -11,7 +11,7 @@ public class MaritalStatusRepository : IMaritalStatusRepository
     {
         return await _context.MaritalStatuses.ToListAsync();
     }
-    
+
     public async Task<MaritalStatus?> GetMaritalStatus(int id)
     {
         return await _context.MaritalStatuses.FindAsync(id);

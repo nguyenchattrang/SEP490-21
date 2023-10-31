@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RecruitXpress_BE.Helper;
-using RecruitXpress_BE.IRepository;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
-namespace RecruitXpress_BE.Repository;
+namespace RecruitXpress_BE.Repositories;
 
 public class AccountRepository : IAccountRepository
 {
@@ -14,9 +14,9 @@ public class AccountRepository : IAccountRepository
     public async Task<List<Account>> GetListAccount()
     {
         var result = await _context.Accounts.ToListAsync();
-        return(result);
+        return result;
     }
-    
+
     public async Task<Account?> GetAccount(int id)
     {
         return await _context.Accounts.FindAsync(id);
@@ -27,7 +27,7 @@ public class AccountRepository : IAccountRepository
         try
         {
             var check = await _context.Accounts.FirstOrDefaultAsync(x => x.Account1 == account.Account1);
-            
+
             if (check == null)
             {
                 throw new Exception("Tài khoản đã tồn tại");
@@ -87,6 +87,6 @@ public class AccountRepository : IAccountRepository
 
         account.Status = 2;
         _context.SaveChanges();
-        
+
     }
 }
