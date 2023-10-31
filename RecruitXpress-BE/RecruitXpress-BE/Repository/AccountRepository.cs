@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepository;
 using RecruitXpress_BE.Models;
 
@@ -8,6 +10,7 @@ namespace RecruitXpress_BE.Repository;
 public class AccountRepository : IAccountRepository
 {
     private readonly RecruitXpressContext _context = new();
+    public IConfiguration _configuration;
     public async Task<List<Account>> GetListAccount()
     {
         var result = await _context.Accounts.ToListAsync();
@@ -23,9 +26,25 @@ public class AccountRepository : IAccountRepository
     {
         try
         {
-            _context.Entry(account).State = EntityState.Added;
+            var check = await _context.Accounts.FirstOrDefaultAsync(x => x.Account1 == account.Account1);
+            
+            if (check == null)
+            {
+                throw new Exception("Tài khoản đã tồn tại");
+            }
+
+            var user = new Account
+            {
+                Account1 = account.Account1,
+                Password = HashHelper.Encrypt(account.Password, _configuration),
+                RoleId = account.RoleId,
+                CreatedAt = DateTime.Now,
+                Status = account.Status,
+            };
+
+            _context.Entry(user).State = EntityState.Added;
             await _context.SaveChangesAsync();
-            return account;
+            return user;
         }
         catch (Exception e)
         {
