@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace RecruitXpress_BE.Models
 {
@@ -39,6 +40,7 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<ComputerProficiency> ComputerProficiencies { get; set; }
         public virtual ICollection<EducationalBackground> EducationalBackgrounds { get; set; }
         public virtual ICollection<FamilyInformation> FamilyInformations { get; set; }
+        [JsonIgnore]
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<LanguageProficiency> LanguageProficiencies { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }

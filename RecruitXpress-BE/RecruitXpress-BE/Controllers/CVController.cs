@@ -31,7 +31,7 @@ namespace RecruitXpress_BE.Controllers
                     var check = await _context.Cvtemplates.SingleOrDefaultAsync(x => x.AccountId == accountId);
                     if(check != null)
                     {
-                        await DeleteCVExit(accountId);
+                        await DeleteCVEsxit(accountId);
                     }
                 }else
                 {
@@ -123,7 +123,7 @@ namespace RecruitXpress_BE.Controllers
             }
             
         } 
-        private async Task<IActionResult> DeleteCVExit(int accountId)
+        private async Task<IActionResult> DeleteCVEsxit(int accountId)
         {
             try
             {

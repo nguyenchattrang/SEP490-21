@@ -1,4 +1,6 @@
-﻿namespace RecruitXpress_BE.DTO
+﻿using RecruitXpress_BE.Models;
+
+namespace RecruitXpress_BE.DTO
 {
     public class ApiRequest<T>
     {
@@ -23,6 +25,30 @@
         public string? Type { get; set; }
         public int? CreatedBy { get; set; }
         public int? Status { get; set; }
+
+    }
+    public class JobApplicationRequest : ApiRequest<JobApplicationDTO>
+    {
+        public string? SearchString { get; set; }
+        public string? Location { get; set; }
+        public string? EmploymentType { get; set; }
+        public string? Industry { get; set; }
+        public string? SalaryRange { get; set; }
+        public string? NameCandidate { get; set; }
+        public string? PhoneCandidate { get; set; }
+        public string? EmailCandidate { get; set; }
+        public DateTime? ApplicationDeadline { get; set; }
+
+        public string? SortBy { get; set; }
+
+        private bool? _isSortAscending;
+
+        public bool IsSortAscending
+        {
+            get => _isSortAscending ?? false;
+            set => _isSortAscending = value;
+        }
+
 
     }
 
