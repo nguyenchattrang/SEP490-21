@@ -11,7 +11,7 @@ namespace RecruitXpress_BE.Controllers
 
     public class MaritalStatusController : ControllerBase
     {
-        private readonly IMaritalStatusRepository _maritalStatusRepository = new MaritalStatusRepository();
+        public readonly IMaritalStatusRepository _maritalStatusRepository;
 
         //GET: api/MaritalStatusManagement
         [HttpGet]

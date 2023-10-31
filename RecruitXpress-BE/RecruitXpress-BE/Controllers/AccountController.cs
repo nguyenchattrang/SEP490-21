@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.IRepository;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repository;
@@ -12,7 +13,7 @@ namespace RecruitXpress_BE.Controllers
 
     public class AccountController : ControllerBase
     {
-        private readonly IAccountRepository _accountRepository = new AccountRepository();
+        public IAccountRepository _accountRepository;
 
         //GET: api/AccountManagement
         [HttpGet]

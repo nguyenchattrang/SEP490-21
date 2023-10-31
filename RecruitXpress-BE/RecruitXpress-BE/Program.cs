@@ -6,8 +6,10 @@ using Microsoft.OpenApi.Models;
 using RecruitXpress_BE.Contracts;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
+using RecruitXpress_BE.IRepository;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
+using RecruitXpress_BE.Repository;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -22,6 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IJobPostingManagementRepository, JobPostingManagementRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
         .Get<EmailConfiguration>();
