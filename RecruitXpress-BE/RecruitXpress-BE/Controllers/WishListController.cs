@@ -9,19 +9,24 @@ namespace RecruitXpress_BE.Controllers;
 [ApiController]
 public class WishListController : ControllerBase
 {
-    private readonly IWishListRepository _WishListRepository = new WishListRepository();
+    private readonly IWishListRepository _wishListRepository;
+
+    public WishListController(IWishListRepository wishListRepository)
+    {
+        _wishListRepository = wishListRepository;
+    }
 
     //GET: api/WishList
     [HttpGet]
     public async Task<ActionResult<IEnumerable<WishList>>> GetListWishLists(int accountId, string? searchString, string? orderBy,
         bool? isSortAscending, int page, int size) =>
-        await _WishListRepository.GetListWishLists(accountId, searchString, orderBy, isSortAscending, page, size);
+        await _wishListRepository.GetListWishLists(accountId, searchString, orderBy, isSortAscending, page, size);
 
     //GET: api/WishList/{accountId}
     [HttpGet("accountId")]
     public async Task<ActionResult<List<WishList?>>> GetWishList(int accountId)
     {
-        var wishLists = await _WishListRepository.GetWishList(accountId);
+        var wishLists = await _wishListRepository.GetWishList(accountId);
         return wishLists;
     }
 
@@ -31,7 +36,7 @@ public class WishListController : ControllerBase
     {
         try
         {
-            var result = await _WishListRepository.AddWishList(wishList);
+            var result = await _wishListRepository.AddWishList(wishList);
             return CreatedAtAction(nameof(GetWishList), new { id = result.WishlistId }, result);
         }
         catch (Exception e)
@@ -47,7 +52,7 @@ public class WishListController : ControllerBase
     {
         try
         {
-            var deleted = await _WishListRepository.DeleteWishList(id);
+            var deleted = await _wishListRepository.DeleteWishList(id);
             if (deleted)
             {
                 return Ok();
