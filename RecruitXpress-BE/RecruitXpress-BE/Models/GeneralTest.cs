@@ -15,7 +15,10 @@ namespace RecruitXpress_BE.Models
         public string? TestName { get; set; }
         public string? Description { get; set; }
         public int? CreatedBy { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
+        public virtual Account? CreatedByNavigation { get; set; }
+        public virtual Profile? Profile { get; set; }
         public virtual ICollection<GeneralTestDetail> GeneralTestDetails { get; set; }
     }
 }

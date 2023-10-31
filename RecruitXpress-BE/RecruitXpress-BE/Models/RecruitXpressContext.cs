@@ -297,6 +297,8 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.GeneralTestId).HasColumnName("GeneralTestID");
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
@@ -304,6 +306,16 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.TestName)
                     .HasMaxLength(255)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.GeneralTests)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_GeneralTest_Account");
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.GeneralTests)
+                    .HasForeignKey(d => d.ProfileId)
+                    .HasConstraintName("FK_GeneralTest_Profile");
             });
 
             modelBuilder.Entity<GeneralTestDetail>(entity =>
@@ -315,13 +327,14 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.DetailId).HasColumnName("DetailID");
 
-                entity.Property(e => e.Answer)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.GeneralTestId).HasColumnName("GeneralTestID");
 
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
+
+                entity.HasOne(d => d.AnswerNavigation)
+                    .WithMany(p => p.GeneralTestDetails)
+                    .HasForeignKey(d => d.Answer)
+                    .HasConstraintName("FK_GeneralTestDetail_Option");
 
                 entity.HasOne(d => d.GeneralTest)
                     .WithMany(p => p.GeneralTestDetails)
