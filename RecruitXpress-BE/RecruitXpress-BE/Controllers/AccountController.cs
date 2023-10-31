@@ -16,7 +16,7 @@ namespace RecruitXpress_BE.Controllers
 
         //GET: api/AccountManagement
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount(   )
+        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount()
         {
              var result =  await _accountRepository.GetListAccount();
            return Ok(result);
@@ -47,7 +47,7 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
         }
@@ -83,7 +83,6 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception e)
             {
-               
                 return NotFound("Không kết quả");
             }
         }
