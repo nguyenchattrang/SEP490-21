@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecruitXpress_BE.IRepository;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
-using RecruitXpress_BE.Repository;
+using RecruitXpress_BE.Repositories;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.IO;

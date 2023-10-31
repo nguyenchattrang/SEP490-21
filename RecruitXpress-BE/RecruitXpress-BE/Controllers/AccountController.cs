@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RecruitXpress_BE.IRepositories;
-using RecruitXpress_BE.IRepository;
 using RecruitXpress_BE.Models;
-using RecruitXpress_BE.Repository;
+using RecruitXpress_BE.Repositories;
 using System.Collections.Generic;
 
 namespace RecruitXpress_BE.Controllers
@@ -14,7 +15,11 @@ namespace RecruitXpress_BE.Controllers
     public class AccountController : ControllerBase
     {
         public IAccountRepository _accountRepository;
-
+        public AccountController( IAccountRepository repository)
+        {
+            
+            _accountRepository = repository;
+        }
         //GET: api/AccountManagement
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Account>>> GetListAccount()

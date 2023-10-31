@@ -6,10 +6,8 @@ using Microsoft.OpenApi.Models;
 using RecruitXpress_BE.Contracts;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
-using RecruitXpress_BE.IRepository;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
-using RecruitXpress_BE.Repository;
 using System.Text;
 using System.Text.Json.Serialization;
 
