@@ -7,7 +7,12 @@ namespace RecruitXpress_BE.Repositories;
 
 public class WishListRepository : IWishListRepository
 {
-    private readonly RecruitXpressContext _context = new();
+    private readonly RecruitXpressContext _context;
+
+    public WishListRepository(RecruitXpressContext context)
+    {
+        _context = context;
+    }
 
     public async Task<List<WishList>> GetListWishLists()
         => await _context.WishLists.ToListAsync();
@@ -69,7 +74,9 @@ public class WishListRepository : IWishListRepository
     private IQueryable<WishList> GetAdvancedSearchWishListQuery(int accountId, JobPostingSearchDTO searchDto, int? page, int? size)
     {
         var query = _context.WishLists
-            .Where(wishList => wishList.JobId == wishList.Job.JobId && wishList.AccountId == accountId).AsQueryable();
+            .Include(w => w.Job)
+            .Where(w => w.AccountId == accountId)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(searchDto.SearchString))
         {

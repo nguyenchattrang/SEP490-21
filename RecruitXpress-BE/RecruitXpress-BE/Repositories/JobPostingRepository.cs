@@ -7,27 +7,50 @@ namespace RecruitXpress_BE.Repositories;
 
 public class JobPostingRepository : IJobPostingRepository
 {
-    private readonly RecruitXpressContext _context = new();
+    private readonly RecruitXpressContext _context;
+
+    public JobPostingRepository(RecruitXpressContext context)
+    {
+        _context = context;
+    }
 
     public async Task<List<JobPosting>> GetListJobPostings()
         => await _context.JobPostings.ToListAsync();
 
-    public async Task<List<JobPosting>> GetListJobPostings(string? searchString, string? sortBy,
-        bool? isSortAscending, int? page, int? size)
-        => await GetAdvancedSearchJobPostingQuery(
+    public async Task<List<JobPostingDTO>> GetListJobPostings(string? searchString, string? sortBy,
+        bool? isSortAscending, int? accountId, int? page, int? size)
+    {
+        var jobPostings = await GetAdvancedSearchJobPostingQuery(
             new JobPostingSearchDTO()
             {
                 SearchString = searchString,
                 SortBy = sortBy,
                 IsSortAscending = isSortAscending == true
             },
-            page,
-            size
+            accountId,
+            page ?? 1,
+            size ?? 10
         ).ToListAsync();
+        return jobPostings.Select(jobPosting => new JobPostingDTO()
+            {
+                JobId = jobPosting.JobId,
+                Title = jobPosting.Title,
+                Company = jobPosting.Company,
+                Location = jobPosting.Location,
+                EmploymentType = jobPosting.EmploymentType,
+                Industry = jobPosting.Industry,
+                ApplicationDeadline = jobPosting.ApplicationDeadline,
+                Requirements = jobPosting.Requirements,
+                DatePosted = jobPosting.DatePosted,
+                Status = jobPosting.Status,
+                IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
+            })
+            .ToList();
+    }
 
-    public async Task<List<JobPosting>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto,
+    public async Task<List<JobPosting>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
         int page, int size)
-        => await GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, page, size).ToListAsync();
+        => await GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId, page, size).ToListAsync();
 
     public async Task<JobPosting?> GetJobPosting(int id)
         => await _context.JobPostings.FindAsync(id);
@@ -49,10 +72,10 @@ public class JobPostingRepository : IJobPostingRepository
 
     public async Task<JobPosting> UpdateJobPostings(int id, JobPosting jobPosting)
     {
+        jobPosting.JobId = id;
         _context.Entry(jobPosting).State = EntityState.Modified;
         try
         {
-            jobPosting.JobId = id;
             await _context.SaveChangesAsync();
             return jobPosting;
         }
@@ -76,10 +99,15 @@ public class JobPostingRepository : IJobPostingRepository
         return true;
     }
 
-    public IQueryable<JobPosting> GetAdvancedSearchJobPostingQuery(JobPostingSearchDTO searchDto, int? page, int? size)
+    public IQueryable<JobPosting> GetAdvancedSearchJobPostingQuery(JobPostingSearchDTO searchDto, int? accountId, int page, int size)
     {
         var query = _context.JobPostings.AsQueryable();
 
+        if (accountId != null)
+        {
+            query = query.Include(j => j.WishLists);
+        }
+        
         if (!string.IsNullOrEmpty(searchDto.SearchString))
         {
             query = query.Where(j =>
@@ -132,7 +160,7 @@ public class JobPostingRepository : IJobPostingRepository
             };
         }
         
-        return query.Skip(((page ?? 1) - 1) * (size ?? 20)).Take(size ?? 20);
+        return query.Skip((page - 1) * size).Take(size);
     }
     
 }
