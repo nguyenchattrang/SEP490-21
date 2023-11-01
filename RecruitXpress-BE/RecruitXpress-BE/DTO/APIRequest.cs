@@ -39,17 +39,6 @@ namespace RecruitXpress_BE.DTO
         public string? EmailCandidate { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
 
-        public string? SortBy { get; set; }
-
-        private bool? _isSortAscending;
-
-        public bool IsSortAscending
-        {
-            get => _isSortAscending ?? false;
-            set => _isSortAscending = value;
-        }
-
-
     }
 
 }
