@@ -18,7 +18,7 @@ namespace RecruitXpress_BE.Models
         public int? Status { get; set; }
 
         public virtual Account? Account { get; set; }
-        [JsonIgnore]
+        
         public virtual ICollection<JobApplication> JobApplications { get; set; }
     }
 }
