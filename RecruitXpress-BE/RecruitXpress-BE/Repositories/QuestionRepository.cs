@@ -142,7 +142,24 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<Question> UpdateQuestion(Question question)
         {
+            // Update the Question entity
             _context.Entry(question).State = EntityState.Modified;
+
+            // Load the existing options
+            var existingOptions = await _context.Options.Where(o => o.QuestionId == question.QuestionId).ToListAsync();
+
+            // Update existing options
+            foreach (var updatedOption in question.Options)
+            {
+                var existingOption = existingOptions.FirstOrDefault(o => o.OptionId == updatedOption.OptionId);
+                if (existingOption != null)
+                {
+                    // Update existing option properties
+                    existingOption.OptionText = updatedOption.OptionText;
+                    existingOption.IsCorrect = updatedOption.IsCorrect;
+                }
+            }
+
             await _context.SaveChangesAsync();
             return question;
         }
