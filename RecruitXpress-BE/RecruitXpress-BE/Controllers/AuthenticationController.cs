@@ -25,14 +25,17 @@ namespace RecruitXpress_BE.Controllers
 {
     public class AuthenticationController : ControllerBase
     {
-        public IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
         private readonly RecruitXpressContext _context;
         private readonly IEmailSender _emailSender;
-        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration, IEmailSender emailSender)
+        private readonly IGoogleService _googleService;
+        
+        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration, IEmailSender emailSender, IGoogleService googleService)
         {
             _context = context;
             _configuration = configuration;
             _emailSender = emailSender;
+            _googleService = googleService;
         }
 
         [HttpPost("SignUp")]
@@ -93,8 +96,6 @@ namespace RecruitXpress_BE.Controllers
             }
         }
 
-
-
         [HttpPost("Email")]
         public async Task<IActionResult> SendEmailConfirm(string to, string subject, string link)
         {
@@ -113,6 +114,7 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500);
             }
         }
+        
         public async Task<IActionResult> SendEmailResetPassword(string to, string subject, string link)
         {
             try
@@ -239,8 +241,6 @@ namespace RecruitXpress_BE.Controllers
 
         }
 
-
-
         [HttpGet("get")]
         public async Task<IActionResult> ListAccount()
         {
@@ -341,6 +341,12 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500);
             }
 
+        }
+        
+        [HttpGet]
+        [Route("auth/google")]
+        public ActionResult<string> GoogleAuth(string redirectUrl) {
+            return _googleService.GetAuthUrl(redirectUrl);
         }
     }
 }
