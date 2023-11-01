@@ -165,6 +165,15 @@ namespace RecruitXpress_BE.Controllers
                             break;
                     }
                 }
+                if (!string.IsNullOrEmpty(request.SearchString))
+                {
+                    query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
+                     s.Profile.PhoneNumber.Contains(request.SearchString) ||
+                     s.Profile.Name.Contains(request.SearchString) ||
+                     s.Job.SalaryRange.Contains(request.SearchString) ||
+                     s.Job.Industry.Contains(request.SearchString) ||
+                     s.Job.Location.Contains(request.SearchString));
+                }
                 var pageNumber = request.Page > 0 ? request.Page : 1;
                 var pageSize = request.Size > 0 ? request.Size : 20;
                 var jobApplications = await query
