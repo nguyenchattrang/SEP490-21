@@ -32,8 +32,51 @@ namespace RecruitXpress_BE.Controllers
             _configuration = configuration;
             _repository = repository;
         }
-
-
+        [HttpGet("GetLevelOfTests")]
+        public async Task<IActionResult> SetUpLevelOfTests()
+        {
+            try
+            {
+              
+                return Ok( new
+                {
+                    easy = ConstantQuestion.easy,
+                    medium = ConstantQuestion.medium,
+                    hard = ConstantQuestion.hard,
+                    totalQuestion = ConstantQuestion.easy + ConstantQuestion.medium + ConstantQuestion.hard,
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("SetLevelOfTests")]
+        public async Task<IActionResult> SetUpLevelOfTests(int easy, int medium, int hard)
+        {
+            try
+            {
+                await _repository.SetUpLevelOfGeneralTests(easy,medium,hard);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("GenerateATest")]
+        public async Task<IActionResult> StartATest()
+        {
+            try
+            {
+                var generalTests = await _repository.GenerateATest();
+                return Ok(generalTests);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         // GET: api/questions/{id}
         [HttpGet("ListQuestion")]
         public async Task<IActionResult> GetQuestion([FromQuery] QuestionRequest request)

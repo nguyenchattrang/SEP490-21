@@ -25,6 +25,12 @@ namespace RecruitXpress_BE.Contracts
             .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation))
             .ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Profile));
             CreateMap<GeneralTestDetail, GeneralTestDetailDTO>();
+
+            CreateMap<Option, ExamOptionDTO>();
+            CreateMap<Question, ExamQuestionDTO>()
+                .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options))
+                .ForMember(dest => dest.Question1, opt => opt.MapFrom(src => src.Question1));
+
             //.ForMember(dest => dest.Job, opt => opt.MapFrom(src => src.Job))
             //.ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Profile))
             //.ForMember(dest => dest.Template, opt => opt.MapFrom(src => src.Template))
