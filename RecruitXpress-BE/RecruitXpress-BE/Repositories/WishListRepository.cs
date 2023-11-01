@@ -7,7 +7,12 @@ namespace RecruitXpress_BE.Repositories;
 
 public class WishListRepository : IWishListRepository
 {
-    private readonly RecruitXpressContext _context = new();
+    private readonly RecruitXpressContext _context;
+
+    public WishListRepository(RecruitXpressContext context)
+    {
+        _context = context;
+    }
 
     public async Task<List<WishList>> GetListWishLists()
         => await _context.WishLists.ToListAsync();

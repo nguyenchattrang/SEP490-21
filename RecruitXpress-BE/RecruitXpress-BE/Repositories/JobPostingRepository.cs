@@ -7,7 +7,12 @@ namespace RecruitXpress_BE.Repositories;
 
 public class JobPostingRepository : IJobPostingRepository
 {
-    private readonly RecruitXpressContext _context = new();
+    private readonly RecruitXpressContext _context;
+
+    public JobPostingRepository(RecruitXpressContext context)
+    {
+        _context = context;
+    }
 
     public async Task<List<JobPosting>> GetListJobPostings()
         => await _context.JobPostings.ToListAsync();
@@ -67,10 +72,10 @@ public class JobPostingRepository : IJobPostingRepository
 
     public async Task<JobPosting> UpdateJobPostings(int id, JobPosting jobPosting)
     {
+        jobPosting.JobId = id;
         _context.Entry(jobPosting).State = EntityState.Modified;
         try
         {
-            jobPosting.JobId = id;
             await _context.SaveChangesAsync();
             return jobPosting;
         }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RecruitXpress_BE.IRepository;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
-using RecruitXpress_BE.Repository;
+using RecruitXpress_BE.Repositories;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -11,8 +11,12 @@ namespace RecruitXpress_BE.Controllers
 
     public class MaritalStatusController : ControllerBase
     {
-        private readonly IMaritalStatusRepository _maritalStatusRepository = new MaritalStatusRepository();
+        public readonly IMaritalStatusRepository _maritalStatusRepository;
+        public MaritalStatusController(IMaritalStatusRepository repository)
+        {
 
+            _maritalStatusRepository = repository;
+        }
         //GET: api/MaritalStatusManagement
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MaritalStatus>>> GetListMaritalStatus() => await _maritalStatusRepository.GetListMaritalStatus();

@@ -10,8 +10,13 @@ namespace RecruitXpress_BE.Controllers
     [ApiController]
     public class JobPostingController : ControllerBase
     {
-        private readonly IJobPostingRepository _jobPostingRepository = new JobPostingRepository();
-        
+        private readonly IJobPostingRepository _jobPostingRepository;
+
+        public JobPostingController(IJobPostingRepository jobPostingRepository)
+        {
+            _jobPostingRepository = jobPostingRepository;
+        }
+
         //GET: api/JobPosting
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobPostingDTO>>> GetListJobPostings(string? searchString, string? orderBy, bool? isSortAscending, int? accountId, int page, int size) => await _jobPostingRepository.GetListJobPostings(searchString, orderBy, isSortAscending, accountId, page, size);
@@ -49,7 +54,7 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return BadRequest(e.Message);
+                return BadRequest("Add Job Posting failed!");
             }
         }
 
@@ -65,7 +70,7 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return NotFound();
+                return BadRequest("Update Job Posting failed!");
             }
         }
 
@@ -82,13 +87,13 @@ namespace RecruitXpress_BE.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("Job Posting not found!");
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return StatusCode(500);
+                return StatusCode(500, "Delete Job Posting failed!");
             }
         }
     }

@@ -7,9 +7,8 @@ namespace RecruitXpress_BE.DTO
         public int QuestionId { get; set; }
         public string? Question1 { get; set; }
         public string? Type { get; set; }
-        public int? CreatedBy { get; set; }
         public int? Status { get; set; }
-
+        public virtual AccountDTO? CreatedByAccount { get; set; }
         public List<OptionDTO> Options { get; set; }
     }
 
@@ -20,7 +19,6 @@ namespace RecruitXpress_BE.DTO
         public string? OptionText { get; set; }
         public bool? IsCorrect { get; set; }
         public int? Status { get; set; }
-
 
     }
 

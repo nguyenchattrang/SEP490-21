@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecruitXpress_BE.IRepository;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
-using RecruitXpress_BE.Repository;
+using RecruitXpress_BE.Repositories;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.IO;
@@ -31,7 +31,7 @@ namespace RecruitXpress_BE.Controllers
                     var check = await _context.Cvtemplates.SingleOrDefaultAsync(x => x.AccountId == accountId);
                     if(check != null)
                     {
-                        await DeleteCVExit(accountId);
+                        await DeleteCVEsxit(accountId);
                     }
                 }else
                 {
@@ -70,12 +70,11 @@ namespace RecruitXpress_BE.Controllers
                     CreatedAt = DateTime.Now,
 
                 };
-                using (var context = new RecruitXpressContext())
-                {
-                    var result = context.Cvtemplates.Add(fileMeterial);
-                    await context.SaveChangesAsync();
+               
+                    var result = _context.Cvtemplates.Add(fileMeterial);
+                    await _context.SaveChangesAsync();
                     return Ok("Thêm CV thành công ");
-                }
+                
 
             }
             catch (Exception ex)
@@ -84,7 +83,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("cvtemplateId")]
-        public async Task<IActionResult> DownloadMaterial(int cvId)
+        public async Task<IActionResult> DownloadCV(int cvId)
         {
             var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.TemplateId == cvId);
             if (result == null)
@@ -103,7 +102,7 @@ namespace RecruitXpress_BE.Controllers
             return File(fileContent, contentType, fileName);
         }
         [HttpDelete("cvtemplateId")]
-        public async Task<IActionResult> DeleteCVAsync(int cvId)
+        public async Task<IActionResult> DeleteCV(int cvId)
         {
             try
             {
@@ -123,8 +122,8 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
             
-        }
-        private async Task<IActionResult> DeleteCVExit(int accountId)
+        } 
+        private async Task<IActionResult> DeleteCVEsxit(int accountId)
         {
             try
             {
@@ -143,6 +142,18 @@ namespace RecruitXpress_BE.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet("myCV")]
+        private async Task<IActionResult> getMyCV(int accountId)
+        {
+            if (accountId == null) return BadRequest("AccountId dau ?");
+            
+            var cv = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == accountId);
+            if (cv == null)
+            {
+                return BadRequest("Khong tim thay CV");
+            }
+            return Ok(cv);
         }
     }
 }

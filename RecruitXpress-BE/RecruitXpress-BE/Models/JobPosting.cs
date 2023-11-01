@@ -40,6 +40,6 @@ namespace RecruitXpress_BE.Models
         //             ? double.Parse(SalaryRange.Split("-")[1])
         //             : double.Parse(SalaryRange.Split("-")[0]);
         //     }
-        // }
+        //}
     }
 }

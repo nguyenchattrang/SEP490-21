@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RecruitXpress_BE.IRepository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
-using RecruitXpress_BE.Repository;
+using RecruitXpress_BE.Repositories;
 using System.Collections.Generic;
 
 namespace RecruitXpress_BE.Controllers
@@ -12,11 +14,15 @@ namespace RecruitXpress_BE.Controllers
 
     public class AccountController : ControllerBase
     {
-        private readonly IAccountRepository _accountRepository = new AccountRepository();
-
+        public IAccountRepository _accountRepository;
+        public AccountController( IAccountRepository repository)
+        {
+            
+            _accountRepository = repository;
+        }
         //GET: api/AccountManagement
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount(   )
+        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount()
         {
              var result =  await _accountRepository.GetListAccount();
            return Ok(result);
@@ -47,7 +53,7 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
         }
@@ -83,7 +89,6 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception e)
             {
-               
                 return NotFound("Không kết quả");
             }
         }

@@ -10,6 +10,7 @@ namespace RecruitXpress_BE.Models
             ComputerProficiencies = new HashSet<ComputerProficiency>();
             EducationalBackgrounds = new HashSet<EducationalBackground>();
             FamilyInformations = new HashSet<FamilyInformation>();
+            GeneralTests = new HashSet<GeneralTest>();
             JobApplications = new HashSet<JobApplication>();
             LanguageProficiencies = new HashSet<LanguageProficiency>();
             ScheduleDetails = new HashSet<ScheduleDetail>();
@@ -39,6 +40,7 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<ComputerProficiency> ComputerProficiencies { get; set; }
         public virtual ICollection<EducationalBackground> EducationalBackgrounds { get; set; }
         public virtual ICollection<FamilyInformation> FamilyInformations { get; set; }
+        public virtual ICollection<GeneralTest> GeneralTests { get; set; }
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<LanguageProficiency> LanguageProficiencies { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }

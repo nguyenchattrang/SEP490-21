@@ -47,8 +47,8 @@ namespace RecruitXpress_BE.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                optionsBuilder.UseSqlServer(config.GetConnectionString("RecruitXpress"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("server =(local)\\SQLEXPRESS01; database = RecruitXpress;uid=sa;pwd=123456; TrustServerCertificate=True ");
             }
         }
 
@@ -200,11 +200,9 @@ namespace RecruitXpress_BE.Models
             modelBuilder.Entity<EmailToken>(entity =>
             {
                 entity.HasKey(e => e.TokenId)
-                    .HasName("PK__EmailTok__658FEEEAD151D069");
+                    .HasName("PK__EmailTok__658FEEEA6548AD56");
 
                 entity.ToTable("EmailToken");
-
-                entity.Property(e => e.TokenId).ValueGeneratedNever();
 
                 entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
 
@@ -215,7 +213,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.EmailTokens)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__EmailToke__Accou__625A9A57");
+                    .HasConstraintName("FK__EmailToke__Accou__681373AD");
             });
 
             modelBuilder.Entity<Exam>(entity =>
@@ -299,6 +297,8 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.GeneralTestId).HasColumnName("GeneralTestID");
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
@@ -306,6 +306,16 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.TestName)
                     .HasMaxLength(255)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.GeneralTests)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_GeneralTest_Account");
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.GeneralTests)
+                    .HasForeignKey(d => d.ProfileId)
+                    .HasConstraintName("FK_GeneralTest_Profile");
             });
 
             modelBuilder.Entity<GeneralTestDetail>(entity =>
@@ -317,13 +327,14 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.DetailId).HasColumnName("DetailID");
 
-                entity.Property(e => e.Answer)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.GeneralTestId).HasColumnName("GeneralTestID");
 
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
+
+                entity.HasOne(d => d.AnswerNavigation)
+                    .WithMany(p => p.GeneralTestDetails)
+                    .HasForeignKey(d => d.Answer)
+                    .HasConstraintName("FK_GeneralTestDetail_Option");
 
                 entity.HasOne(d => d.GeneralTest)
                     .WithMany(p => p.GeneralTestDetails)
@@ -595,6 +606,11 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.Question1).HasColumnName("Question");
 
                 entity.Property(e => e.Type).HasMaxLength(100);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Question_Account");
             });
 
             modelBuilder.Entity<Role>(entity =>
