@@ -43,6 +43,7 @@ namespace RecruitXpress_BE.Controllers
                     return BadRequest("Please upload file");
                 }
                 string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CVTemplates"));
+
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -66,7 +67,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     AccountId = accountId,
                     Status = 1,
-                    Url = path + "\\" + fileName,
+                    Url = "\\" + fileName,
                     CreatedAt = DateTime.Now,
 
                 };
@@ -90,7 +91,9 @@ namespace RecruitXpress_BE.Controllers
             {
                 return NotFound("File not found!");
             }
-            var filePath = result.Url;
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CVTemplates"));
+            
+            var filePath = path + result.Url;
            
             if (!System.IO.File.Exists(filePath))
             {
@@ -106,12 +109,13 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                 var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.TemplateId == cvId);
+                var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.TemplateId == cvId);
                 if(result == null)
                 {
                     return NotFound("File not found!");
                 }
-                var filePath = result.Url;
+                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CVTemplates"));
+                var filePath = path + result.Url;
                 System.IO.File.Delete(filePath);
                 _context.Cvtemplates.Remove(result);
                 await _context.SaveChangesAsync();
@@ -132,7 +136,8 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Xoa CV fail");
                 }
-                var filePath = result.Url;
+                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CVTemplates"));
+                var filePath = path + result.Url;
                 System.IO.File.Delete(filePath);
                 _context.Cvtemplates.Remove(result);
                 await _context.SaveChangesAsync();

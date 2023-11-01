@@ -31,7 +31,7 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                if(accountId == null) return BadRequest("Account is not null");
+                if (accountId == null) return BadRequest("Account is not null");
                 var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == accountId);
                 var CV = _context.Cvtemplates.FirstOrDefault(x => x.AccountId == accountId);
                 if (profile == null)
@@ -42,18 +42,18 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ ");
                 }
-                
-                    var jobApp = new JobApplication
-                    {
-                        JobId = jobId,
-                        ProfileId = profile.ProfileId,
-                        TemplateId = CV.TemplateId,
-                        Status = 1
-                    };
-                     _context.Add(jobApp);
-                    await _context.SaveChangesAsync();
-                    return Ok("Nộp hồ sơ thành công");
-                
+
+                var jobApp = new JobApplication
+                {
+                    JobId = jobId,
+                    ProfileId = profile.ProfileId,
+                    TemplateId = CV.TemplateId,
+                    Status = 1
+                };
+                _context.Add(jobApp);
+                await _context.SaveChangesAsync();
+                return Ok("Nộp hồ sơ thành công");
+
 
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace RecruitXpress_BE.Controllers
                 //    .Include(x => x.Job).Include(x=>x.Template).Where(x=> x.Status ==1 ).ToListAsync();
                 //if (listJob == null) return NotFound("Khong tim thay ban ghi ");
                 //return Ok(listJob);
-                var query =  _context.JobApplications
+                var query = _context.JobApplications
                 .Include(q => q.Profile)
                 .Include(q => q.Job)
                 .Include(q => q.Template).AsQueryable();
@@ -93,7 +93,7 @@ namespace RecruitXpress_BE.Controllers
                 if (request.SalaryRange != null)
                 {
                     query = query.Where(s => s.Job != null && s.Job.SalaryRange != null && s.Job.SalaryRange.Contains(request.SalaryRange));
-                }  
+                }
 
                 if (request.ApplicationDeadline != null)
                 {
@@ -165,10 +165,22 @@ namespace RecruitXpress_BE.Controllers
                             break;
                     }
                 }
+                if (!string.IsNullOrEmpty(request.SearchString))
+                {
+                    query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
+                     s.Profile.PhoneNumber.Contains(request.SearchString) ||
+                     s.Profile.Name.Contains(request.SearchString) ||
+                     s.Job.SalaryRange.Contains(request.SearchString) ||
+                     s.Job.Industry.Contains(request.SearchString) ||
+                     s.Job.Location.Contains(request.SearchString));
+                }
+                var pageNumber = request.Page > 0 ? request.Page : 1;
+                var pageSize = request.Size > 0 ? request.Size : 20;
                 var jobApplications = await query
-                .Skip(request.Offset)
-                 .Take(request.Limit)
-                 .ToListAsync();
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
                 var jobApplicationDTOs = _mapper.Map<List<JobApplicationDTO>>(jobApplications);
 
                 return Ok(jobApplicationDTOs);
@@ -176,21 +188,21 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception ex)
             {
-               return BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet("GetSumited")]
-        public async Task<IActionResult>getJobApplicationSubmitted(int accountId)
+        public async Task<IActionResult> getJobApplicationSubmitted(int accountId)
         {
             try
             {
-                var account = _context.Profiles.FirstOrDefault (x=> x.AccountId== accountId);
-                if(account == null)
+                var account = _context.Profiles.FirstOrDefault(x => x.AccountId == accountId);
+                if (account == null)
                 {
                     return BadRequest("Account khong co profile");
                 }
-                var listJob = await _context.JobApplications.Include(x=> x.Job).Where(x => x.ProfileId == account.ProfileId).ToListAsync();
-                if(listJob == null)
+                var listJob = await _context.JobApplications.Include(x => x.Job).Where(x => x.ProfileId == account.ProfileId).ToListAsync();
+                if (listJob == null)
                 {
                     return NotFound("Khong co thong tin");
                 }
@@ -207,9 +219,9 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var detailJob = await _context.JobApplications.Include(x => x.Job).Include(x=> x.Template)
-                    .FirstOrDefaultAsync(x=> x.ApplicationId == jobApplyId);
-                if(detailJob == null)
+                var detailJob = await _context.JobApplications.Include(x => x.Job).Include(x => x.Template)
+                    .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
+                if (detailJob == null)
                 {
                     return NotFound("Khong co ket qua");
                 }
@@ -222,7 +234,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpPut("PutJobApp")]
-        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? profileId,int? Status)
+        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? profileId, int? Status)
         {
             try
             {
@@ -231,10 +243,10 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return NotFound("Khong co ket qua");
                 }
-                if(Status != null)
+                if (Status != null)
                 {
                     detailJob.Status = 2;
-                     _context.Update(detailJob);
+                    _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     return Ok("Cập nhật trạng thái thành công");
                 }
@@ -258,14 +270,14 @@ namespace RecruitXpress_BE.Controllers
                     return NotFound("Khong tim thay ban ghi submit");
                 }
                 var account = _context.Profiles.FirstOrDefaultAsync(x => x.ProfileId == profileId);
-                if(account == null)
+                if (account == null)
                 {
                     return BadRequest("Account khong co profile ");
                 }
                 var check = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == account.Id);
                 if (check == null)
                 {
-                    if(check.TemplateId == detailJob.TemplateId)
+                    if (check.TemplateId == detailJob.TemplateId)
                     {
                         return BadRequest("Ban da submit job nay roi, de submit lai voi CV moi hay update CV cua ban");
                     }

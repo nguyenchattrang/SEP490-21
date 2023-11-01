@@ -4,19 +4,16 @@ namespace RecruitXpress_BE.DTO
 {
     public class ApiRequest<T>
     {
-        public int Limit { get; set; } = 20; // Number of items to retrieve per page
-        public int Offset { get; set; } = 0; // Number of items to skip
+        public int Page { get; set; } = 0; 
+        public int Size { get; set; } = 20; 
         public string SortBy { get; set; } // Field to sort by
         private bool? _orderByAscending;
-
         public bool OrderByAscending
         {
             get => _orderByAscending ?? false;
             set => _orderByAscending = value;
         }
         public string SearchAll { get; set; } // Search het
-
- 
     }
 
     public class QuestionRequest : ApiRequest<QuestionDTO>
@@ -38,17 +35,6 @@ namespace RecruitXpress_BE.DTO
         public string? PhoneCandidate { get; set; }
         public string? EmailCandidate { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
-
-        public string? SortBy { get; set; }
-
-        private bool? _isSortAscending;
-
-        public bool IsSortAscending
-        {
-            get => _isSortAscending ?? false;
-            set => _isSortAscending = value;
-        }
-
 
     }
 

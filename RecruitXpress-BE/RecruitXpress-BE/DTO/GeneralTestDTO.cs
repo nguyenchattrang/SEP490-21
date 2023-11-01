@@ -4,7 +4,6 @@ namespace RecruitXpress_BE.DTO
 {
     public class GeneralTestDTO
     {
-
         public int GeneralTestId { get; set; }
         public int? ProfileId { get; set; }
         public string? TestName { get; set; }

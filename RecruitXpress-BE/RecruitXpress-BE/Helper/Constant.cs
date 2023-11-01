@@ -16,4 +16,10 @@ namespace RecruitXpress_BE.Helper
             public const string ACCESS_TYPE = "offline";
         }
     }
+    public static class ConstantQuestion
+    {
+        public static int easy = 5;
+        public static int medium = 3;
+        public static int hard = 2;
+    }
 }
