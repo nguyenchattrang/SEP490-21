@@ -25,23 +25,20 @@ namespace RecruitXpress_BE.Contracts
             .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation))
             .ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Profile));
             CreateMap<GeneralTestDetail, GeneralTestDetailDTO>();
-
+            CreateMap<JobPosting, JobDTO>();
             CreateMap<Option, ExamOptionDTO>();
             CreateMap<Question, ExamQuestionDTO>()
                 .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options))
                 .ForMember(dest => dest.Question1, opt => opt.MapFrom(src => src.Question1));
-
-            //.ForMember(dest => dest.Job, opt => opt.MapFrom(src => src.Job))
-            //.ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Profile))
-            //.ForMember(dest => dest.Template, opt => opt.MapFrom(src => src.Template))
-            //.ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Job.Location))
-            //.ForMember(dest => dest.EmploymentType, opt => opt.MapFrom(src => src.Job.EmploymentType))
-            //.ForMember(dest => dest.Industry, opt => opt.MapFrom(src => src.Job.Industry))
-            //.ForMember(dest => dest.SalaryRange, opt => opt.MapFrom(src => src.Job.SalaryRange))
-            //.ForMember(dest => dest.NameCandidate, opt => opt.MapFrom(src => src.Profile.Name))
-            //.ForMember(dest => dest.PhoneCandidate, opt => opt.MapFrom(src => src.Profile.PhoneNumber))
-            //.ForMember(dest => dest.EmailCandidate, opt => opt.MapFrom(src => src.Profile.Email))
-            //.ForMember(dest => dest.ApplicationDeadline, opt => opt.MapFrom(src => src.Job.ApplicationDeadline));
+            CreateMap<Cvtemplate, CvtemplateDTO>().ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
+                .ForMember(dest => dest.TemplateId, opt => opt.MapFrom(src => src.TemplateId));
+            CreateMap<Models.Profile, ProfileDTO>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.AccountId)) 
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
+                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth));
 
 
         }
