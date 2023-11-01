@@ -10,22 +10,27 @@ namespace RecruitXpress_BE.Controllers
     [ApiController]
     public class JobPostingController : ControllerBase
     {
-        private readonly IJobPostingRepository _jobPostingRepository = new JobPostingRepository();
-        
+        private readonly IJobPostingRepository _jobPostingRepository;
+
+        public JobPostingController(IJobPostingRepository jobPostingRepository)
+        {
+            _jobPostingRepository = jobPostingRepository;
+        }
+
         //GET: api/JobPosting
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobPosting>>> GetListJobPostings(string? searchString, string? orderBy, bool? isSortAscending, int page, int size) => await _jobPostingRepository.GetListJobPostings(searchString, orderBy, isSortAscending, page, size);
+        public async Task<ActionResult<IEnumerable<JobPostingDTO>>> GetListJobPostings(string? searchString, string? orderBy, bool? isSortAscending, int? accountId, int page, int size) => await _jobPostingRepository.GetListJobPostings(searchString, orderBy, isSortAscending, accountId, page, size);
         
         //POST: api/JobPosting/AdvancedSearch?page={page}&size={size}
         [HttpPost("AdvancedSearch")]
-        public async Task<ActionResult<IEnumerable<JobPosting>>> GetListJobPostingsAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int page, int size)
+        public async Task<ActionResult<IEnumerable<JobPostingDTO>>> GetListJobPostingsAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId, int page, int size)
         {
-            var jobPostings = await _jobPostingRepository.GetListJobPostingAdvancedSearch(jobPostingSearchDto, page, size);
+            var jobPostings = await _jobPostingRepository.GetListJobPostingAdvancedSearch(jobPostingSearchDto, accountId, page, size);
             return Ok(jobPostings);
         }
 
         //GET: api/JobPosting/{id}
-        [HttpGet("{id}")]
+        [HttpGet("id")]
         public async Task<ActionResult<JobPosting>> GetJobPosting(int id)
         {
             var jobPosting = await _jobPostingRepository.GetJobPosting(id);
@@ -49,12 +54,12 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return BadRequest(e.Message);
+                return BadRequest("Add Job Posting failed!");
             }
         }
 
         //PUT: api/JobPosting/{id}
-        [HttpPut("{id}")]
+        [HttpPut("id")]
         public async Task<IActionResult> UpdateJobPosting(int id, JobPosting jobPosting)
         {
             try
@@ -65,7 +70,7 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return NotFound();
+                return BadRequest("Update Job Posting failed!");
             }
         }
 
@@ -82,13 +87,13 @@ namespace RecruitXpress_BE.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("Job Posting not found!");
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return StatusCode(500);
+                return StatusCode(500, "Delete Job Posting failed!");
             }
         }
     }

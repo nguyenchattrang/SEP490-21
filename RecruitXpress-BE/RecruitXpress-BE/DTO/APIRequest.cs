@@ -41,4 +41,12 @@ namespace RecruitXpress_BE.DTO
 
     }
 
+    public class GeneralTestRequest : ApiRequest<GeneralTest>
+    {
+        public string? TestName { get; set; }
+        public string? Description { get; set; }
+        public int? CreatedBy { get; set; }
+        public int? ProfileId { get; set; }
+        public DateTime? CreatedAt { get; set; }
+    }
 }

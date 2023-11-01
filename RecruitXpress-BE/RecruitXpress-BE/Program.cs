@@ -19,7 +19,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
+builder.Services.AddScoped<IWishListRepository, WishListRepository>();
+
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IGeneralTestRepository, GeneralTestRepository>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IJobPostingManagementRepository, JobPostingManagementRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -67,7 +71,9 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.AddDbContext<RecruitXpressContext>(opt
     => opt.UseSqlServer(builder.Configuration.GetConnectionString("RecruitXpress")));
 
-
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 
 builder.Services.AddCors();
 
