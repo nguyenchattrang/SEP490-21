@@ -11,11 +11,8 @@ namespace RecruitXpress_BE.Helper
     }
     public static class ConstantQuestion
     {
-
-        public static int easy = 1;
-        public static int medium = 1;
-        public static int hard = 1;
-
-
+        public static int easy = 5;
+        public static int medium = 3;
+        public static int hard = 2;
     }
 }

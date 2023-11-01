@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
 using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using System.Collections;
@@ -19,6 +20,7 @@ namespace RecruitXpress_BE.Repositories
             _mapper = mapper;
         }
 
+   
 
         public async Task<IEnumerable<GeneralTestDTO>> GetAllGeneralTests(GeneralTestRequest request)
         {
@@ -85,9 +87,11 @@ namespace RecruitXpress_BE.Repositories
                 }
             }
 
+            var pageNumber = request.Page > 0 ? request.Page : 1;
+            var pageSize = request.Size > 0 ? request.Size : 20;
             var generalTests = await query
-                .Skip(request.Offset)
-                .Take(request.Limit)
+               .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var generalTestDTOs = _mapper.Map<List<GeneralTestDTO>>(generalTests);
@@ -143,6 +147,7 @@ namespace RecruitXpress_BE.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
     }
 }
 

@@ -106,10 +106,12 @@ namespace RecruitXpress_BE.Repositories
                 }
             }
 
+            var pageNumber = request.Page > 0 ? request.Page : 1;
+            var pageSize = request.Size > 0 ? request.Size : 20;
             var questions = await query
-             .Skip(request.Offset)
-             .Take(request.Limit)
-             .ToListAsync();
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
             var questionDTOs = _mapper.Map<List<QuestionDTO>>(questions);
 
             return questionDTOs;
