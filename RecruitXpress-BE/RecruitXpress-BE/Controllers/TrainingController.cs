@@ -76,10 +76,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var TrainingUpdate = _context.training
-                    .FirstOrDefault(x => x.TrainingId == data.TrainingId);
-
-                if (TrainingUpdate == null) return NotFound("Khong co du lieu");
                 _context.Entry(data).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return Ok("Cập nhật thành công");

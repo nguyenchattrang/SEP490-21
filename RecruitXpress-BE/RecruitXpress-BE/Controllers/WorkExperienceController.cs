@@ -76,10 +76,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var WorkExperienceUpdate = _context.WorkExperiences
-                    .FirstOrDefault(x => x.WorkExperienceId == data.WorkExperienceId);
-
-                if (WorkExperienceUpdate == null) return NotFound("Khong co du lieu");
                 _context.Entry(data).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return Ok("Cập nhật thành công");
