@@ -76,10 +76,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var LanguageProficiencyUpdate = _context.LanguageProficiencies
-                    .FirstOrDefault(x => x.LanguageProficiencyId == data.LanguageProficiencyId);
-
-                if (LanguageProficiencyUpdate == null) return NotFound("Khong co du lieu");
                 _context.Entry(data).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return Ok("Cập nhật thành công");

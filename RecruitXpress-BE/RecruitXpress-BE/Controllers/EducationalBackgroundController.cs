@@ -76,10 +76,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var edu = _context.EducationalBackgrounds
-                    .FirstOrDefault(x => x.EducationalBackgroundId == educationBackground.EducationalBackgroundId);
-                
-                if (edu == null) return NotFound("Khong co du lieu");
                 _context.Entry(educationBackground).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return Ok("Cập nhật thành công");

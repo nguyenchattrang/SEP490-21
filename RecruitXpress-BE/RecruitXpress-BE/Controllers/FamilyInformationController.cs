@@ -76,12 +76,9 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                
-                var familyInformationUpdate = _context.FamilyInformations
-                    .FirstOrDefault(x => x.FamilyId == data.FamilyId);
-
-                if (familyInformationUpdate == null) return NotFound("Khong co du lieu");
-                _context.Entry(data).State = EntityState.Modified;
+                _context.Entry(data).State = EntityState.Detached;
+               
+                _context.Update(data);
                 await _context.SaveChangesAsync();
                 return Ok("Cập nhật thành công");
             }
