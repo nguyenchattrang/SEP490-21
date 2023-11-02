@@ -52,6 +52,12 @@ namespace RecruitXpress_BE.Controllers
             await _repository.CreateGeneralTest(generalTestDTO);
             return CreatedAtAction("GetGeneralTest", new { id = generalTestDTO.GeneralTestId }, generalTestDTO);
         }
+        [HttpPost("SubmitTest")]
+        public async Task<IActionResult> SubmitTest([FromBody] GeneralTest generalTestDTO)
+        {
+            await _repository.SubmitGeneralTest(generalTestDTO);
+            return CreatedAtAction("GetGeneralTest", new { id = generalTestDTO.GeneralTestId }, generalTestDTO);
+        }
 
         // PUT: api/GeneralTest/5
         [HttpPut("{id}")]
