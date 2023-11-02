@@ -45,7 +45,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
 
-            var profile = await _context.Profiles.SingleOrDefaultAsync(x => x.AccountId == id);
+            var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == id);
             if (profile == null)
             {
                 return NotFound("Không kết quả");
@@ -82,8 +82,7 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return Ok(e);
+                return BadRequest(e.Message);
             }
 
         }
@@ -95,7 +94,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 _context.Entry(Profile).State = EntityState.Modified;
-                var profile = await _context.Profiles.SingleOrDefaultAsync(x => x.ProfileId == Profile.ProfileId && x.AccountId == accountId);
+                var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.ProfileId == Profile.ProfileId && x.AccountId == accountId);
                 if(profile != null)
                 {
                     var result = profile;
@@ -112,10 +111,9 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
 
-                return NotFound("Không kết quả");
+                return BadRequest(e.Message);
             }
         }
-
         //DELETE: api/ProfileManagement
    
        
