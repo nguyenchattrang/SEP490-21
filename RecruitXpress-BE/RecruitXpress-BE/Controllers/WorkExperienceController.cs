@@ -68,7 +68,7 @@ namespace RecruitXpress_BE.Controllers
                         else
                         {
                             workData1.ProfileId = profile.ProfileId;
-                            _context.training.Add(workData1);
+                            _context.WorkExperiences.Add(workData1);
                         }
 
                     }
