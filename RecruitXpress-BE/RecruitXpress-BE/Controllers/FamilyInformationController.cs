@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -16,10 +18,11 @@ namespace RecruitXpress_BE.Controllers
     {
         
         private readonly RecruitXpressContext _context;
-       
-        public FamilyInformationController(RecruitXpressContext context)
+        public IMapper _mapper;
+        public FamilyInformationController(RecruitXpressContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         [HttpGet("getbyId")]
         public async Task<IActionResult> GetFamilyInformation(int accountId)
@@ -30,11 +33,12 @@ namespace RecruitXpress_BE.Controllers
                 if (profile == null) return NotFound("Account chua co profile");
 
                 var result = await _context.FamilyInformations.Where(x => x.ProfileId == profile.ProfileId).ToListAsync();
-                if (result == null)
+                var listComputer = _mapper.Map<List<FamilyInformationDTO>>(result);
+                if (listComputer == null)
                 {
                     return NotFound("Không kết quả");
                 }
-                return Ok(result);
+                return Ok(listComputer);
             }
             catch (Exception ex)
             {
@@ -44,7 +48,7 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/FamilyInformationManagement
         [HttpPost]
-        public async Task<IActionResult> AddFamilyInformation(FamilyInformation familyInformation, int accountId)
+        public async Task<IActionResult> AddFamilyInformation(List<FamilyInformation> familyInformation, int accountId)
         {
             try
             {
@@ -53,9 +57,13 @@ namespace RecruitXpress_BE.Controllers
                     var profile =await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
 
-                    var computer = familyInformation;
-                    familyInformation.ProfileId = profile.ProfileId;
-                    _context.FamilyInformations.Add(familyInformation);
+                    foreach (var familyInfor in familyInformation)
+                    {
+                        var familyInfor1 = familyInfor;
+                        familyInfor1.ProfileId = profile.ProfileId;
+                        _context.FamilyInformations.Add(familyInfor1);
+
+                    }
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }
@@ -72,14 +80,19 @@ namespace RecruitXpress_BE.Controllers
 
         //PUT: api/FamilyInformationManagement/{id}
         [HttpPut("id")]
-        public async Task<IActionResult> UpdateFamilyInformation(FamilyInformation data)
+        public async Task<IActionResult> UpdateFamilyInformation(List<FamilyInformation> data)
         {
             try
             {
-                _context.Entry(data).State = EntityState.Detached;
-               
-                _context.Update(data);
-                await _context.SaveChangesAsync();
+                if (data != null)
+                {
+                    foreach (var com in data)
+                    {
+                        _context.Entry(com).State = EntityState.Modified;
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
                 return Ok("Cập nhật thành công");
             }
             catch (Exception e)

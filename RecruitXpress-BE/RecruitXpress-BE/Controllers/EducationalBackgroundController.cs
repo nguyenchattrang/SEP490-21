@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -16,10 +18,12 @@ namespace RecruitXpress_BE.Controllers
     {
         
         private readonly RecruitXpressContext _context;
-       
-        public EducationalBackgroundController(RecruitXpressContext context)
+        public IMapper _mapper;
+
+        public EducationalBackgroundController(RecruitXpressContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         [HttpGet("getbyId")]
         public async Task<IActionResult> GetEducationBackground(int accountId)
@@ -30,6 +34,7 @@ namespace RecruitXpress_BE.Controllers
                 if (profile == null) return NotFound("Account chua co profile");
                
                 var result = await _context.EducationalBackgrounds.Where(x => x.ProfileId == profile.ProfileId).ToListAsync();
+                var listComputer = _mapper.Map<List<EducationalBackgroundDTO>>(result);
                 if (result == null)
                 {
                     return NotFound("Không kết quả");
