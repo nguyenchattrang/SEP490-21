@@ -60,6 +60,10 @@ namespace RecruitXpress_BE.Controllers
                     foreach (var familyInfor in familyInformation)
                     {
                         var familyInfor1 = familyInfor;
+                        if(familyInfor1.FamilyId != null)
+                        {
+                            _context.Entry(familyInfor1).State = EntityState.Modified;
+                        }
                         familyInfor1.ProfileId = profile.ProfileId;
                         _context.FamilyInformations.Add(familyInfor1);
 
