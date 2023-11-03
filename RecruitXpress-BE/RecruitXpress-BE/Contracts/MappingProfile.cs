@@ -24,6 +24,13 @@ namespace RecruitXpress_BE.Contracts
            
             CreateMap<JobApplication, JobApplicationDTO>();
           
+            CreateMap<ComputerProficiency, ComputerProficiencyDTO>();
+            CreateMap<MaritalStatus, MaritalStatusDTO>();
+            CreateMap<LanguageProficiency, LanguageProficiencyDTO>();
+            CreateMap<EducationalBackground, EducationalBackgroundDTO>();
+            CreateMap<FamilyInformation, FamilyInformationDTO>();
+            CreateMap<training, TrainigDTO>();
+            CreateMap<WorkExperience, WorkExperienceDTO>();
             CreateMap<GeneralTest, GeneralTestDTO>()
             .ForMember(dest => dest.GeneralTestDetails, opt => opt.MapFrom(src => src.GeneralTestDetails))
             .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation));

@@ -124,8 +124,6 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task CreateQuestion(Question questiondto)
         {
-
-
             /*var questions = _mapper.Map<Question>(questiondto);*/
             _context.Questions.Add(questiondto);
             await _context.SaveChangesAsync();
