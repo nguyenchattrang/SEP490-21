@@ -9,6 +9,7 @@ namespace RecruitXpress_BE.IRepositories
 
         Task<IEnumerable<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest specializedExamRequest);
         Task<SpecializedExamDTO> GetSpecializedExamById(int examId);
+        Task<SpecializedExamDTO> GetSpecializedExamByCode(string code);
         Task AddSpecializedExam(SpecializedExam exam);
         Task UpdateSpecializedExam(SpecializedExam exam);
         Task<bool> DeleteSpecializedExam(int examId);

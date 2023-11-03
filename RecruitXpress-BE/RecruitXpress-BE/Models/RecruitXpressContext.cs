@@ -557,6 +557,8 @@ namespace RecruitXpress_BE.Models
 
                 entity.ToTable("SpecializedExam");
 
+                entity.Property(e => e.Code).HasMaxLength(100);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");

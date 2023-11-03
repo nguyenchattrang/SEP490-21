@@ -25,9 +25,19 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet("GetSpecializedExamById/{examId}")]
-        public async Task<IActionResult> GetSpecializedExam(int examId)
+        public async Task<IActionResult> GetSpecializedExamById(int examId)
         {
             var exam = await _repository.GetSpecializedExamById(examId);
+            if (exam == null)
+            {
+                return NotFound();
+            }
+            return Ok(exam);
+        }
+        [HttpGet("GetSpecializedExamByCode/{code}")]
+        public async Task<IActionResult> GetSpecializedExamByCode(string code)
+        {
+            var exam = await _repository.GetSpecializedExamByCode(code);
             if (exam == null)
             {
                 return NotFound();

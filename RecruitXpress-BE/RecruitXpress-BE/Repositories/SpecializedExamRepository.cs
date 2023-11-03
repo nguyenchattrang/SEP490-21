@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
 namespace RecruitXpress_BE.Repositories
 {
-    public class SpecializedExamRepository: ISpecializedExamRepository
+    public class SpecializedExamRepository : ISpecializedExamRepository
     {
         private readonly RecruitXpressContext _context;
         private readonly IMapper _mapper;
@@ -19,7 +20,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<IEnumerable<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest request)
         {
-            var query = _context.SpecializedExams.Include(s=> s.CreatedByNavigation).AsQueryable();
+            var query = _context.SpecializedExams.Include(s => s.CreatedByNavigation).AsQueryable();
 
             if (!string.IsNullOrEmpty(request.ExamName))
             {
@@ -56,6 +57,10 @@ namespace RecruitXpress_BE.Repositories
             {
                 var createAt = request.CreatedAt.Value.Date;
                 query = query.Where(e => e.CreatedAt != null && e.CreatedAt.Value.Date == createAt);
+            }
+            if (!string.IsNullOrEmpty(request.Code))
+            {
+                query = query.Where(e => e.Code.Contains(request.Code));
             }
 
             if (request.SortBy != null)
@@ -100,7 +105,21 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<SpecializedExamDTO> GetSpecializedExamById(int examId)
         {
-            var specializedExam = await _context.SpecializedExams.FindAsync(examId);
+            var specializedExam = await _context.SpecializedExams.Include(s => s.CreatedByNavigation).Where(s => s.ExamId == examId).FirstOrDefaultAsync();
+
+            var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specializedExam);
+            return specializedExamDTO;
+        }
+        public async Task<SpecializedExamDTO> GetSpecializedExamByCode(string code)
+        {
+            var specializedExam = await _context.SpecializedExams
+                .Include(s => s.CreatedByNavigation)
+                .FirstOrDefaultAsync(s => s.Code.Contains(code));
+            if (specializedExam == null || !specializedExam.Code.Equals(code))
+            {
+                return null;
+            }
+
 
             var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specializedExam);
             return specializedExamDTO;
@@ -109,6 +128,10 @@ namespace RecruitXpress_BE.Repositories
         public async Task AddSpecializedExam(SpecializedExam exam)
         {
             exam.CreatedAt = DateTime.Now;
+
+            var generatedCode = GenerateUniqueCode();
+            exam.Code = generatedCode;
+
             _context.SpecializedExams.Add(exam);
             await _context.SaveChangesAsync();
         }
@@ -122,7 +145,7 @@ namespace RecruitXpress_BE.Repositories
         public async Task<bool> DeleteSpecializedExam(int examId)
         {
 
-            var specializedExam =  await _context.SpecializedExams.FindAsync(examId);
+            var specializedExam = await _context.SpecializedExams.FindAsync(examId);
 
             if (specializedExam == null)
             {
@@ -132,6 +155,31 @@ namespace RecruitXpress_BE.Repositories
             _context.SpecializedExams.Remove(specializedExam);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private string GenerateUniqueCode()
+        {
+            int maxAttempts = 10; // Set a maximum number of attempts.
+            int attemptCount = 0;
+            string generatedCode;
+
+            do
+            {
+                // Generate a random code.
+                generatedCode = TokenHelper.GenerateRandomToken(8);
+                attemptCount++;
+
+                // Check if the generated code is unique.
+                var isCodeUnique = !_context.SpecializedExams.Any(e => e.Code == generatedCode);
+
+                if (isCodeUnique)
+                {
+                    return generatedCode;
+                }
+            } while (attemptCount < maxAttempts);
+
+            // Handle the case where a unique code couldn't be generated.
+            throw new Exception("Failed to generate a unique code after multiple attempts.");
         }
     }
 }

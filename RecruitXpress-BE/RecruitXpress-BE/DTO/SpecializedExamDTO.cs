@@ -12,7 +12,7 @@ namespace RecruitXpress_BE.DTO
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public int? Status { get; set; }
-
+        public string? Code { get; set; }
         public virtual AccountDTO? CreatedByAccount { get; set; }
     }
 }
