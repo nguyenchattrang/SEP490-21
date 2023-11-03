@@ -60,17 +60,29 @@ namespace RecruitXpress_BE.Controllers
                 {
                     var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
-                   
+                    var listUpdate = new List<ComputerProficiency>();
                     foreach (var com in computerProficiency)
                     {
                     var computer = com;
-                        if(computer.ComputerProficiencyId != null)
+                        if (computer.ComputerProficiencyId != null)
+                        {
+                            listUpdate.Add(computer);
+                        }
+                        else
+                        {
                         computer.ProfileId = profile.ProfileId;
-                    _context.ComputerProficiencies.Add(computer);
+                        _context.ComputerProficiencies.Add(computer);
+                        }
 
                     }
+                    if (listUpdate != null)
+                    {
+                        foreach (var compu in listUpdate)
+                        {
+                            _context.Update(compu);
+                        }
+                    }
                     await _context.SaveChangesAsync();
-                   
                     return Ok("Thành công");
                 }
                 else

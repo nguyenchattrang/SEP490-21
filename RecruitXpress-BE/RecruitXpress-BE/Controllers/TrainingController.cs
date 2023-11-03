@@ -58,12 +58,27 @@ namespace RecruitXpress_BE.Controllers
                     var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
 
-                    foreach (var train in data)
+                    var listUpdate = new List<training>();
+                    foreach (var trainingData in data)
                     {
-                        var train1 = train;
-                        train1.ProfileId = profile.ProfileId;
-                        _context.training.Add(train1);
+                        var data1 = trainingData;
+                        if (data1.TrainingId != null)
+                        {
+                            listUpdate.Add(data1);
+                        }
+                        else
+                        {
+                            data1.ProfileId = profile.ProfileId;
+                            _context.training.Add(data1);
+                        }
 
+                    }
+                    if (listUpdate != null)
+                    {
+                        foreach (var compu in listUpdate)
+                        {
+                            _context.Update(compu);
+                        }
                     }
                     await _context.SaveChangesAsync();
 
