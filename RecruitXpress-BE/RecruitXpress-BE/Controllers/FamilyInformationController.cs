@@ -56,17 +56,26 @@ namespace RecruitXpress_BE.Controllers
                 {
                     var profile =await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
-
+                    var listUpdate = new List<FamilyInformation>();
                     foreach (var familyInfor in familyInformation)
                     {
                         var familyInfor1 = familyInfor;
-                        if(familyInfor1.FamilyId != null)
+                        if (familyInfor1.FamilyId != null)
                         {
-                            _context.Entry(familyInfor1).State = EntityState.Modified;
+                            listUpdate.Add(familyInfor1);
                         }
+                        else { 
                         familyInfor1.ProfileId = profile.ProfileId;
                         _context.FamilyInformations.Add(familyInfor1);
+                        }
 
+                    }
+                    if(listUpdate != null)
+                    {
+                        foreach(var family in listUpdate)
+                        {
+                            _context.Update(family);
+                        }
                     }
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
