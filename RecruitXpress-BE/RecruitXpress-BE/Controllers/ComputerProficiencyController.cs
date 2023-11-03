@@ -64,6 +64,7 @@ namespace RecruitXpress_BE.Controllers
                     foreach (var com in computerProficiency)
                     {
                     var computer = com;
+                        if(computer.ComputerProficiencyId != null)
                         computer.ProfileId = profile.ProfileId;
                     _context.ComputerProficiencies.Add(computer);
 
