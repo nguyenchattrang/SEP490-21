@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -16,10 +18,11 @@ namespace RecruitXpress_BE.Controllers
     {
         
         private readonly RecruitXpressContext _context;
-       
-        public LanguageProficiencyController(RecruitXpressContext context)
+        public IMapper _mapper;
+        public LanguageProficiencyController(RecruitXpressContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         [HttpGet("getbyId")]
         public async Task<IActionResult> GetLanguageProficiency(int accountId)
@@ -30,11 +33,12 @@ namespace RecruitXpress_BE.Controllers
                 if (profile == null) return NotFound("Account chua co profile");
 
                 var result = await _context.LanguageProficiencies.Where(x => x.ProfileId == profile.ProfileId).ToListAsync();
-                if (result == null)
+                var listLanguage = _mapper.Map<List<LanguageProficiencyDTO>>(result);
+                if (listLanguage == null)
                 {
                     return NotFound("Không kết quả");
                 }
-                return Ok(result);
+                return Ok(listLanguage);
             }
             catch (Exception ex)
             {
@@ -44,7 +48,7 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/LanguageProficiencyManagement
         [HttpPost]
-        public async Task<IActionResult> AddLanguageProficiency(LanguageProficiency data, int accountId)
+        public async Task<IActionResult> AddLanguageProficiency(List<LanguageProficiency> data, int accountId)
         {
             try
             {
@@ -53,10 +57,15 @@ namespace RecruitXpress_BE.Controllers
                     var profile =await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
 
-                    var computer = data;
-                    data.ProfileId = profile.ProfileId;
-                    _context.LanguageProficiencies.Add(data);
+                    foreach (var language in data)
+                    {
+                        var language1 = language;
+                        language1.ProfileId = profile.ProfileId;
+                        _context.LanguageProficiencies.Add(language1);
+
+                    }
                     await _context.SaveChangesAsync();
+                    
                     return Ok("Thành công");
                 }
                 else
@@ -72,12 +81,19 @@ namespace RecruitXpress_BE.Controllers
 
         //PUT: api/LanguageProficiencyManagement/{id}
         [HttpPut("id")]
-        public async Task<IActionResult> UpdateLanguageProficiency( LanguageProficiency data)
+        public async Task<IActionResult> UpdateLanguageProficiency(List<LanguageProficiency> data)
         {
             try
             {
-                _context.Entry(data).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+                if (data != null)
+                {
+                    foreach (var com in data)
+                    {
+                        _context.Entry(com).State = EntityState.Modified;
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
                 return Ok("Cập nhật thành công");
             }
             catch (Exception e)

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RecruitXpress_BE.Contracts;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -16,10 +19,12 @@ namespace RecruitXpress_BE.Controllers
     {
 
         private readonly RecruitXpressContext _context;
-
-        public ComputerProficiencyController(RecruitXpressContext context)
+        public IMapper _mapper;
+        public ComputerProficiencyController(RecruitXpressContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+           
         }
 
         //GET: api/ComputerProficiencyManagement/{id}
@@ -31,11 +36,12 @@ namespace RecruitXpress_BE.Controllers
                 var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                 if (profile == null) return NotFound("Account chua co profile");
                 var result = await _context.ComputerProficiencies.Where(x => x.ProfileId == profile.ProfileId).ToListAsync();
-                if (result == null)
+                var listComputer = _mapper.Map<List<ComputerProficiencyDTO>>(result);
+                if (listComputer == null)
                 {
                     return NotFound("Không kết quả");
                 }
-                return Ok(result);
+                return Ok(listComputer);
             }
             catch (Exception ex)
             {
@@ -45,18 +51,25 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/ComputerProficiencyManagement
         [HttpPost]
-        public async Task<IActionResult> AddComputerProficiency(ComputerProficiency computerProficiency, int accountId)
+        public async Task<IActionResult> AddComputerProficiency(List<ComputerProficiency> computerProficiency, int accountId)
         {
             try
             {
+               
                 if (computerProficiency != null && accountId != null)
                 {
                     var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
-                    var computer = computerProficiency;
-                    computerProficiency.ProfileId = profile.ProfileId;
+                   
+                    foreach (var com in computerProficiency)
+                    {
+                    var computer = com;
+                        computer.ProfileId = profile.ProfileId;
                     _context.ComputerProficiencies.Add(computer);
+
+                    }
                     await _context.SaveChangesAsync();
+                   
                     return Ok("Thành công");
                 }
                 else
@@ -72,12 +85,19 @@ namespace RecruitXpress_BE.Controllers
 
         //PUT: api/ComputerProficiencyManagement/{id}
         [HttpPut("id")]
-        public async Task<IActionResult> UpdateComputerProficiency(ComputerProficiency computerProficiency)
+        public async Task<IActionResult> UpdateComputerProficiency(List<ComputerProficiency> computerProficiency)
         {
             try
             {
-                _context.Entry(computerProficiency).State = EntityState.Modified;
+                if(computerProficiency != null)
+                {
+                    foreach(var com in computerProficiency)
+                    {
+                        _context.Entry(com).State = EntityState.Modified;
+                    }
+               
                 await _context.SaveChangesAsync();
+                }
                 return Ok("Cập nhật thành công");
             }
             catch (Exception e)

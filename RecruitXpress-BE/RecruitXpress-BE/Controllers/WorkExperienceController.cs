@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -16,10 +18,11 @@ namespace RecruitXpress_BE.Controllers
     {
         
         private readonly RecruitXpressContext _context;
-       
-        public WorkExperienceController(RecruitXpressContext context)
+        public IMapper _mapper;
+        public WorkExperienceController(RecruitXpressContext context, IMapper mapper)
         {
             _context = context;
+            _mapper= mapper;
         }
         [HttpGet("getbyId")]
         public async Task<IActionResult> GetWorkExperience(int accountId)
@@ -30,11 +33,12 @@ namespace RecruitXpress_BE.Controllers
                 if (profile == null) return NotFound("Account chua co profile");
 
                 var result = await _context.WorkExperiences.Where(x => x.ProfileId == profile.ProfileId).ToListAsync();
-                if (result == null)
+                var listWork = _mapper.Map<List<WorkExperienceDTO>>(result);
+                if (listWork == null)
                 {
                     return NotFound("Không kết quả");
                 }
-                return Ok(result);
+                return Ok(listWork);
             }
             catch (Exception ex)
             {
@@ -44,7 +48,7 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/WorkExperienceManagement
         [HttpPost]
-        public async Task<IActionResult> AddWorkExperience(WorkExperience data, int accountId)
+        public async Task<IActionResult> AddWorkExperience(List<WorkExperience> data, int accountId)
         {
             try
             {
@@ -53,10 +57,15 @@ namespace RecruitXpress_BE.Controllers
                     var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
 
-                    var WorkExperience1 = data;
-                    WorkExperience1.ProfileId = profile.ProfileId;
-                    _context.WorkExperiences.Add(WorkExperience1);
+                    foreach (var work in data)
+                    {
+                        var work1 = work;
+                        work1.ProfileId = profile.ProfileId;
+                        _context.WorkExperiences.Add(work1);
+
+                    }
                     await _context.SaveChangesAsync();
+
                     return Ok("Thành công");
                 }
                 else
@@ -72,12 +81,19 @@ namespace RecruitXpress_BE.Controllers
 
         //PUT: api/WorkExperienceManagement/{id}
         [HttpPut("id")]
-        public async Task<IActionResult> UpdateWorkExperience( WorkExperience data)
+        public async Task<IActionResult> UpdateWorkExperience( List<WorkExperience> data)
         {
             try
             {
-                _context.Entry(data).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+                if (data != null)
+                {
+                    foreach (var com in data)
+                    {
+                        _context.Entry(com).State = EntityState.Modified;
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
                 return Ok("Cập nhật thành công");
             }
             catch (Exception e)
