@@ -49,7 +49,7 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/EducationBackgroundManagement
         [HttpPost]
-        public async Task<IActionResult> AddEducationBackground(EducationalBackground educationBackground, int accountId)
+        public async Task<IActionResult> AddEducationBackground(List<EducationalBackground> educationBackground, int accountId)
         {
             try
             {
@@ -57,10 +57,29 @@ namespace RecruitXpress_BE.Controllers
                 {
                     var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                     if (profile == null) return NotFound("Account chua co profile");
-                    
-                    var computer = educationBackground;
-                    educationBackground.ProfileId = profile.ProfileId;
-                    _context.EducationalBackgrounds.Add(educationBackground);
+
+                    var listUpdate = new List<EducationalBackground>();
+                    foreach (var edu in educationBackground)
+                    {
+                        var education = edu;
+                        if (education.EducationalBackgroundId != null)
+                        {
+                            listUpdate.Add(education);
+                        }
+                        else
+                        {
+                            education.ProfileId = profile.ProfileId;
+                            _context.EducationalBackgrounds.Add(education);
+                        }
+
+                    }
+                    if (listUpdate != null)
+                    {
+                        foreach (var compu in listUpdate)
+                        {
+                            _context.Update(compu);
+                        }
+                    }
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }
