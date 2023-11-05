@@ -5,6 +5,11 @@ namespace RecruitXpress_BE.Models
 {
     public partial class SpecializedExam
     {
+        public SpecializedExam()
+        {
+            Exams = new HashSet<Exam>();
+        }
+
         public int ExamId { get; set; }
         public string ExamName { get; set; } = null!;
         public string? Description { get; set; }
@@ -16,5 +21,6 @@ namespace RecruitXpress_BE.Models
         public string? Code { get; set; }
 
         public virtual Account? CreatedByNavigation { get; set; }
+        public virtual ICollection<Exam> Exams { get; set; }
     }
 }
