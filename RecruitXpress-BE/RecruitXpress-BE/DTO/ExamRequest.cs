@@ -9,4 +9,12 @@ namespace RecruitXpress_BE.DTO
         public int? SpecializedExamId { get; set; }
 
     }
+    public class GradeExamRequest
+    {
+        public int ExamId { get; set; }
+        public string? Point { get; set; }
+        public string? Comment { get; set; }
+        public string? MarkedBy { get; set; }
+
+    }
 }

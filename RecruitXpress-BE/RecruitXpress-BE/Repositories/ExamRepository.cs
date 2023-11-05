@@ -230,9 +230,10 @@ namespace RecruitXpress_BE.Repositories
 
                 string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $"Upload\\ExamFiles"));
                 string folder = $"{specExam.Code}";
-                if (!Directory.Exists(path))
+                var newPath = Path.Combine(path, folder);
+                if (!Directory.Exists(newPath))
                 {
-                    Directory.CreateDirectory(path);
+                    Directory.CreateDirectory(newPath);
                 }
 
                 // Save the file bytes
@@ -266,10 +267,26 @@ namespace RecruitXpress_BE.Repositories
             }
         }
 
+        public async Task GradeExam(GradeExamRequest e)
+        {
+            var exam = _context.Exams.FirstOrDefault(ex => ex.ExamId == e.ExamId);
+            if (exam == null)
+            {
+                throw new Exception("Không tìm được bài thi");
+            }
+
+            exam.Comment = e.Comment;
+            exam.Point = e.Point;
+            exam.MarkedBy = e.MarkedBy;
+            exam.MarkedDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+        }
 
 
         public async Task UpdateExam(Exam exam)
         {
+            _context.ChangeTracker.Clear();
             _context.Entry(exam).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }

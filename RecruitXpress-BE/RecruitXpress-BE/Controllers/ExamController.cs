@@ -158,6 +158,19 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpPut("GradeExam")]
+        public async Task<IActionResult> GradeExam(GradeExamRequest exam)
+        {
+            try
+            {
+                await _examRepository.GradeExam(exam);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         [HttpDelete("DeleteExam/{id}")]
         public async Task<IActionResult> DeleteExam(int id)

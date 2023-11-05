@@ -6,18 +6,21 @@ namespace RecruitXpress_BE.Helper
     {
         public static string GenerateRandomToken(int length)
         {
+            using (var rng = new RNGCryptoServiceProvider())
             {
-                using (var rng = new RNGCryptoServiceProvider())
+                var validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                var charactersLength = validCharacters.Length;
+                var randomChars = new char[length];
+
+                for (int i = 0; i < length; i++)
                 {
-                    var bytes = new byte[length];
-                    rng.GetBytes(bytes);
-
-                    // Convert the random bytes to a string without padding
-                    var base64 = Convert.ToBase64String(bytes).Replace("=", "");
-
-                    // Ensure the string is the desired length or truncate if it's longer
-                    return base64.Substring(0, length);
+                    byte[] randomBytes = new byte[1];
+                    rng.GetBytes(randomBytes);
+                    char randomChar = validCharacters[randomBytes[0] % charactersLength];
+                    randomChars[i] = randomChar;
                 }
+
+                return new string(randomChars);
             }
         }
         public static string GenerateNumericToken(int length)
