@@ -10,6 +10,9 @@ namespace RecruitXpress_BE.Models
         public string? Note { get; set; }
         public float? Mark { get; set; }
         public string? EvaluatedBy { get; set; }
+        public string? EvaluaterPhoneContact { get; set; }
+        public string? EvaluaterEmailContact { get; set; }
+
         public DateTime? CreatedAt { get; set; }
         public int? Status { get; set; }
         public virtual Profile? Profile { get; set; }
