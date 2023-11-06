@@ -146,5 +146,18 @@ namespace RecruitXpress_BE.Controllers
             return NoContent();
         }
 
+        [HttpDelete("DeleteOption/{id}")]
+        public async Task<IActionResult> DeleteOption(int id)
+        {
+            var deleted = await _repository.DeleteOption(id);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
     }
 }

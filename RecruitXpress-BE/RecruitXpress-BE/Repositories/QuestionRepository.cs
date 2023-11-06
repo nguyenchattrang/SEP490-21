@@ -156,6 +156,10 @@ namespace RecruitXpress_BE.Repositories
                     existingOption.OptionText = updatedOption.OptionText;
                     existingOption.IsCorrect = updatedOption.IsCorrect;
                 }
+                else
+                {
+                    _context.Options.Add(updatedOption);
+                }    
             }
 
             await _context.SaveChangesAsync();
@@ -177,6 +181,18 @@ namespace RecruitXpress_BE.Repositories
             }
 
             _context.Questions.Remove(question);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteOption(int optionId)
+        {
+            var option = _context.Options.Where(o => o.OptionId == optionId).FirstOrDefault();
+            if (option == null)
+            {
+                return false;
+            }
+            _context.Options.Remove(option);
             await _context.SaveChangesAsync();
             return true;
         }

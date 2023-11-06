@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Org.BouncyCastle.Utilities;
+using System.Text.RegularExpressions;
 
 namespace RecruitXpress_BE.Helper
 {
@@ -6,7 +7,7 @@ namespace RecruitXpress_BE.Helper
     {
      
         public static readonly Regex validateGuidRegex = new Regex("^(?=.*?[A-Z])(?=.*?[0-9]).{8,32}$");
-        
+        public static readonly int MaxFileSize = 25 * 1024 * 1024; //(Bytes = 25mb)
         public static class GOOGLE_SERVICE
         {
             public const string SCOPE_URL = "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?";

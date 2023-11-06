@@ -17,5 +17,6 @@ namespace RecruitXpress_BE.IRepositories
         Task<Question> UpdateQuestion(Question question);
 
         Task<bool> DeleteQuestion(int questionId);
+        Task<bool> DeleteOption(int optionId);
     }
 }

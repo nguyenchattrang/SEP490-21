@@ -62,4 +62,18 @@ namespace RecruitXpress_BE.DTO
         public string? Code { get; set; }
 
     }
+
+    public class ExamRequest : ApiRequest<SpecializedExam>
+    {
+        public int? AccountId { get; set; }
+        public string? FileUrl { get; set; }
+        public DateTime? TestDate { get; set; }
+        public DateTime? TestTime { get; set; }
+        public string? Point { get; set; }
+        public string? Comment { get; set; }
+        public string? MarkedBy { get; set; }
+        public DateTime? MarkedDate { get; set; }
+        public int? Status { get; set; }
+
+    }
 }

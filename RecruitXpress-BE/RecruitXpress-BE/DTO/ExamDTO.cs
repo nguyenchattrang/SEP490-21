@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RecruitXpress_BE.Models
+﻿namespace RecruitXpress_BE.DTO
 {
-    public partial class Exam
+    public class ExamDTO
     {
         public int ExamId { get; set; }
         public int? AccountId { get; set; }
@@ -15,9 +12,7 @@ namespace RecruitXpress_BE.Models
         public string? MarkedBy { get; set; }
         public DateTime? MarkedDate { get; set; }
         public int? Status { get; set; }
-        public int? SpecializedExamId { get; set; }
 
-        public virtual Account? Account { get; set; }
-        public virtual SpecializedExam? SpecializedExam { get; set; }
+        public virtual AccountDTO? Account { get; set; }
     }
 }
