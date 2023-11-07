@@ -62,18 +62,20 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("AllJobApplication")]
-        public async Task<IActionResult> listJobApplication([FromQuery] JobApplicationRequest request)
+        public async Task<IActionResult> listJobApplication([FromQuery] JobApplicationRequest request, int roleId, int? accountId)
         {
             try
             {
-                //var listJob = await _context.JobApplications.Include(x => x.Profile)
-                //    .Include(x => x.Job).Include(x=>x.Template).Where(x=> x.Status ==1 ).ToListAsync();
-                //if (listJob == null) return NotFound("Khong tim thay ban ghi ");
-                //return Ok(listJob);
+               
                 var query = _context.JobApplications
                 .Include(q => q.Profile)
                 .Include(q => q.Job)
                 .Include(q => q.Template).AsQueryable();
+               
+                if (accountId != null && roleId ==2 )
+                {
+                    query = query.Where(x=> x.AssignedFor== accountId);
+                }
 
                 if (request.Location != null)
                 {
@@ -98,6 +100,14 @@ namespace RecruitXpress_BE.Controllers
                 if (request.ApplicationDeadline != null)
                 {
                     query = query.Where(s => s.Job != null && s.Job.ApplicationDeadline != null && s.Job.ApplicationDeadline.Equals(request.ApplicationDeadline));
+                }
+                if (request.Title != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.Title != null && s.Job.Title.Equals(request.Title));
+                }
+                if (request.Company != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.Company != null && s.Job.Company.Equals(request.Company));
                 }
                 if (request.NameCandidate != null)
                 {
@@ -157,7 +167,21 @@ namespace RecruitXpress_BE.Controllers
                                 ? query.OrderBy(j => j.Profile.Email)
                                 : query.OrderByDescending(j => j.Profile.Email);
                             break;
-
+                        case "Title":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Title)
+                                : query.OrderByDescending(j => j.Job.Title);
+                            break;
+                        case "Company":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Company)
+                                : query.OrderByDescending(j => j.Job.Company);
+                            break;
+                        case "DatePosted":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.DatePosted)
+                                : query.OrderByDescending(j => j.Job.DatePosted);
+                            break;
                         default:
                             query = request.OrderByAscending
                                    ? query.OrderBy(j => j.Job.ApplicationDeadline)
@@ -172,7 +196,10 @@ namespace RecruitXpress_BE.Controllers
                      s.Profile.Name.Contains(request.SearchString) ||
                      s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.Industry.Contains(request.SearchString) ||
-                     s.Job.Location.Contains(request.SearchString));
+                     s.Job.Location.Contains(request.SearchString) ||
+                     s.Job.Title.Contains(request.SearchString)||
+                     s.Job.Company.Contains(request.SearchString));
+                     
                 }
                 var pageNumber = request.Page > 0 ? request.Page : 1;
                 var pageSize = request.Size > 0 ? request.Size : 20;
@@ -233,8 +260,8 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("PutJobApp")]
-        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? profileId, int? Status)
+        [HttpPut("UpdateStatus")]
+        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? Status)
         {
             try
             {
@@ -245,7 +272,11 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (Status != null)
                 {
-                    detailJob.Status = 2;
+                    detailJob.Status = Status;
+                    if (accountId != null)
+                    {
+                        detailJob.AssignedFor = accountId;
+                    }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     return Ok("Cập nhật trạng thái thành công");
@@ -259,7 +290,7 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("PutJobApp1")]
+        [HttpPut("Resubmit")]
         public async Task<IActionResult> ResubmitjobApplication(int jobApplyId, int profileId)
         {
             try
