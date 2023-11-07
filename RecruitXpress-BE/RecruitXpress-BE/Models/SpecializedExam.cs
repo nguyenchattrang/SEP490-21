@@ -11,7 +11,7 @@ namespace RecruitXpress_BE.Models
         }
 
         public int ExamId { get; set; }
-        public string? ExamName { get; set; } = null!;
+        public string ExamName { get; set; } = null!;
         public string? Description { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

@@ -22,7 +22,6 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
         public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
         public virtual DbSet<EmailToken> EmailTokens { get; set; } = null!;
-        public virtual DbSet<Evaluate> Evaluates { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<FamilyInformation> FamilyInformations { get; set; } = null!;
         public virtual DbSet<GeneralTest> GeneralTests { get; set; } = null!;
@@ -49,8 +48,8 @@ namespace RecruitXpress_BE.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("server =DATVT\\DATVT25; database = RecruitXpress;uid=sa;pwd=123456; TrustServerCertificate=True ");
+                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                optionsBuilder.UseSqlServer(config.GetConnectionString("RecruitXpress"));
             }
         }
 
@@ -82,7 +81,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.RoleId)
-                    .HasConstraintName("FK__Account__RoleID__267ABA7A");
+                    .HasConstraintName("FK__Account__RoleID__38996AB5");
             });
 
             modelBuilder.Entity<ComputerProficiency>(entity =>
@@ -98,13 +97,13 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.ComputerProficiencies)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__ComputerP__Profi__46E78A0C");
+                    .HasConstraintName("FK__ComputerP__Profi__1332DBDC");
             });
 
             modelBuilder.Entity<Cvtemplate>(entity =>
             {
                 entity.HasKey(e => e.TemplateId)
-                    .HasName("PK__CVTempla__F87ADD0766EBA548");
+                    .HasName("PK__CVTempla__F87ADD070A716C45");
 
                 entity.ToTable("CVTemplate");
 
@@ -122,7 +121,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Cvtemplates)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__CVTemplat__Accou__3A81B327");
+                    .HasConstraintName("FK__CVTemplat__Accou__4AB81AF0");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>
@@ -144,13 +143,13 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.EducationalBackgrounds)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__Education__Profi__2F10007B");
+                    .HasConstraintName("FK__Education__Profi__7F2BE32F");
             });
 
             modelBuilder.Entity<EmailTemplate>(entity =>
             {
                 entity.HasKey(e => e.TemplateId)
-                    .HasName("PK__EmailTem__F87ADD07A062333C");
+                    .HasName("PK__EmailTem__F87ADD070824A102");
 
                 entity.ToTable("EmailTemplate");
 
@@ -162,7 +161,7 @@ namespace RecruitXpress_BE.Models
             modelBuilder.Entity<EmailToken>(entity =>
             {
                 entity.HasKey(e => e.TokenId)
-                    .HasName("PK__EmailTok__658FEEEA79A81FCB");
+                    .HasName("PK__EmailTok__658FEEEA6548AD56");
 
                 entity.ToTable("EmailToken");
 
@@ -175,24 +174,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.EmailTokens)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__EmailToke__Accou__6FE99F9F");
-            });
-
-            modelBuilder.Entity<Evaluate>(entity =>
-            {
-                entity.ToTable("Evaluate");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.EvaluaterEmailContact).HasMaxLength(255);
-
-                entity.Property(e => e.EvaluaterPhoneContact).HasMaxLength(50);
-
-                entity.HasOne(d => d.Profile)
-                    .WithMany(p => p.Evaluates)
-                    .HasForeignKey(d => d.ProfileId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Evaluate__Profil__02084FDA");
+                    .HasConstraintName("FK__EmailToke__Accou__681373AD");
             });
 
             modelBuilder.Entity<Exam>(entity =>
@@ -224,13 +206,18 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Exams)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__Exam__AccountID__6754599E");
+                    .HasConstraintName("FK__Exam__AccountID__76969D2E");
+
+                entity.HasOne(d => d.SpecializedExam)
+                    .WithMany(p => p.Exams)
+                    .HasForeignKey(d => d.SpecializedExamId)
+                    .HasConstraintName("FK_Exam_SpecializedExam");
             });
 
             modelBuilder.Entity<FamilyInformation>(entity =>
             {
                 entity.HasKey(e => e.FamilyId)
-                    .HasName("PK__FamilyIn__41D82F4B3F932CC3");
+                    .HasName("PK__FamilyIn__41D82F4B191BA3E1");
 
                 entity.ToTable("FamilyInformation");
 
@@ -259,7 +246,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.FamilyInformations)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__FamilyInf__Profi__5FB337D6");
+                    .HasConstraintName("FK__FamilyInf__Profi__1DB06A4F");
             });
 
             modelBuilder.Entity<GeneralTest>(entity =>
@@ -273,12 +260,22 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.GeneralTests)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_GeneralTest_Account");
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.GeneralTests)
+                    .HasForeignKey(d => d.ProfileId)
+                    .HasConstraintName("FK_GeneralTest_Profile");
             });
 
             modelBuilder.Entity<GeneralTestDetail>(entity =>
             {
                 entity.HasKey(e => e.DetailId)
-                    .HasName("PK__GeneralT__135C314D16244C47");
+                    .HasName("PK__GeneralT__135C314D621B7001");
 
                 entity.ToTable("GeneralTestDetail");
 
@@ -288,10 +285,15 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
+                entity.HasOne(d => d.AnswerNavigation)
+                    .WithMany(p => p.GeneralTestDetails)
+                    .HasForeignKey(d => d.Answer)
+                    .HasConstraintName("FK_GeneralTestDetail_Option");
+
                 entity.HasOne(d => d.GeneralTest)
                     .WithMany(p => p.GeneralTestDetails)
                     .HasForeignKey(d => d.GeneralTestId)
-                    .HasConstraintName("FK__GeneralTe__Gener__4BAC3F29");
+                    .HasConstraintName("FK__GeneralTe__Gener__5AEE82B9");
             });
 
             modelBuilder.Entity<Interviewer>(entity =>
@@ -305,18 +307,18 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Interviewers)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__Interview__Accou__59FA5E80");
+                    .HasConstraintName("FK__Interview__Accou__6754599E");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Interviewers)
                     .HasForeignKey(d => d.ScheduleId)
-                    .HasConstraintName("FK__Interview__Sched__5AEE82B9");
+                    .HasConstraintName("FK__Interview__Sched__68487DD7");
             });
 
             modelBuilder.Entity<JobApplication>(entity =>
             {
                 entity.HasKey(e => e.ApplicationId)
-                    .HasName("PK__JobAppli__C93A4F7978364438");
+                    .HasName("PK__JobAppli__C93A4F79B26EEE6F");
 
                 entity.ToTable("JobApplication");
 
@@ -331,23 +333,23 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Job)
                     .WithMany(p => p.JobApplications)
                     .HasForeignKey(d => d.JobId)
-                    .HasConstraintName("FK__JobApplic__JobID__3F466844");
+                    .HasConstraintName("FK__JobApplic__JobID__0B91BA14");
 
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.JobApplications)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__JobApplic__Profi__403A8C7D");
+                    .HasConstraintName("FK__JobApplic__Profi__0C85DE4D");
 
                 entity.HasOne(d => d.Template)
                     .WithMany(p => p.JobApplications)
                     .HasForeignKey(d => d.TemplateId)
-                    .HasConstraintName("FK__JobApplic__Templ__412EB0B6");
+                    .HasConstraintName("FK__JobApplic__Templ__0D7A0286");
             });
 
             modelBuilder.Entity<JobPosting>(entity =>
             {
                 entity.HasKey(e => e.JobId)
-                    .HasName("PK__JobPosti__056690E2634FA7CD");
+                    .HasName("PK__JobPosti__056690E27DD35E85");
 
                 entity.ToTable("JobPosting");
 
@@ -373,13 +375,13 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.LanguageProficiencies)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__LanguageP__Profi__440B1D61");
+                    .HasConstraintName("FK__LanguageP__Profi__10566F31");
             });
 
             modelBuilder.Entity<MaritalStatus>(entity =>
             {
                 entity.HasKey(e => e.StatusId)
-                    .HasName("PK__MaritalS__C8EE204339E40737");
+                    .HasName("PK__MaritalS__C8EE20431005001E");
 
                 entity.ToTable("MaritalStatus");
 
@@ -408,12 +410,12 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Receiver)
                     .WithMany(p => p.NotificationReceivers)
                     .HasForeignKey(d => d.ReceiverId)
-                    .HasConstraintName("FK__Notificat__Recei__534D60F1");
+                    .HasConstraintName("FK__Notificat__Recei__60A75C0F");
 
                 entity.HasOne(d => d.Sender)
                     .WithMany(p => p.NotificationSenders)
                     .HasForeignKey(d => d.SenderId)
-                    .HasConstraintName("FK__Notificat__Sende__52593CB8");
+                    .HasConstraintName("FK__Notificat__Sende__5FB337D6");
             });
 
             modelBuilder.Entity<Option>(entity =>
@@ -423,6 +425,11 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.OptionId).HasColumnName("OptionID");
 
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
+
+                entity.HasOne(d => d.Question)
+                    .WithMany(p => p.Options)
+                    .HasForeignKey(d => d.QuestionId)
+                    .HasConstraintName("FK_Option_Question");
             });
 
             modelBuilder.Entity<Profile>(entity =>
@@ -447,7 +454,9 @@ namespace RecruitXpress_BE.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Gender).HasMaxLength(100);
+                entity.Property(e => e.Gender)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Imperfection).HasColumnType("text");
 
@@ -468,12 +477,12 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Profiles)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__Profile__Account__2B3F6F97");
+                    .HasConstraintName("FK__Profile__Account__7B5B524B");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Profiles)
                     .HasForeignKey(d => d.StatusId)
-                    .HasConstraintName("FK__Profile__StatusI__2C3393D0");
+                    .HasConstraintName("FK__Profile__StatusI__7C4F7684");
             });
 
             modelBuilder.Entity<Question>(entity =>
@@ -484,9 +493,12 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.Question1).HasColumnName("Question");
 
-                entity.Property(e => e.Type)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Type).HasMaxLength(100);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Question_Account");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -535,18 +547,18 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.ScheduleDetails)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__ScheduleD__Profi__37A5467C");
+                    .HasConstraintName("FK__ScheduleD__Profi__06CD04F7");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.ScheduleDetails)
                     .HasForeignKey(d => d.ScheduleId)
-                    .HasConstraintName("FK__ScheduleD__Sched__36B12243");
+                    .HasConstraintName("FK__ScheduleD__Sched__05D8E0BE");
             });
 
             modelBuilder.Entity<SpecializedExam>(entity =>
             {
                 entity.HasKey(e => e.ExamId)
-                    .HasName("PK__Speciali__297521C788E8B7E3");
+                    .HasName("PK__Speciali__297521C76A3469C5");
 
                 entity.ToTable("SpecializedExam");
 
@@ -559,12 +571,17 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.ExamName).HasMaxLength(255);
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.SpecializedExams)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_SpecializedExam_Account");
             });
 
             modelBuilder.Entity<UserAnalytic>(entity =>
             {
                 entity.HasKey(e => e.AnalyticId)
-                    .HasName("PK__UserAnal__4C99FBC30F0AB1D3");
+                    .HasName("PK__UserAnal__4C99FBC383CF1626");
 
                 entity.Property(e => e.AnalyticId).HasColumnName("AnalyticID");
 
@@ -590,12 +607,12 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.WishLists)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__WishList__Accoun__5629CD9C");
+                    .HasConstraintName("FK__WishList__Accoun__6383C8BA");
 
                 entity.HasOne(d => d.Job)
                     .WithMany(p => p.WishLists)
                     .HasForeignKey(d => d.JobId)
-                    .HasConstraintName("FK__WishList__JobID__571DF1D5");
+                    .HasConstraintName("FK__WishList__JobID__6477ECF3");
             });
 
             modelBuilder.Entity<WorkExperience>(entity =>
@@ -625,7 +642,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.WorkExperiences)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__WorkExper__Profi__31EC6D26");
+                    .HasConstraintName("FK__WorkExper__Profi__02084FDA");
             });
 
             modelBuilder.Entity<training>(entity =>
@@ -655,7 +672,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.training)
                     .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__Training__Profil__628FA481");
+                    .HasConstraintName("FK__Training__Profil__208CD6FA");
             });
 
             OnModelCreatingPartial(modelBuilder);
