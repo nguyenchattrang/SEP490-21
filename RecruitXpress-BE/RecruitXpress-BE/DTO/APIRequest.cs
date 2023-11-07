@@ -36,6 +36,7 @@ namespace RecruitXpress_BE.DTO
         public string? EmailCandidate { get; set; }
         public string? Company { get; set; }
         public string? Title { get; set; }
+        public int? Status { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
         public DateTime? DatePosted { get; set; }
 
