@@ -60,8 +60,7 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest("Examid không khớp");
             }
 
-            await _repository.UpdateSpecializedExam(exam);
-            return Ok(exam);
+            return Ok(await _repository.UpdateSpecializedExam(exam));
         }
 
         [HttpDelete("DeleteSpecializedExam/{examId}")]
