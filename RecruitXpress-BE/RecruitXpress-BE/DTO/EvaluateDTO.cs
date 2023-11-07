@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RecruitXpress_BE.Models
+﻿namespace RecruitXpress_BE.DTO
 {
-    public partial class Evaluate
+    public class EvaluateDTO
     {
         public int EvaluateId { get; set; }
         public int ProfileId { get; set; }
@@ -17,6 +14,5 @@ namespace RecruitXpress_BE.Models
         public int? EvaluaterAccountId { get; set; }
         public int? Status { get; set; }
 
-        public virtual Profile Profile { get; set; } = null!;
     }
 }
