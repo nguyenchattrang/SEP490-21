@@ -22,6 +22,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
         public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
         public virtual DbSet<EmailToken> EmailTokens { get; set; } = null!;
+        public virtual DbSet<Evaluate> Evaluates { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<FamilyInformation> FamilyInformations { get; set; } = null!;
         public virtual DbSet<GeneralTest> GeneralTests { get; set; } = null!;
@@ -48,8 +49,8 @@ namespace RecruitXpress_BE.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                optionsBuilder.UseSqlServer(config.GetConnectionString("RecruitXpress"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("server =(local)\\SQLEXPRESS01; database = RecruitXpress;uid=sa;pwd=123456; TrustServerCertificate=True ");
             }
         }
 
@@ -175,6 +176,23 @@ namespace RecruitXpress_BE.Models
                     .WithMany(p => p.EmailTokens)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK__EmailToke__Accou__681373AD");
+            });
+
+            modelBuilder.Entity<Evaluate>(entity =>
+            {
+                entity.ToTable("Evaluate");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EvaluaterEmailContact).HasMaxLength(255);
+
+                entity.Property(e => e.EvaluaterPhoneContact).HasMaxLength(50);
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.Evaluates)
+                    .HasForeignKey(d => d.ProfileId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Evaluate__Profil__41B8C09B");
             });
 
             modelBuilder.Entity<Exam>(entity =>
