@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace RecruitXpress_BE.Models
 {
@@ -18,7 +17,6 @@ namespace RecruitXpress_BE.Models
         public int? Status { get; set; }
 
         public virtual Account? Account { get; set; }
-        
         public virtual ICollection<JobApplication> JobApplications { get; set; }
     }
 }
