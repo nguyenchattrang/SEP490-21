@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿/*using System.Text;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
@@ -94,7 +94,7 @@ public class GoogleService : IGoogleService
             throw new Exception($"Failed to authenticate: {responseContent}");
         }
     }
-
+*/
     // public async Task<string> AddToGoogleCalendar(GoogleCalendarRequestDTO googleCalendarReqDTO) {
     //     try {
     //         var token = new TokenResponse {
@@ -211,4 +211,3 @@ public class GoogleService : IGoogleService
     //         throw;
     //     }
     // }
-}

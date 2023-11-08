@@ -29,15 +29,21 @@ namespace RecruitXpress_BE.Controllers
         private readonly RecruitXpressContext _context;
         private readonly IEmailSender _emailSender;
         private readonly IGoogleService _googleService;
-
-        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration, IEmailSender emailSender, IGoogleService googleService)
-        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration,
-            IEmailSender emailSender, IGoogleService googleService)
+/*        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration,
+             IEmailSender emailSender, IGoogleService googleService)
         {
             _context = context;
             _configuration = configuration;
             _emailSender = emailSender;
             _googleService = googleService;
+        }*/
+
+        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration,
+      IEmailSender emailSender)
+        {
+            _context = context;
+            _configuration = configuration;
+            _emailSender = emailSender;
         }
 
         [HttpPost("SignUp")]
@@ -255,8 +261,7 @@ namespace RecruitXpress_BE.Controllers
             }
 
             var user = await _context.Accounts.Include(a => a.Role).SingleOrDefaultAsync(u => u.Account1 == model.Username);
-            var user = await _context.Accounts.Include(a => a.Role)
-                .SingleOrDefaultAsync(u => u.Account1 == model.Username);
+
 
             if (user != null)
             {
@@ -326,7 +331,7 @@ namespace RecruitXpress_BE.Controllers
                         return StatusCode(403, "Code của bạn đã hết hạn để đăng nhập");
                     }
                 }
-               
+
 
                 // Retrieve the secret key from appsettings.json
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
