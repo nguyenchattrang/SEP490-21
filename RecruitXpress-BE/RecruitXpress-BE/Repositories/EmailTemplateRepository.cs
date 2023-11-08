@@ -1,16 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
 namespace RecruitXpress_BE.Repositories
 {
-    public class EmailTemplateRepository
+    public class EmailTemplateRepository: IEmailTemplateRepository
     {
         private readonly RecruitXpressContext _context;
+        private readonly IEmailSender _sender;
 
-        public EmailTemplateRepository(RecruitXpressContext context)
+        public EmailTemplateRepository(RecruitXpressContext context, IEmailSender sender)
         {
             _context = context;
+            _sender = sender;
         }
 
         public async Task<List<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request)
@@ -30,6 +33,10 @@ namespace RecruitXpress_BE.Repositories
             if (request.CreatedBy.HasValue)
             {
                 query = query.Where(e => e.CreatedBy == request.CreatedBy);
+            }
+            if (request.Status.HasValue)
+            {
+                query = query.Where(e => e.MailType == request.MailType);
             }
 
             if (request.Status.HasValue)
@@ -57,17 +64,17 @@ namespace RecruitXpress_BE.Repositories
                             : query.OrderByDescending(j => j.Title);
                         break;
 
-             /*       case "questionId":
+                    case "header":
                         query = request.OrderByAscending
-                            ? query.OrderBy(j => j.QuestionId)
-                            : query.OrderByDescending(j => j.QuestionId);
+                            ? query.OrderBy(j => j.Header)
+                            : query.OrderByDescending(j => j.Header);
                         break;
 
                     default:
                         query = request.OrderByAscending
-                               ? query.OrderBy(j => j.QuestionId)
-                               : query.OrderByDescending(j => j.QuestionId);
-                        break;*/
+                               ? query.OrderBy(j => j.TemplateId)
+                               : query.OrderByDescending(j => j.TemplateId);
+                        break;
                 }
             }
 
@@ -86,6 +93,72 @@ namespace RecruitXpress_BE.Repositories
             return await _context.EmailTemplates.FirstOrDefaultAsync(e => e.TemplateId == templateId);
         }
 
+        //Email template
+        public async Task SendEmailRefuse(int mailtype, string email, string name)
+        {
+          var emailTemplate=  _context.EmailTemplates.Where(e => e.MailType == mailtype).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", name);
+                _sender.Send(email, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+        public async Task SendEmailInterview(int mailtype, string email, string name, string time, string location, string interviewer)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == mailtype).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
+                emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
+                emailTemplate.Body = emailTemplate.Body.Replace("@interviewer", interviewer);
+
+                _sender.Send(email, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+        public async Task SendEmailExamSchedule(int mailtype, string email, string name, string time, string location)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == mailtype).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
+                emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
+
+                _sender.Send(email, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+        public async Task SendEmailUpdateProfile(int mailtype, string email, string name)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == mailtype).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", name);
+
+                _sender.Send(email, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+        public async Task SendEmailAccepted(int mailtype, string email, string name)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == mailtype).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", name);
+
+                _sender.Send(email, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+        public async Task SendEmailCanceled(int mailtype, string email, string name)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == mailtype).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", name);
+
+                _sender.Send(email, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+        //
         public async Task CreateEmailTemplate(EmailTemplate emailTemplate)
         {
             _context.EmailTemplates.Add(emailTemplate);

@@ -16,6 +16,7 @@ namespace RecruitXpress_BE.Models
         {
         }
 
+        public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
         public virtual DbSet<Cvtemplate> Cvtemplates { get; set; } = null!;
@@ -47,7 +48,6 @@ namespace RecruitXpress_BE.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
             if (!optionsBuilder.IsConfigured)
             {
                 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -57,6 +57,15 @@ namespace RecruitXpress_BE.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AccessCode>(entity =>
+            {
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.Email).HasMaxLength(255);
+
+                entity.Property(e => e.ExpirationTimestamp).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("Account");

@@ -12,5 +12,6 @@ namespace RecruitXpress_BE.Models
         public string? SendTo { get; set; }
         public int? CreatedBy { get; set; }
         public int? Status { get; set; }
+        public int? MailType { get; set; }
     }
 }

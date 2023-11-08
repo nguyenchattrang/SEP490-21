@@ -29,7 +29,7 @@ namespace RecruitXpress_BE.Controllers
         private readonly RecruitXpressContext _context;
         private readonly IEmailSender _emailSender;
         private readonly IGoogleService _googleService;
-        
+
         public AuthenticationController(RecruitXpressContext context, IConfiguration configuration, IEmailSender emailSender, IGoogleService googleService)
         {
             _context = context;
@@ -114,7 +114,7 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500);
             }
         }
-        
+
         public async Task<IActionResult> SendEmailResetPassword(string to, string subject, string link)
         {
             try
@@ -257,7 +257,7 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            var user = await _context.Accounts.Include(a=> a.Role).SingleOrDefaultAsync(u => u.Account1 == model.Username);
+            var user = await _context.Accounts.Include(a => a.Role).SingleOrDefaultAsync(u => u.Account1 == model.Username);
 
             if (user != null)
             {
@@ -305,6 +305,57 @@ namespace RecruitXpress_BE.Controllers
             return Unauthorized();
         }
 
+        [HttpPost("GrantAccess")]
+        public async Task<IActionResult> GrantAccess(AccessModel model)
+        {
+            if (model is null)
+            {
+                return BadRequest("Invalid user request!!!");
+            }
+
+            var user = await _context.AccessCodes.SingleOrDefaultAsync(u => u.Email == model.email);
+
+            if (user != null)
+            {
+                if (!user.Code.Equals(model.code))
+                {
+                    return StatusCode(403, "Sai code đăng nhập");
+                    if (user.ExpirationTimestamp < DateTime.Now)
+                    {
+                        return StatusCode(403, "Code của bạn đã hết hạn để đăng nhập");
+                    }
+                }
+               
+
+                // Retrieve the secret key from appsettings.json
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+
+                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var tokeOptions = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Audience"],
+                    audience: _configuration["Jwt:Issuer"],
+                    claims: new List<Claim>()
+                    {
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                        new Claim("UserId", user.Email),
+                        new Claim(ClaimTypes.Role, "Expert"),
+                    },
+                    expires: DateTime.Now.AddHours(6),
+                    signingCredentials: signinCredentials
+                );
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+                return Ok(new
+                {
+                    Token = tokenString,
+                    Email = user.Email,
+                    RoleId = 5
+                });
+            }
+
+            return Unauthorized();
+        }
+
 
         private bool CheckPassword(Account? user, LoginModel? login)
         {
@@ -342,10 +393,11 @@ namespace RecruitXpress_BE.Controllers
             }
 
         }
-        
+
         [HttpGet]
         [Route("auth/google")]
-        public ActionResult<string> GoogleAuth(string redirectUrl) {
+        public ActionResult<string> GoogleAuth(string redirectUrl)
+        {
             return _googleService.GetAuthUrl(redirectUrl);
         }
     }

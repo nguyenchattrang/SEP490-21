@@ -184,6 +184,22 @@ namespace RecruitXpress_BE.Controllers
 
             return NoContent();
         }
+
+
+        [HttpGet("AssignExpert")]
+        public async Task<IActionResult> AssignExpert(string email)
+        {
+            try
+            {
+                await _examRepository.AssignExpertToSystem(email);
+            
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 
     public class ExamWithFileRequest

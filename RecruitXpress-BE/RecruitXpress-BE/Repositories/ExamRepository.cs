@@ -13,10 +13,12 @@ namespace RecruitXpress_BE.Repositories
     {
         private readonly RecruitXpressContext _context;
         private readonly IMapper _mapper;
-        public ExamRepository(RecruitXpressContext context, IMapper mapper)
+        private readonly IEmailSender _sender;
+        public ExamRepository(RecruitXpressContext context, IMapper mapper, IEmailSender sender)
         {
             _context = context;
             _mapper = mapper;
+            _sender = sender;
         }
 
         public async Task<List<ExamDTO>> GetAllExams(ExamRequest request)
@@ -267,6 +269,18 @@ namespace RecruitXpress_BE.Repositories
             }
         }
 
+        public async Task AssignExpertToSystem(string email)
+        {
+            var a = new AccessCode
+            {
+                Email = email,
+                Code = GenerateUniqueCode(),
+                ExpirationTimestamp = DateTime.Now.AddDays(1),
+            };
+            _context.AccessCodes.AddAsync(a);
+            await _context.SaveChangesAsync();
+            _sender.Send(email, "Grant access", "Mật khẩu của bạn là: " + a.Code);
+        }
         public async Task GradeExam(GradeExamRequest e)
         {
             var exam = _context.Exams.FirstOrDefault(ex => ex.ExamId == e.ExamId);
@@ -302,6 +316,31 @@ namespace RecruitXpress_BE.Repositories
             _context.Exams.Remove(exam);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private string GenerateUniqueCode()
+        {
+            int maxAttempts = 10; // Set a maximum number of attempts.
+            int attemptCount = 0;
+            string generatedCode;
+
+            do
+            {
+                // Generate a random code.
+                generatedCode = TokenHelper.GenerateRandomToken(10);
+                attemptCount++;
+
+                // Check if the generated code is unique.
+                var isCodeUnique = !_context.AccessCodes.Any(e => e.Code == generatedCode);
+
+                if (isCodeUnique)
+                {
+                    return generatedCode;
+                }
+            } while (attemptCount < maxAttempts);
+
+            // Handle the case where a unique code couldn't be generated.
+            throw new Exception("Failed to generate a unique code after multiple attempts.");
         }
     }
 }
