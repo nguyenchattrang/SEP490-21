@@ -30,7 +30,6 @@ namespace RecruitXpress_BE.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IGoogleService _googleService;
 
-        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration, IEmailSender emailSender, IGoogleService googleService)
         public AuthenticationController(RecruitXpressContext context, IConfiguration configuration,
             IEmailSender emailSender, IGoogleService googleService)
         {
@@ -254,7 +253,6 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            var user = await _context.Accounts.Include(a => a.Role).SingleOrDefaultAsync(u => u.Account1 == model.Username);
             var user = await _context.Accounts.Include(a => a.Role)
                 .SingleOrDefaultAsync(u => u.Account1 == model.Username);
 
@@ -408,7 +406,7 @@ namespace RecruitXpress_BE.Controllers
             string scope = HttpContext.Request.Query["scope"];
 
             //get token method
-            var token = await _googleService.GetTokenJson(code);
+            var token = await _googleService.GetTokens(code);
             return Ok(token);
         }
     }

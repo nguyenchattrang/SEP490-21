@@ -1,10 +1,5 @@
 ﻿using System.Text;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
-using Google.Apis.Calendar.v3;
-using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Services;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
@@ -39,40 +34,13 @@ public class GoogleService : IGoogleService
         }
     }
     
-    public async Task<GoogleTokenResponse> GetTokenJson(string code)
-    {
-        var redirectURL = "https://localhost:7113/auth/callback";
-        var tokenEndpoint = "https://oauth2.googleapis.com/token";
-        var content = new StringContent(
-            $"code={code}" +
-            $"&redirect_uri={Uri.EscapeDataString(redirectURL)}" +
-            $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
-            $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
-            $"&client_secret={Constant.GOOGLE_SERVICE.CLIENT_SERCRET}" +
-            $"&grant_type=authorization_code",
-            Encoding.UTF8, "application/x-www-form-urlencoded");
-
-        var response = await _httpClient.PostAsync(tokenEndpoint, content);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        if (response.IsSuccessStatusCode)
-        {
-            var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<GoogleTokenResponse>(responseContent);
-            return tokenResponse;
-        }
-        else
-        {
-            // Handle the error case when authentication fails
-            throw new Exception($"Failed to authenticate: {responseContent}");
-        }
-    }
-
-    public async Task<TokenResponse> GetTokens()
+    public async Task<GoogleTokenResponse> GetTokens(string code)
     {
         var redirectURL = "https://localhost:7113/auth/google-callback";
         var tokenEndpoint = "https://accounts.google.com/o/oauth2/token";
         var content = new StringContent(
-            // $"code={code}" +
-            $"redirect_uri={Uri.EscapeDataString(redirectURL)}" +
+            $"code={code}" +
+            $"&redirect_uri={Uri.EscapeDataString(redirectURL)}" +
             $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
             $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
             $"&client_secret={Constant.GOOGLE_SERVICE.CLIENT_SERCRET}" +
@@ -85,7 +53,7 @@ public class GoogleService : IGoogleService
         var responseContent = await response.Content.ReadAsStringAsync();
         if (response.IsSuccessStatusCode)
         {
-            var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenResponse>(responseContent);
+            var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<GoogleTokenResponse>(responseContent);
             return tokenResponse;
         }
         else
