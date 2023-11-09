@@ -12,9 +12,14 @@ namespace RecruitXpress_BE.Helper
         {
             public const string SCOPE_URL = "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?";
             public const string CLIENT_ID = "738514220360-t74atgpqn4p0ooho0c9trgnukd1b13n8.apps.googleusercontent.com";
-            public const string SCOPE = "https://www.googleapis.com/auth/userinfo.email";
+            public const string CLIENT_SERCRET = "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";
             public const string RESPONSE_TYPE = "code";
             public const string ACCESS_TYPE = "offline";
+            public static class SCOPE
+            {
+                // public const string EMAIL = "https://www.googleapis.com/auth/userinfo.email";
+                public const string EMAIL = "email";
+            }
         }
     }
     public static class ConstantQuestion

@@ -77,4 +77,15 @@ namespace RecruitXpress_BE.DTO
         public int? Status { get; set; }
 
     }
+    public class EmailTemplateRequest : ApiRequest<SpecializedExam>
+    {
+        public string? Title { get; set; }
+        public string? Header { get; set; }
+        public string? Body { get; set; }
+        public string? SendTo { get; set; }
+        public int? CreatedBy { get; set; }
+        public int? MailType { get; set; }
+        public int? Status { get; set; }
+
+    }
 }

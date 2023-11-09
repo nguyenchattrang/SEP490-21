@@ -11,6 +11,7 @@ namespace RecruitXpress_BE.IRepositories
         Task<Exam> CreateExamWithFile(ExamRequestClass exam, IFormFile fileData);
         Task UpdateExam(Exam exam);
         Task GradeExam(GradeExamRequest e);
+        Task AssignExpertToSystem(string email);
         Task<bool> DeleteExam(int examId);
     }
 }

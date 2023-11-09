@@ -136,11 +136,63 @@ namespace RecruitXpress_BE.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateSpecializedExam(SpecializedExam exam)
+
+        public async Task<SpecializedExam> UpdateSpecializedExam(SpecializedExam exam)
         {
-            _context.Entry(exam).State = EntityState.Modified;
+            var originalExam = await _context.SpecializedExams.FindAsync(exam.ExamId);
+
+            if (originalExam == null)
+            {
+                throw new Exception("Không tìm thấy exam");
+            }
+
+            if (exam.ExamName != null)
+            {
+                originalExam.ExamName = exam.ExamName;
+            }
+
+            if (exam.Description != null)
+            {
+                originalExam.Description = exam.Description;
+            }
+
+            if (exam.StartDate != null)
+            {
+                originalExam.StartDate = exam.StartDate;
+            }
+
+            if (exam.EndDate != null)
+            {
+                originalExam.EndDate = exam.EndDate;
+            }
+
+            if (exam.CreatedAt != null)
+            {
+                originalExam.CreatedAt = exam.CreatedAt;
+            }
+
+            if (exam.CreatedBy != null)
+            {
+                originalExam.CreatedBy = exam.CreatedBy;
+            }
+
+            if (exam.Status != null)
+            {
+                originalExam.Status = exam.Status;
+            }
+
+            if (exam.Code != null)
+            {
+                originalExam.Code = exam.Code;
+            }
+
+            // Save changes to the database
             await _context.SaveChangesAsync();
+
+            // Return the updated entity
+            return originalExam;
         }
+
 
         public async Task<bool> DeleteSpecializedExam(int examId)
         {
