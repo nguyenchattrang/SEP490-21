@@ -29,22 +29,17 @@ namespace RecruitXpress_BE.Controllers
         private readonly RecruitXpressContext _context;
         private readonly IEmailSender _emailSender;
         private readonly IGoogleService _googleService;
-/*        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration,
-             IEmailSender emailSender, IGoogleService googleService)
+
+        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration,
+            IEmailSender emailSender, IGoogleService googleService)
         {
             _context = context;
             _configuration = configuration;
             _emailSender = emailSender;
             _googleService = googleService;
-        }*/
-
-        public AuthenticationController(RecruitXpressContext context, IConfiguration configuration,
-      IEmailSender emailSender)
-        {
-            _context = context;
-            _configuration = configuration;
-            _emailSender = emailSender;
         }
+
+
 
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp(SignUpModel model)
@@ -413,7 +408,7 @@ namespace RecruitXpress_BE.Controllers
             string scope = HttpContext.Request.Query["scope"];
 
             //get token method
-            var token = await _googleService.GetTokenJson(code);
+            var token = await _googleService.GetTokens(code);
             return Ok(token);
         }
     }
