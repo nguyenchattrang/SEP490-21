@@ -51,7 +51,7 @@ namespace RecruitXpress_BE.Models
             if (!optionsBuilder.IsConfigured)
             {
                 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                optionsBuilder.UseSqlServer(config.GetConnectionString("RecruitXpress"));
+                optionsBuilder.UseSqlServer(config.GetConnectionString("DBConnection"));
             }
         }
 
@@ -326,21 +326,21 @@ namespace RecruitXpress_BE.Models
 
             modelBuilder.Entity<Interviewer>(entity =>
             {
-                entity.Property(e => e.InterviewerId).HasColumnName("InterviewerID");
+                entity.HasKey(e => new { e.InterviewerId, e.ScheduleId });
 
-                entity.Property(e => e.AccountId).HasColumnName("AccountID");
+                entity.ToTable("Interviewer");
 
-                entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
-
-                entity.HasOne(d => d.Account)
+                entity.HasOne(d => d.InterviewerNavigation)
                     .WithMany(p => p.Interviewers)
-                    .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__Interview__Accou__6754599E");
+                    .HasForeignKey(d => d.InterviewerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Interviewer_Profile");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Interviewers)
                     .HasForeignKey(d => d.ScheduleId)
-                    .HasConstraintName("FK__Interview__Sched__68487DD7");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Interviewer_Schedule");
             });
 
             modelBuilder.Entity<JobApplication>(entity =>
@@ -560,27 +560,31 @@ namespace RecruitXpress_BE.Models
 
             modelBuilder.Entity<ScheduleDetail>(entity =>
             {
-                entity.Property(e => e.ScheduleDetailId).HasColumnName("ScheduleDetailID");
+                entity.ToTable("ScheduleDetail");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
 
-                entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
-                entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Strengths).HasColumnType("text");
+                entity.Property(e => e.Note).HasMaxLength(250);
 
-                entity.Property(e => e.Weaknesses).HasColumnType("text");
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Profile)
+                entity.Property(e => e.UpdatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Candidate)
                     .WithMany(p => p.ScheduleDetails)
-                    .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__ScheduleD__Profi__06CD04F7");
+                    .HasForeignKey(d => d.CandidateId)
+                    .HasConstraintName("FK_ScheduleDetail_Profile");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.ScheduleDetails)
                     .HasForeignKey(d => d.ScheduleId)
-                    .HasConstraintName("FK__ScheduleD__Sched__05D8E0BE");
+                    .HasConstraintName("FK_ScheduleDetail_Schedule");
             });
 
             modelBuilder.Entity<SpecializedExam>(entity =>
