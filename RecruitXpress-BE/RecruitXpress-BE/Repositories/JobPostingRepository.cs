@@ -48,9 +48,24 @@ public class JobPostingRepository : IJobPostingRepository
             .ToList();
     }
 
-    public async Task<List<JobPosting>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
+    public async Task<List<JobPostingDTO>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
         int page, int size)
-        => await GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId, page, size).ToListAsync();
+        => await GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId, page, size)
+            .Select(jobPosting => new JobPostingDTO()
+            {
+                JobId = jobPosting.JobId,
+                Title = jobPosting.Title,
+                Company = jobPosting.Company,
+                Location = jobPosting.Location,
+                EmploymentType = jobPosting.EmploymentType,
+                Industry = jobPosting.Industry,
+                ApplicationDeadline = jobPosting.ApplicationDeadline,
+                Requirements = jobPosting.Requirements,
+                DatePosted = jobPosting.DatePosted,
+                Status = jobPosting.Status,
+                IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
+            })
+            .ToListAsync();
 
     public async Task<JobPosting?> GetJobPosting(int id)
         => await _context.JobPostings.FindAsync(id);
