@@ -16,6 +16,7 @@ namespace RecruitXpress_BE.Models
             JobApplications = new HashSet<JobApplication>();
             LanguageProficiencies = new HashSet<LanguageProficiency>();
             ScheduleDetails = new HashSet<ScheduleDetail>();
+            Schedules = new HashSet<Schedule>();
             WorkExperiences = new HashSet<WorkExperience>();
             training = new HashSet<training>();
         }
@@ -48,6 +49,7 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<LanguageProficiency> LanguageProficiencies { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; }
         public virtual ICollection<WorkExperience> WorkExperiences { get; set; }
         public virtual ICollection<training> training { get; set; }
     }
