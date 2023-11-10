@@ -51,7 +51,7 @@ namespace RecruitXpress_BE.Models
             if (!optionsBuilder.IsConfigured)
             {
                 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                optionsBuilder.UseSqlServer(config.GetConnectionString("DBConnection"));
+                optionsBuilder.UseSqlServer(config.GetConnectionString("RecruitXpress"));
             }
         }
 
