@@ -1,7 +1,7 @@
-﻿/*using System.Text;
+﻿using System.Text;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
-﻿using System.Text;
+using System.Text;
 using Google.Apis.Auth.OAuth2.Responses;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
@@ -36,7 +36,7 @@ public class GoogleService : IGoogleService
             return ex.ToString();
         }
     }
-    
+
     public async Task<GoogleTokenResponse> GetTokens(string code)
     {
         var redirectURL = "https://localhost:7113/auth/google-callback";
@@ -65,7 +65,8 @@ public class GoogleService : IGoogleService
             throw new Exception($"Failed to authenticate: {responseContent}");
         }
     }
-*/
+}
+
     // public async Task<string> AddToGoogleCalendar(GoogleCalendarRequestDTO googleCalendarReqDTO) {
     //     try {
     //         var token = new TokenResponse {
