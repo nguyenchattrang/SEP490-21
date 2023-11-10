@@ -5,7 +5,7 @@ using RecruitXpress_BE.Models;
 
 namespace RecruitXpress_BE.Repositories;
 
-public class ScheduleRepository : IScheduleRepository
+public class ScheduleRepository 
 {
     private readonly RecruitXpressContext _context;
 
@@ -15,7 +15,7 @@ public class ScheduleRepository : IScheduleRepository
     }
 
 
-    public async Task<List<Schedule>> GetListSchedules()
+/*    public async Task<List<Schedule>> GetListSchedules()
     {
         return await _context.Schedules
             .Include(s => s.Interviewers)
@@ -24,7 +24,7 @@ public class ScheduleRepository : IScheduleRepository
             .ThenInclude(sd => sd.Profile)
             .ToListAsync();
     }
-
+*/
     public Task<List<Schedule>> GetListSchedules(string? searchString, string? orderBy, bool? isSortAscending, int? accountId, int? page,
         int? size)
     {

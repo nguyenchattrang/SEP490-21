@@ -11,7 +11,6 @@ namespace RecruitXpress_BE.Models
             EmailTokens = new HashSet<EmailToken>();
             Exams = new HashSet<Exam>();
             GeneralTests = new HashSet<GeneralTest>();
-            Interviewers = new HashSet<Interviewer>();
             NotificationReceivers = new HashSet<Notification>();
             NotificationSenders = new HashSet<Notification>();
             Profiles = new HashSet<Profile>();
@@ -33,7 +32,6 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<EmailToken> EmailTokens { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }
         public virtual ICollection<GeneralTest> GeneralTests { get; set; }
-        public virtual ICollection<Interviewer> Interviewers { get; set; }
         public virtual ICollection<Notification> NotificationReceivers { get; set; }
         public virtual ICollection<Notification> NotificationSenders { get; set; }
         public virtual ICollection<Profile> Profiles { get; set; }
