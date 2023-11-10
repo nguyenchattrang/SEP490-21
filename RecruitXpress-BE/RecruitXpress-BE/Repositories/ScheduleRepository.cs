@@ -41,7 +41,7 @@ public class ScheduleRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Schedule> AddSchedule(Schedule schedule)
+/*    public async Task<Schedule> AddSchedule(Schedule schedule)
     {
         try
         {
@@ -68,7 +68,7 @@ public class ScheduleRepository
             throw;
         }
     }
-
+*/
     public Task<Schedule> UpdateSchedules(int id, Schedule Schedule)
     {
         throw new NotImplementedException();

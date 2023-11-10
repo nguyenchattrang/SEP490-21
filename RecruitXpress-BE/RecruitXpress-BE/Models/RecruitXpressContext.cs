@@ -548,14 +548,18 @@ namespace RecruitXpress_BE.Models
             {
                 entity.ToTable("Schedule");
 
-                entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
 
-                entity.Property(e => e.Date).HasColumnType("date");
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
-                entity.Property(e => e.Hr)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("HR");
+                entity.Property(e => e.UpdatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.HumanResource)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.HumanResourceId)
+                    .HasConstraintName("FK_Schedule_Profile");
             });
 
             modelBuilder.Entity<ScheduleDetail>(entity =>
