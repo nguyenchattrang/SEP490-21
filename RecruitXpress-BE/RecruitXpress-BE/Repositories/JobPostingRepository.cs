@@ -2,6 +2,7 @@
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
+using Constant = RecruitXpress_BE.Helper.Constant;
 
 namespace RecruitXpress_BE.Repositories;
 
@@ -116,7 +117,7 @@ public class JobPostingRepository : IJobPostingRepository
 
     public IQueryable<JobPosting> GetAdvancedSearchJobPostingQuery(JobPostingSearchDTO searchDto, int? accountId, int page, int size)
     {
-        var query = _context.JobPostings.AsQueryable();
+        var query = _context.JobPostings.Where(j => j.Status == Constant.ENTITY_STATUS.ACTIVE).AsQueryable();
 
         if (accountId != null)
         {
