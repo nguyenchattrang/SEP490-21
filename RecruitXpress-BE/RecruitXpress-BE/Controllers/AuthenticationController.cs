@@ -39,6 +39,8 @@ namespace RecruitXpress_BE.Controllers
             _googleService = googleService;
         }
 
+
+
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp(SignUpModel model)
         {
@@ -253,8 +255,8 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            var user = await _context.Accounts.Include(a => a.Role)
-                .SingleOrDefaultAsync(u => u.Account1 == model.Username);
+            var user = await _context.Accounts.Include(a => a.Role).SingleOrDefaultAsync(u => u.Account1 == model.Username);
+
 
             if (user != null)
             {
@@ -324,7 +326,7 @@ namespace RecruitXpress_BE.Controllers
                         return StatusCode(403, "Code của bạn đã hết hạn để đăng nhập");
                     }
                 }
-               
+
 
                 // Retrieve the secret key from appsettings.json
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

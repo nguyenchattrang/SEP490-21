@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<ISpecializedExamRepository, SpecializedExamRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IExamRepository, ExamRepository>();
 builder.Services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 builder.Services.AddScoped<IGoogleService, GoogleService>();

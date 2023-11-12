@@ -6,10 +6,10 @@ namespace RecruitXpress_BE.IRepositories;
 public interface IScheduleRepository
 {
     Task<List<Schedule>> GetListSchedules();
-    Task<List<Schedule>> GetListSchedules(string? searchString, string? orderBy, bool? isSortAscending, int? accountId, int? page, int? size);
+    Task<List<ScheduleDTO>> GetListSchedules(int profileId);
     Task<List<Schedule>> GetListScheduleAdvancedSearch(Schedule schedule, int? accountId, int page, int size);
     Task<Schedule?> GetSchedule(int id);
-    Task<Schedule> AddSchedule(Schedule Schedule);
-    Task<Schedule> UpdateSchedules(int id, Schedule Schedule);
+    Task<ScheduleDTO> AddSchedule(ScheduleDTO Schedule);
+    Task<ScheduleDTO> UpdateSchedules(int id, ScheduleDTO scheduleDTO);
     Task<bool> DeleteSchedule(int jobId);
 }

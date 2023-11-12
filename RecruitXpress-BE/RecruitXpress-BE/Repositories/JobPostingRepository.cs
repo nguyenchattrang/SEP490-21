@@ -2,6 +2,7 @@
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
+using Constant = RecruitXpress_BE.Helper.Constant;
 
 namespace RecruitXpress_BE.Repositories;
 
@@ -48,9 +49,24 @@ public class JobPostingRepository : IJobPostingRepository
             .ToList();
     }
 
-    public async Task<List<JobPosting>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
+    public async Task<List<JobPostingDTO>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
         int page, int size)
-        => await GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId, page, size).ToListAsync();
+        => await GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId, page, size)
+            .Select(jobPosting => new JobPostingDTO()
+            {
+                JobId = jobPosting.JobId,
+                Title = jobPosting.Title,
+                Company = jobPosting.Company,
+                Location = jobPosting.Location,
+                EmploymentType = jobPosting.EmploymentType,
+                Industry = jobPosting.Industry,
+                ApplicationDeadline = jobPosting.ApplicationDeadline,
+                Requirements = jobPosting.Requirements,
+                DatePosted = jobPosting.DatePosted,
+                Status = jobPosting.Status,
+                IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
+            })
+            .ToListAsync();
 
     public async Task<JobPosting?> GetJobPosting(int id)
         => await _context.JobPostings.FindAsync(id);
@@ -101,7 +117,7 @@ public class JobPostingRepository : IJobPostingRepository
 
     public IQueryable<JobPosting> GetAdvancedSearchJobPostingQuery(JobPostingSearchDTO searchDto, int? accountId, int page, int size)
     {
-        var query = _context.JobPostings.AsQueryable();
+        var query = _context.JobPostings.Where(j => j.Status == Constant.ENTITY_STATUS.ACTIVE).AsQueryable();
 
         if (accountId != null)
         {

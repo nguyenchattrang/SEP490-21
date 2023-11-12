@@ -21,6 +21,13 @@ namespace RecruitXpress_BE.Helper
                 public const string EMAIL = "email";
             }
         }
+        
+        public static class ENTITY_STATUS
+        {
+            public const int ACTIVE = 1;
+            public const int INACTIVE = 0;
+            
+        }
     }
     public static class ConstantQuestion
     {
