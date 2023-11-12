@@ -7,6 +7,7 @@ namespace RecruitXpress_BE.Models
     {
         public Account()
         {
+            CandidateCvs = new HashSet<CandidateCv>();
             Cvtemplates = new HashSet<Cvtemplate>();
             EmailTokens = new HashSet<EmailToken>();
             Exams = new HashSet<Exam>();
@@ -28,6 +29,7 @@ namespace RecruitXpress_BE.Models
         public int? Status { get; set; }
 
         public virtual Role? Role { get; set; }
+        public virtual ICollection<CandidateCv> CandidateCvs { get; set; }
         public virtual ICollection<Cvtemplate> Cvtemplates { get; set; }
         public virtual ICollection<EmailToken> EmailTokens { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }

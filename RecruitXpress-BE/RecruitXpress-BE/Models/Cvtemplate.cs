@@ -5,18 +5,14 @@ namespace RecruitXpress_BE.Models
 {
     public partial class Cvtemplate
     {
-        public Cvtemplate()
-        {
-            JobApplications = new HashSet<JobApplication>();
-        }
-
-        public int TemplateId { get; set; }
-        public int? AccountId { get; set; }
-        public string? Url { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public int CvtemplateId { get; set; }
+        public string? Title { get; set; }
+        public string? Thumbnail { get; set; }
+        public string? Content { get; set; }
+        public DateTime? CreateAt { get; set; }
+        public int? CreatedBy { get; set; }
         public int? Status { get; set; }
 
-        public virtual Account? Account { get; set; }
-        public virtual ICollection<JobApplication> JobApplications { get; set; }
+        public virtual Account? CreatedByNavigation { get; set; }
     }
 }
