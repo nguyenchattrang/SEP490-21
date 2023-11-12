@@ -144,6 +144,12 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var user = await _context.Accounts.SingleOrDefaultAsync(u => u.Account1 == email);
+
+                if (user == null)
+                {
+                    return NotFound("Tài khoản không tồn tại.");
+                }
+
                 if (user.Status == 0)
                 {
                     return StatusCode(403, "Địa chỉ email của bạn chưa được xác thực");
@@ -154,32 +160,25 @@ namespace RecruitXpress_BE.Controllers
                     return StatusCode(403, "Tài khoản của bạn đã bị khóa!");
                 }
 
-                if (user != null)
+                var token = TokenHelper.GenerateRandomToken(64);
+                string url = _configuration["Website:ClientUrl"] + "/set-password?token=" + token;
+                string subject = "Quên mật khẩu";
+                var emailtoken = new EmailToken
                 {
-                    var token = TokenHelper.GenerateRandomToken(64);
-                    string url = _configuration["Website:ClientUrl"] + "/set-password?token=" + token;
-                    string subject = "Quên mật khẩu";
-                    var emailtoken = new EmailToken
-                    {
-                        Token = token,
-                        IssuedAt = DateTime.UtcNow,
-                        ExpiredAt = DateTime.UtcNow.AddDays(1),
-                        IsRevoked = false,
-                        IsUsed = false,
-                        AccountId = user.AccountId,
-                    };
+                    Token = token,
+                    IssuedAt = DateTime.UtcNow,
+                    ExpiredAt = DateTime.UtcNow.AddDays(1),
+                    IsRevoked = false,
+                    IsUsed = false,
+                    AccountId = user.AccountId,
+                };
 
-                    _context.Add(emailtoken);
-                    await _context.SaveChangesAsync();
+                _context.Add(emailtoken);
+                await _context.SaveChangesAsync();
 
-                    SendEmailConfirm(user.Account1, subject, url);
+                SendEmailConfirm(user.Account1, subject, url);
 
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest("Tài khoản không tồn tại.");
-                }
+                return Ok();
             }
             catch
             {
