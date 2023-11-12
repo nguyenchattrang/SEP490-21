@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
@@ -17,10 +18,12 @@ namespace RecruitXpress_BE.Controllers
     {
         
         private readonly RecruitXpressContext _context;
-       
-        public EvaluateController(RecruitXpressContext context)
+        public IMapper _mapper;
+
+        public EvaluateController(RecruitXpressContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         //GET: api/ProfileManagement/{id}
@@ -76,7 +79,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("evaluaterAccountId khong co");
                 }
-                var evaluate = await _context.Evaluates.Where(x => x.EvaluaterAccountId == evaluaterAccountId).ToListAsync();
+                var evaluate = await _context.Evaluates.Include(x=>x.Profile).Where(x => x.EvaluaterAccountId == evaluaterAccountId).ToListAsync();
                 if (evaluate == null)
                 {
                     return NotFound("Không kết quả");
@@ -91,7 +94,7 @@ namespace RecruitXpress_BE.Controllers
         }
         //POST: api/ProfileManagement
         [HttpPost]
-        public async Task<IActionResult> AddEvaluate(Evaluate evaluate, int EvaluaterAccountId, string? emailContact, string? phonelContact)
+        public async Task<IActionResult> AddEvaluate(EvaluateDTO evaluate, int EvaluaterAccountId, string? emailContact, string? phonelContact)
         {
             try
             {
@@ -109,7 +112,8 @@ namespace RecruitXpress_BE.Controllers
                         data.EvaluaterPhoneContact = phonelContact;
                     }
                     data.Status = 1;
-                    _context.Evaluates.Add(data);
+                    var create = _mapper.Map<Evaluate>(data);
+                    _context.Evaluates.Add(create);
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }

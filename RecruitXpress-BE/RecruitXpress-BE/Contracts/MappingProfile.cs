@@ -25,6 +25,7 @@ namespace RecruitXpress_BE.Contracts
             .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation));
             CreateMap<JobPosting, JobDTO>();
             CreateMap<Evaluate, EvaluateDTO>();
+            CreateMap<EvaluateDTO, Evaluate>();
             CreateMap<Cvtemplate, CvtemplateDTO>().ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
                 .ForMember(dest => dest.TemplateId, opt => opt.MapFrom(src => src.TemplateId));
             CreateMap<Models.Profile, ProfileDTO>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
