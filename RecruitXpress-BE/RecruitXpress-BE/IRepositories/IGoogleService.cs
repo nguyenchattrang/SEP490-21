@@ -6,5 +6,4 @@ public interface IGoogleService
 {
     string GetAuthUrl(string redirectUrl);
     Task<GoogleTokenResponse> GetTokens(string code);
-    // Task<string> AddToGoogleCalendar(GoogleCalendarRequestDTO googleCalendarReqDTO);
 }

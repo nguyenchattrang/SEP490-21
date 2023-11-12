@@ -22,22 +22,29 @@ public class ScheduleController : ControllerBase
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetListSchedules() => await _scheduleRepository.GetListSchedules();
 
-        // //GET: api/Schedule/{id}
-        // [HttpGet("id")]
-        // public async Task<ActionResult<Schedule>> GetSchedule(int id)
-        // {
-        //     var schedule = await _scheduleRepository.GetSchedule(id);
-        //     if (schedule == null)
-        //     {
-        //         return NotFound("Job posting not found!");
-        //     }
-        //
-        //     return schedule;
-        // }
+        //GET: api/Schedule/{profileId}
+        [HttpGet("profileId")]
+        public async Task<ActionResult<IEnumerable<ScheduleDTO>>> GetSchedule(int profileId)
+        {
+            try
+            {
+                var schedule = await _scheduleRepository.GetListSchedules(profileId);
+                if (schedule == null)
+                {
+                    return NotFound("Schedule not found!");
+                }
+        
+                return schedule;
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, "Server error!");
+            }
+        }
 
         //POST: api/Schedule
         [HttpPost]
-        public async Task<ActionResult<Schedule>> AddSchedule(Schedule? schedule)
+        public async Task<ActionResult<ScheduleDTO>> AddSchedule(ScheduleDTO schedule)
         {
             try
             {
@@ -46,7 +53,6 @@ public class ScheduleController : ControllerBase
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 return BadRequest("Add Schedule failed!");
             }
         }
