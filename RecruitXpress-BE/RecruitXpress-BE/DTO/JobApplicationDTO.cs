@@ -14,12 +14,12 @@ namespace RecruitXpress_BE.DTO
 
         public virtual JobDTO? Job { get; set; }
 
-        public virtual ProfileDTO? Profile { get; set; }
+        public virtual LoggingDTO? Profile { get; set; }
 
         public virtual CvtemplateDTO? Template { get; set; }
 
     }
-    public partial class ProfileDTO
+    public partial class LoggingDTO
     {
         public int? AccountId { get; set; }
         public string? Name { get; set; }
