@@ -22,13 +22,13 @@ public class ScheduleController : ControllerBase
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetListSchedules() => await _scheduleRepository.GetListSchedules();
 
-        //GET: api/Schedule/{profileId}
-        [HttpGet("profileId")]
-        public async Task<ActionResult<IEnumerable<ScheduleDTO>>> GetSchedule(int profileId)
+        //GET: api/Schedule/{accountId}
+        [HttpGet("accountId")]
+        public async Task<ActionResult<ScheduleResponse>> GetSchedule(int accountId, DateTime? startDate, DateTime? endDate)
         {
             try
             {
-                var schedule = await _scheduleRepository.GetListSchedules(profileId);
+                var schedule = await _scheduleRepository.GetListSchedules(accountId, startDate, endDate);
                 if (schedule == null)
                 {
                     return NotFound("Schedule not found!");

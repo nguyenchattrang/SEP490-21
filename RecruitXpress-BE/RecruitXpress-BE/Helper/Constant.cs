@@ -28,6 +28,15 @@ namespace RecruitXpress_BE.Helper
             public const int INACTIVE = 0;
             
         }
+        
+        public static class ROLE
+        {
+            public const int ADMIN = 1;
+            public const int CANDIDATE = 2;
+            public const int HUMAN_RESOURCE = 3;
+            public const int INTERVIEWER = 4;
+            public const int EXPERT = 5;
+        }
     }
     public static class ConstantQuestion
     {
