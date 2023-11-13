@@ -57,21 +57,21 @@ public class ScheduleController : ControllerBase
             }
         }
 
-        // //PUT: api/Schedule/{id}
-        // [HttpPut("id")]
-        // public async Task<IActionResult> UpdateSchedule(int id, Schedule Schedule)
-        // {
-        //     try
-        //     {
-        //         var result = await _scheduleRepository.UpdateSchedules(id, Schedule);
-        //         return CreatedAtAction(nameof(UpdateSchedule), new { id = result.JobId }, result);
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Console.WriteLine(e);
-        //         return BadRequest("Update Job Posting failed!");
-        //     }
-        // }
+        //PUT: api/Schedule/{id}
+        [HttpPut("id")]
+        public async Task<IActionResult> UpdateSchedule(int id, ScheduleDTO Schedule)
+        {
+            try
+            {
+                var result = await _scheduleRepository.UpdateSchedules(id, Schedule);
+                return CreatedAtAction(nameof(UpdateSchedule), new { id = result.ScheduleId }, result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest("Update Job Posting failed!");
+            }
+        }
         //
         // //DELETE: api/Schedule/{id}
         // [HttpDelete("{id}")]
