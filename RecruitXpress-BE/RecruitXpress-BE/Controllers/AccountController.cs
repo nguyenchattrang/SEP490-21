@@ -95,7 +95,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("getAccountByStatus")]
-        private async Task<IActionResult> getMyCV(int status)
+        public async Task<IActionResult> getMyCV(int status)
         {
             if (status == null) return BadRequest("Status dau ?");
 
