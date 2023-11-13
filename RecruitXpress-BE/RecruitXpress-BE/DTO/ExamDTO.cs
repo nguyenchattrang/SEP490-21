@@ -12,6 +12,7 @@
         public string? MarkedBy { get; set; }
         public DateTime? MarkedDate { get; set; }
         public int? Status { get; set; }
+        public int? SpecializedExamId { get; set; }
 
         public virtual AccountDTO? Account { get; set; }
     }
