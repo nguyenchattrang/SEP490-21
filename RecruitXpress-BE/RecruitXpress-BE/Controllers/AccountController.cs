@@ -94,12 +94,12 @@ namespace RecruitXpress_BE.Controllers
                 return NotFound("Không kết quả");
             }
         }
-        [HttpGet("getAccountByStatus")]
-        private async Task<IActionResult> getMyCV(int status)
+        [HttpGet("getAccountByRole")]
+        public async Task<IActionResult> getMyCV(int status)
         {
             if (status == null) return BadRequest("Status dau ?");
 
-            var listAccount = await _context.Accounts.Include(x=>x.Profiles).Where(x => x.Status == status).ToListAsync();
+            var listAccount = await _context.Accounts.Include(x=>x.Profiles).Where(x => x.RoleId == status).ToListAsync();
 
             if (listAccount == null)
             {
