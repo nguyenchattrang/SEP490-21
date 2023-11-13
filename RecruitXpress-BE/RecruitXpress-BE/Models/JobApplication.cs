@@ -15,6 +15,6 @@ namespace RecruitXpress_BE.Models
 
         public virtual JobPosting? Job { get; set; }
         public virtual Profile? Profile { get; set; }
-        public virtual Cvtemplate? Template { get; set; }
+        public virtual CandidateCv? Template { get; set; }
     }
 }
