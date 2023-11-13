@@ -18,6 +18,7 @@ namespace RecruitXpress_BE.Models
 
         public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<CandidateCv> CandidateCvs { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
         public virtual DbSet<Cvtemplate> Cvtemplates { get; set; } = null!;
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
@@ -95,6 +96,30 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__Account__RoleID__38996AB5");
             });
 
+            modelBuilder.Entity<CandidateCv>(entity =>
+            {
+                entity.HasKey(e => e.TemplateId)
+                    .HasName("PK__CVTempla__F87ADD070A716C45");
+
+                entity.ToTable("CandidateCV");
+
+                entity.Property(e => e.TemplateId).HasColumnName("TemplateID");
+
+                entity.Property(e => e.AccountId).HasColumnName("AccountID");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Url)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("URL");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.CandidateCvs)
+                    .HasForeignKey(d => d.AccountId)
+                    .HasConstraintName("FK__CVTemplat__Accou__4AB81AF0");
+            });
+
             modelBuilder.Entity<ComputerProficiency>(entity =>
             {
                 entity.ToTable("ComputerProficiency");
@@ -113,26 +138,18 @@ namespace RecruitXpress_BE.Models
 
             modelBuilder.Entity<Cvtemplate>(entity =>
             {
-                entity.HasKey(e => e.TemplateId)
-                    .HasName("PK__CVTempla__F87ADD070A716C45");
-
                 entity.ToTable("CVTemplate");
 
-                entity.Property(e => e.TemplateId).HasColumnName("TemplateID");
+                entity.Property(e => e.CvtemplateId).HasColumnName("CVTemplateID");
 
-                entity.Property(e => e.AccountId).HasColumnName("AccountID");
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.Thumbnail).HasMaxLength(255);
 
-                entity.Property(e => e.Url)
-                    .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("URL");
-
-                entity.HasOne(d => d.Account)
+                entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.Cvtemplates)
-                    .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__CVTemplat__Accou__4AB81AF0");
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_CVTemplate_Account");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>

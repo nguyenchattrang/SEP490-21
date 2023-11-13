@@ -33,7 +33,7 @@ namespace RecruitXpress_BE.Controllers
             {
                 if (accountId == null) return BadRequest("Account is not null");
                 var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == accountId);
-                var CV = _context.Cvtemplates.FirstOrDefault(x => x.AccountId == accountId);
+                var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
                 if (profile == null)
                 {
                     return BadRequest("Hãy cập nhật thông tin cá nhân đầy đủ trước khi nộp hồ sơ");
@@ -448,7 +448,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Account khong co profile ");
                 }
-                var check = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == account.Id);
+                var check = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == account.Id);
                 if (check == null)
                 {
                     if (check.TemplateId == detailJob.TemplateId)
