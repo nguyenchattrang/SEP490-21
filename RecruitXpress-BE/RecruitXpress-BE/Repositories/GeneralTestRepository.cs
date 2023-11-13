@@ -200,7 +200,7 @@ namespace RecruitXpress_BE.Repositories
                     calculatedQuestionIds.Add((int)detail.QuestionId);
                 }
             }
-            var score = (float)userScore / generalTest.GeneralTestDetails.Select(q => q.QuestionId).Distinct().Count();
+            var score = (float)userScore / (ConstantQuestion.easy+ConstantQuestion.medium+ConstantQuestion.hard);
             var roundedScore = (int)Math.Ceiling(score * 10);
             return roundedScore;
         }
