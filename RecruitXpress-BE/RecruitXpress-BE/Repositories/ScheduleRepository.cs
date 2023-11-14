@@ -28,7 +28,7 @@ public class ScheduleRepository : IScheduleRepository
         {
             startDate ??= DateTime.Parse("1/1/1753");
             endDate ??= DateTime.Parse("31/12/9999");
-            var role = _context.Accounts.Include(a => a.Role).Where(a => a.AccountId == accountId).SingleOrDefault().Role.RoleId;
+            var role = _context.Accounts.Include(a => a.Role).SingleOrDefault(a => a.AccountId == accountId).Role.RoleId;
             var query = _context.Schedules
                 .Include(s => s.HumanResource)
                 .Include(s => s.ScheduleDetails)
@@ -41,6 +41,7 @@ public class ScheduleRepository : IScheduleRepository
                     HumanResource = new Profile()
                     {
                         ProfileId = s.HumanResource.ProfileId,
+                        AccountId = s.HumanResource.AccountId,
                         Name = s.HumanResource.Name
                     },
                     Interviewers = s.Interviewers.Select(i => new Interviewer
@@ -48,6 +49,7 @@ public class ScheduleRepository : IScheduleRepository
                         InterviewerNavigation = new Profile()
                         {
                             ProfileId = i.InterviewerNavigation.ProfileId,
+                            AccountId = i.InterviewerNavigation.AccountId,
                             Name = i.InterviewerNavigation.Name
                         }
                     }).ToList(),
@@ -222,7 +224,7 @@ public class ScheduleRepository : IScheduleRepository
     {
         try
         {
-            var schedule = await _context.Schedules.FindAsync(scheduleDTO.ScheduleId);
+            var schedule = await _context.Schedules.FindAsync(id);
 
             if (schedule == null)
             {
@@ -235,16 +237,10 @@ public class ScheduleRepository : IScheduleRepository
                 throw new Exception("Human Resource is not exist!");
             }
 
-            schedule = new Schedule()
-            {
-                ScheduleId = schedule.ScheduleId,
-                HumanResourceId = hrProfile.ProfileId,
-                Status = scheduleDTO.Status,
-                CreatedTime = schedule.CreatedTime,
-                UpdatedTime = DateTime.Now,
-                CreatedBy = schedule.CreatedBy,
-                UpdatedBy = scheduleDTO.UpdatedBy
-            };
+            schedule.HumanResourceId = hrProfile.ProfileId;
+            schedule.Status = scheduleDTO.Status;
+            schedule.UpdatedTime = DateTime.Now;
+            schedule.UpdatedBy = scheduleDTO.UpdatedBy;
 
             _context.Entry(schedule).State = EntityState.Modified;
 
