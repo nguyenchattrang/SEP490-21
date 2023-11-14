@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
@@ -14,11 +15,13 @@ namespace RecruitXpress_BE.Repositories
         private readonly RecruitXpressContext _context;
         private readonly IMapper _mapper;
         private readonly IEmailSender _sender;
-        public ExamRepository(RecruitXpressContext context, IMapper mapper, IEmailSender sender)
+        private readonly IConfiguration _configuration;
+        public ExamRepository(RecruitXpressContext context, IMapper mapper, IEmailSender sender, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _sender = sender;
+            _configuration = configuration;
         }
 
         public async Task<List<ExamDTO>> GetAllExams(ExamRequest request)
@@ -376,9 +379,18 @@ namespace RecruitXpress_BE.Repositories
                 ExpirationTimestamp = DateTime.Now.AddDays(Constant.ExpireExamDays),
             };
             _context.AccessCodes.AddAsync(a);
+            var sExam=   _context.SpecializedExams.Where(s=> s.Code == examCode).FirstOrDefault();
+             if(  sExam.ExpertEmail==null)
+            { sExam.ExpertEmail = email; }
+             else
+            {
+                sExam.ExpertEmail = sExam.ExpertEmail + "; "+ email ;
+            }    
             await _context.SaveChangesAsync();
+            string url = _configuration["Website:ClientUrl"] + "/LoginExpert/";
+            string urlExam = _configuration["Website:ClientUrl"] + "/Exam/"+examCode;
             _sender.Send(email, "Grant access", "Bạn được cấp quyền chấm bài cho bài thi có Examcode là: "+examCode +
-                ".\nMật khẩu của bạn là: " + a.Code);
+                ".\nMật khẩu của bạn là: " + a.Code + ".\n Địa chỉ truy cập đăng nhập: "+url + ".\n Địa chỉ chấm bài: "+urlExam);
         }
         public async Task GradeExam(GradeExamRequest e)
         {

@@ -23,6 +23,8 @@ using RecruitXpress_BE.Repositories;
 
 namespace RecruitXpress_BE.Controllers
 {
+    [Route("api/Authentication/")]
+
     public class AuthenticationController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -118,7 +120,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
 
-        public async Task<IActionResult> SendEmailResetPassword(string to, string subject, string link)
+        private async Task<IActionResult> SendEmailResetPassword(string to, string subject, string link)
         {
             try
             {
@@ -305,7 +307,7 @@ namespace RecruitXpress_BE.Controllers
             return Unauthorized();
         }
 
-        [HttpPost("GrantAccess")]
+        [HttpPost("LoginExpert")]
         public async Task<IActionResult> GrantAccess(AccessModel model)
         {
             if (model is null)
@@ -313,102 +315,102 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            var user = await _context.AccessCodes.SingleOrDefaultAsync(u => u.Email == model.email);
+            var user = await _context.AccessCodes.SingleOrDefaultAsync(u => u.Email == model.email && u.Code.Equals(model.code));
 
-            if (user != null)
+            if (user == null)
             {
-                if (!user.Code.Equals(model.code))
+                return StatusCode(403, "Sai code đăng nhập");
+
+            }
+            else if (user.ExpirationTimestamp < DateTime.Now)
+            {
+                return StatusCode(403, "Code của bạn đã hết hạn để đăng nhập");
+            }
+            else
+            {     
+
+            // Retrieve the secret key from appsettings.json
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+
+            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            var tokeOptions = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Audience"],
+                audience: _configuration["Jwt:Issuer"],
+                claims: new List<Claim>()
                 {
-                    return StatusCode(403, "Sai code đăng nhập");
-                    if (user.ExpirationTimestamp < DateTime.Now)
-                    {
-                        return StatusCode(403, "Code của bạn đã hết hạn để đăng nhập");
-                    }
-                }
-
-
-                // Retrieve the secret key from appsettings.json
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                var tokeOptions = new JwtSecurityToken(
-                    issuer: _configuration["Jwt:Audience"],
-                    audience: _configuration["Jwt:Issuer"],
-                    claims: new List<Claim>()
-                    {
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                         new Claim("UserId", user.Email),
                         new Claim(ClaimTypes.Role, "Expert"),
-                    },
-                    expires: DateTime.Now.AddHours(6),
-                    signingCredentials: signinCredentials
-                );
+                },
+                expires: DateTime.Now.AddHours(6),
+                signingCredentials: signinCredentials
+            );
 
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                return Ok(new
-                {
-                    Token = tokenString,
-                    Email = user.Email,
-                    RoleId = 5
-                });
-            }
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+            return Ok(new
+            {
+                Token = tokenString,
+                Email = user.Email,
+                RoleId = 5
+            });
+        }
 
             return Unauthorized();
+    }
+
+
+    private bool CheckPassword(Account? user, LoginModel? login)
+    {
+        if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
+        {
+            return true;
         }
 
 
-        private bool CheckPassword(Account? user, LoginModel? login)
+        else return false;
+    }
+
+    [HttpPost("RevokeToken")]
+    public async Task<IActionResult> RevokeToken(string token)
+    {
+        try
         {
-            if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
+            var emailtoken = await _context.EmailTokens.SingleOrDefaultAsync(t => t.Token == token);
+            if (emailtoken != null)
             {
-                return true;
+                emailtoken.IsRevoked = true;
+                _context.Update(emailtoken);
+                await _context.SaveChangesAsync();
+                return Ok();
             }
-
-
-            else return false;
-        }
-
-        [HttpPost("RevokeToken")]
-        public async Task<IActionResult> RevokeToken(string token)
-        {
-            try
+            else
             {
-                var emailtoken = await _context.EmailTokens.SingleOrDefaultAsync(t => t.Token == token);
-                if (emailtoken != null)
-                {
-                    emailtoken.IsRevoked = true;
-                    _context.Update(emailtoken);
-                    await _context.SaveChangesAsync();
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest("Invalid Token");
-                }
-            }
-            catch
-            {
-                return StatusCode(500);
+                return BadRequest("Invalid Token");
             }
         }
-
-        [HttpGet]
-        [Route("auth/google")]
-        public ActionResult<string> GoogleAuth(string redirectUrl)
+        catch
         {
-            return _googleService.GetAuthUrl(redirectUrl);
-        }
-
-        [HttpGet]
-        [Route("/auth/callback")]
-        public async Task<IActionResult> Callback()
-        {
-            string code = HttpContext.Request.Query["code"];
-            string scope = HttpContext.Request.Query["scope"];
-
-            //get token method
-            var token = await _googleService.GetTokens(code);
-            return Ok(token);
+            return StatusCode(500);
         }
     }
+
+    [HttpGet]
+    [Route("auth/google")]
+    public ActionResult<string> GoogleAuth(string redirectUrl)
+    {
+        return _googleService.GetAuthUrl(redirectUrl);
+    }
+
+    [HttpGet]
+    [Route("/auth/callback")]
+    public async Task<IActionResult> Callback()
+    {
+        string code = HttpContext.Request.Query["code"];
+        string scope = HttpContext.Request.Query["scope"];
+
+        //get token method
+        var token = await _googleService.GetTokens(code);
+        return Ok(token);
+    }
+}
 }
