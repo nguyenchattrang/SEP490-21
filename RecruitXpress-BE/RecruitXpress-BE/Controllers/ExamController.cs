@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -44,11 +45,11 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("GetExamBySpecializedExamCode/{code}")]
-        public async Task<IActionResult> GetAllExams([FromQuery] ExamRequest request, string code)
+        public async Task<IActionResult> GetAllExams([FromQuery] ExamRequest request, string code,[Required] string expertEmail)
         {
             try
             {
-                var exams = await _examRepository.GetListExamWithSpecializedExamCode(request, code);
+                var exams = await _examRepository.GetListExamWithSpecializedExamCode(request, code, expertEmail);
                 return Ok(exams);
             }
             catch (Exception ex)
@@ -200,11 +201,11 @@ namespace RecruitXpress_BE.Controllers
 
 
         [HttpGet("AssignExpert")]
-        public async Task<IActionResult> AssignExpert(string email)
+        public async Task<IActionResult> AssignExpert(string email, string examCode)
         {
             try
             {
-                await _examRepository.AssignExpertToSystem(email);
+                await _examRepository.AssignExpertToSystem(email, examCode);
             
                 return Ok();
             }
