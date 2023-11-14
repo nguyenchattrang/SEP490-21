@@ -31,9 +31,9 @@ namespace RecruitXpress_BE.Controllers
 
         //GET: api/JobPosting/{id}
         [HttpGet("id")]
-        public async Task<ActionResult<JobPosting>> GetJobPosting(int id)
+        public async Task<ActionResult<JobPostingDTO>> GetJobPosting(int id, int? accountId)
         {
-            var jobPosting = await _jobPostingRepository.GetJobPosting(id);
+            var jobPosting = await _jobPostingRepository.GetJobPosting(id, accountId);
             if (jobPosting == null)
             {
                 return NotFound("Job posting not found!");
