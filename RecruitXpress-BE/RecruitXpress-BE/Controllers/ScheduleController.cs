@@ -72,29 +72,28 @@ public class ScheduleController : ControllerBase
                 return BadRequest("Update Job Posting failed!");
             }
         }
-        //
-        // //DELETE: api/Schedule/{id}
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeleteSchedule(int id)
-        // {
-        //     try
-        //     {
-        //         var deleted = await _scheduleRepository.DeleteSchedule(id);
-        //         if (deleted)
-        //         {
-        //             return Ok();
-        //         }
-        //         else
-        //         {
-        //             return NotFound("Job Posting not found!");
-        //         }
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Console.WriteLine(e);
-        //         return StatusCode(500, "Delete Job Posting failed!");
-        //     }
-        // }
-        //
+        
+        //DELETE: api/Schedule/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSchedule(int id)
+        {
+            try
+            {
+                var deleted = await _scheduleRepository.DeleteSchedule(id);
+                if (deleted)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return NotFound("Job Posting not found!");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, "Delete Job Posting failed!");
+            }
+        }
     
 }
