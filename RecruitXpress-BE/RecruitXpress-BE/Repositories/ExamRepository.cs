@@ -387,7 +387,7 @@ namespace RecruitXpress_BE.Repositories
                 sExam.ExpertEmail = sExam.ExpertEmail + "; "+ email ;
             }    
             await _context.SaveChangesAsync();
-            string url = _configuration["Website:ClientUrl"] + "/LoginExpert/";
+            string url = _configuration["Website:ClientUrl"] + "/LoginExpert";
             string urlExam = _configuration["Website:ClientUrl"] + "/Exam/"+examCode;
             _sender.Send(email, "Grant access", "Bạn được cấp quyền chấm bài cho bài thi có Examcode là: "+examCode +
                 ".\nMật khẩu của bạn là: " + a.Code + ".\n Địa chỉ truy cập đăng nhập: "+url + ".\n Địa chỉ chấm bài: "+urlExam);
