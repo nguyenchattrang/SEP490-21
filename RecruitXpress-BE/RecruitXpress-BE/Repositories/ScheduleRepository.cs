@@ -28,7 +28,7 @@ public class ScheduleRepository : IScheduleRepository
         {
             startDate ??= DateTime.Parse("1/1/1753");
             endDate ??= DateTime.Parse("31/12/9999");
-            var role = _context.Accounts.Find(accountId).Role.RoleId;
+            var role = _context.Accounts.Include(a => a.Role).Where(a => a.AccountId == accountId).SingleOrDefault().Role.RoleId;
             var query = _context.Schedules
                 .Include(s => s.HumanResource)
                 .Include(s => s.ScheduleDetails)
@@ -59,14 +59,14 @@ public class ScheduleRepository : IScheduleRepository
             {
                 case Constant.ROLE.INTERVIEWER:
                     query = query.Where(s =>
-                        s.Interviewers.Select(i => i.InterviewerNavigation.ProfileId).Contains(accountId));
+                        s.Interviewers.Select(i => i.InterviewerNavigation.AccountId).Contains(accountId));
                     break;
                 case Constant.ROLE.CANDIDATE:
                     query = query.Where(s =>
-                        s.ScheduleDetails.Select(sd => sd.Candidate.ProfileId).Contains(accountId));
+                        s.ScheduleDetails.Select(sd => sd.Candidate.AccountId).Contains(accountId));
                     break;
                 default:
-                    query = query.Where(s => s.HumanResource.ProfileId == accountId);
+                    query = query.Where(s => s.HumanResource.AccountId == accountId);
                     break;
             }
 
@@ -86,31 +86,42 @@ public class ScheduleRepository : IScheduleRepository
                     scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Name;
                     scheduleAdditionDataDTO.type = scheduleDetail.ScheduleType ?? (scheduleAdditionDataDTO.InterviewerName.Count > 0 ? 1 : 2);
                     var scheduleDate = scheduleDetail.StartDate.Value;
-                    if (!scheduleAdditionData.ContainsKey(scheduleDate.Year))
+                    if (!scheduleAdditionDataResult.Exists(result => result.Year == scheduleDate.Year))
                     {
-                        scheduleAdditionData.Add(
-                            scheduleDate.Year,
-                            new Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>()
-                            );
-                    }
-                    
-                    if (!scheduleAdditionData[scheduleDate.Year].ContainsKey(scheduleDate.Month))
-                    {
-                        scheduleAdditionData[scheduleDate.Year].Add(
-                            scheduleDate.Month,
-                            new Dictionary<int, List<ScheduleAdditionDataDTO>>()
-                        );
-                    }
-                    
-                    if (!scheduleAdditionData[scheduleDate.Year][scheduleDate.Month].ContainsKey(scheduleDate.Day))
-                    {
-                        scheduleAdditionData[scheduleDate.Year][scheduleDate.Month].Add(
-                            scheduleDate.Day,
-                            new List<ScheduleAdditionDataDTO>()
-                        );
+                        scheduleAdditionDataResult.Add(new ScheduleAdditionDataYear()
+                        {
+                            Year = scheduleDate.Year,
+                            ScheduleAdditionDataMonths = new List<ScheduleAdditionDataMonth>()
+                        });
                     }
 
-                    scheduleAdditionData[scheduleDate.Year][scheduleDate.Month][scheduleDate.Day].Add(scheduleAdditionDataDTO);
+                    var scheduleAdditionDataYear =
+                        scheduleAdditionDataResult.Find(result => result.Year == scheduleDate.Year);
+                    
+                    if (scheduleAdditionDataYear != null && !scheduleAdditionDataYear.ScheduleAdditionDataMonths.Exists(result => result.Month == scheduleDate.Month))
+                    {
+                        scheduleAdditionDataYear.ScheduleAdditionDataMonths.Add(new ScheduleAdditionDataMonth()
+                        {
+                            Month = scheduleDate.Month,
+                            ScheduleAdditionDataDays = new List<ScheduleAdditionDataDay>()
+                        });
+                    }
+                    
+                    var scheduleAdditionDataMonth =
+                        scheduleAdditionDataYear?.ScheduleAdditionDataMonths.Find(result => result.Month == scheduleDate.Month);
+                    
+                    if (scheduleAdditionDataMonth != null && !scheduleAdditionDataMonth.ScheduleAdditionDataDays.Exists(result => result.Day == scheduleDate.Day))
+                    {
+                        scheduleAdditionDataMonth.ScheduleAdditionDataDays.Add(new ScheduleAdditionDataDay()
+                        {
+                            Day = scheduleDate.Day,
+                            ScheduleAdditionDataDTOs = new List<ScheduleAdditionDataDTO>()
+                        });
+                    }
+
+                    var scheduleAdditionDataDay =
+                        scheduleAdditionDataMonth?.ScheduleAdditionDataDays.Find(result => result.Day == scheduleDate.Day);
+                    scheduleAdditionDataDay?.ScheduleAdditionDataDTOs.Add(scheduleAdditionDataDTO);
                 }
             }
 
