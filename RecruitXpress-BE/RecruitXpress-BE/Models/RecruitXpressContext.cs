@@ -625,6 +625,8 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.ExamName).HasMaxLength(255);
 
+                entity.Property(e => e.ExpertEmail).HasMaxLength(255);
+
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.CreatedByNavigation)
