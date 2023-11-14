@@ -198,6 +198,95 @@ namespace RecruitXpress_BE.Repositories
             return _mapper.Map<ExamDTO>(exam);
         }
 
+        public async Task<List<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code)
+        {
+            var specializedExam = await _context.SpecializedExams
+                 .Include(s => s.CreatedByNavigation)
+                 .FirstOrDefaultAsync(s => s.Code.Contains(code));
+
+            var query = _context.Exams
+            .Where(e => e.SpecializedExamId == specializedExam.ExamId)
+            .Include(e => e.Account)
+            .AsQueryable();
+
+            if (!string.IsNullOrEmpty(request.FileUrl))
+            {
+                query = query.Where(e => e.FileUrl.Contains(request.FileUrl));
+            }
+
+            if (request.TestDate.HasValue)
+            {
+                var testDate = request.TestDate.Value.Date;
+                query = query.Where(e => e.TestDate != null && e.TestDate.Value.Date == testDate);
+            }
+
+            if (!string.IsNullOrEmpty(request.Point))
+            {
+                query = query.Where(e => e.Point.Contains(request.Point));
+            }
+
+            if (!string.IsNullOrEmpty(request.Comment))
+            {
+                query = query.Where(e => e.Comment != null && e.Comment.Contains(request.Comment));
+            }
+
+            if (!string.IsNullOrEmpty(request.MarkedBy))
+            {
+                query = query.Where(e => e.MarkedBy != null && e.MarkedBy.Contains(request.MarkedBy));
+            }
+
+            if (request.MarkedDate.HasValue)
+            {
+                var markedDate = request.MarkedDate.Value.Date;
+                query = query.Where(e => e.MarkedDate != null && e.MarkedDate.Value.Date == markedDate);
+            }
+
+            if (request.Status.HasValue)
+            {
+                query = query.Where(e => e.Status == request.Status);
+            }
+
+            if (request.AccountId.HasValue)
+            {
+                query = query.Where(e => e.AccountId == request.AccountId);
+            }
+
+            if (request.SortBy != null)
+            {
+                switch (request.SortBy)
+                {
+                    case "testDate":
+                        query = request.OrderByAscending
+                            ? query.OrderBy(e => e.TestDate)
+                            : query.OrderByDescending(e => e.TestDate);
+                        break;
+
+                    case "point":
+                        query = request.OrderByAscending
+                            ? query.OrderBy(e => e.Point)
+                            : query.OrderByDescending(e => e.Point);
+                        break;
+
+                    // Add other sorting options if needed.
+                    default:
+                        query = request.OrderByAscending
+                            ? query.OrderBy(e => e.ExamId)
+                            : query.OrderByDescending(e => e.ExamId);
+                        break;
+                }
+            }
+
+            var pageNumber = request.Page > 0 ? request.Page : 1;
+            var pageSize = request.Size > 0 ? request.Size : 20;
+
+            var exams = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var examDTOs = _mapper.Map<List<ExamDTO>>(exams);
+            return examDTOs;
+        }
         public async Task<Exam> CreateExamWithFile(ExamRequestClass exam, IFormFile fileData)
         {
             try

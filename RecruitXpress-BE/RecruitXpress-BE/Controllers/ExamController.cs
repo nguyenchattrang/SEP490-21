@@ -43,6 +43,19 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("GetExamBySpecializedExamCode/{code}")]
+        public async Task<IActionResult> GetAllExams([FromQuery] ExamRequest request, string code)
+        {
+            try
+            {
+                var exams = await _examRepository.GetListExamWithSpecializedExamCode(request, code);
+                return Ok(exams);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         [HttpGet("{examId}")]
         public async Task<IActionResult> GetExamById(int examId)
@@ -105,7 +118,7 @@ namespace RecruitXpress_BE.Controllers
             var contentType = "application/octet-stream";
             return File(fileContent, contentType, fileName);
         }
-        [HttpGet("Download/{examId}")]
+        /*[HttpGet("Download/{examId}")]
         public async Task<IActionResult> DownloadFile(int examId)
         {
             try
@@ -132,7 +145,7 @@ namespace RecruitXpress_BE.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-        }
+        }*/
 
         [HttpPut("UpdateExam/{examId}")]
         public async Task<IActionResult> UpdateExam(int examId, Exam exam)
