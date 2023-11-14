@@ -230,11 +230,20 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-
+                var profileId = 0;
+                if(accountId != null)
+                {
+                    var getAccountId = _context.Profiles.Where(x=> x.AccountId == accountId).FirstOrDefault();
+                    if (getAccountId != null)
+                    {
+                        profileId = getAccountId.ProfileId;
+                    }
+                    else return BadRequest("Khong tim thay du lieu profile cua user nay");
+                }
                 var query = _context.JobApplications
                 .Include(q => q.Profile)
                 .Include(q => q.Job)
-                .Include(q => q.Template).AsQueryable();
+                .Include(q => q.Template).Where(x=> x.ProfileId == profileId).AsQueryable();
 
                 if (request.Location != null)
                 {
