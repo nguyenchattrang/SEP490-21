@@ -68,7 +68,10 @@ namespace RecruitXpress_BE.Controllers
             {
                
                 var query = _context.JobApplications
-                .Include(q => q.Profile)
+                .Include(q => q.Profile).ThenInclude(x=> x.Schedules)
+                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
+                .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x=> x.GeneralTestDetails)
                 .Include(q => q.Job)
                 .Include(q => q.Template).AsQueryable();
                
