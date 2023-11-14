@@ -10,5 +10,5 @@ public interface IScheduleRepository
     Task<Schedule?> GetSchedule(int id);
     Task<ScheduleDTO> AddSchedule(ScheduleDTO Schedule);
     Task<ScheduleDTO> UpdateSchedules(int id, ScheduleDTO scheduleDTO);
-    Task<bool> DeleteSchedule(int jobId);
+    Task<bool> DeleteSchedule(int scheduleId);
 }
