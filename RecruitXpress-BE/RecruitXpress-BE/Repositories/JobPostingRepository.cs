@@ -68,8 +68,34 @@ public class JobPostingRepository : IJobPostingRepository
             })
             .ToListAsync();
 
-    public async Task<JobPosting?> GetJobPosting(int id)
-        => await _context.JobPostings.FindAsync(id);
+    public async Task<JobPostingDTO?> GetJobPosting(int id, int? accountId)
+    {
+        var jobPosting = await GetAdvancedSearchJobPostingQuery(
+            new JobPostingSearchDTO() { JobId = id },
+            accountId,
+            1,
+            1
+        ).SingleOrDefaultAsync();
+        if (jobPosting != null)
+        {
+            return  new JobPostingDTO()
+            {
+                JobId = jobPosting.JobId,
+                Title = jobPosting.Title,
+                Company = jobPosting.Company,
+                Location = jobPosting.Location,
+                EmploymentType = jobPosting.EmploymentType,
+                Industry = jobPosting.Industry,
+                ApplicationDeadline = jobPosting.ApplicationDeadline,
+                Requirements = jobPosting.Requirements,
+                DatePosted = jobPosting.DatePosted,
+                Status = jobPosting.Status,
+                IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
+            };;
+        }
+
+        return null;
+    }
 
     public async Task<JobPosting> AddJobPosting(JobPosting jobPosting)
     {
@@ -122,6 +148,12 @@ public class JobPostingRepository : IJobPostingRepository
         if (accountId != null)
         {
             query = query.Include(j => j.WishLists);
+        }
+        
+        if (searchDto.JobId != null)
+        {
+            query = query.Where(j =>
+                j.JobId == searchDto.JobId);
         }
         
         if (!string.IsNullOrEmpty(searchDto.SearchString))

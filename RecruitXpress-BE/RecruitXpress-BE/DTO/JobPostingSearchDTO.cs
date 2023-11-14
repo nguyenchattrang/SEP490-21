@@ -3,6 +3,7 @@ namespace RecruitXpress_BE.DTO;
 
 public class JobPostingSearchDTO
 {
+    public int? JobId { get; set; }
     public string? SearchString { get; set; }
     public string? Location { get; set; }
     public string? EmploymentType { get; set; }
