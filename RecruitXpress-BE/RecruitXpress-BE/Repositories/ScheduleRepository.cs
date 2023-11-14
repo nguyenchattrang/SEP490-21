@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
@@ -20,11 +21,15 @@ public class ScheduleRepository : IScheduleRepository
         return null;
     }
 
-    public async Task<List<ScheduleDTO>> GetListSchedules(int profileId)
+    public async Task<ScheduleResponse> GetListSchedules(int accountId, DateTime? startDate,
+        DateTime? endDate)
     {
         try
         {
-            var result = await _context.Schedules
+            startDate ??= DateTime.Parse("1/1/1753");
+            endDate ??= DateTime.Parse("31/12/9999");
+            var role = _context.Accounts.Include(a => a.Role).Where(a => a.AccountId == accountId).SingleOrDefault().Role.RoleId;
+            var query = _context.Schedules
                 .Include(s => s.HumanResource)
                 .Include(s => s.ScheduleDetails)
                 .ThenInclude(sd => sd.Candidate)
@@ -46,25 +51,91 @@ public class ScheduleRepository : IScheduleRepository
                             Name = i.InterviewerNavigation.Name
                         }
                     }).ToList(),
-                    ScheduleDetails = s.ScheduleDetails
+                    ScheduleDetails = s.ScheduleDetails.Where(sd => sd.StartDate > startDate && sd.EndDate < endDate).ToList()
                 })
-                .Where(s => s.HumanResource.ProfileId == profileId
-                            || s.Interviewers.Select(i => i.InterviewerNavigation.ProfileId).Contains(profileId)
-                            || s.ScheduleDetails.Select(sd => sd.Candidate.ProfileId).Contains(profileId)
-                            )
-                .ToListAsync();
-            return result;
+                .Where(s => s.ScheduleDetails.Count > 0)
+                .AsQueryable();
+            switch (role)
+            {
+                case Constant.ROLE.INTERVIEWER:
+                    query = query.Where(s =>
+                        s.Interviewers.Select(i => i.InterviewerNavigation.AccountId).Contains(accountId));
+                    break;
+                case Constant.ROLE.CANDIDATE:
+                    query = query.Where(s =>
+                        s.ScheduleDetails.Select(sd => sd.Candidate.AccountId).Contains(accountId));
+                    break;
+                default:
+                    query = query.Where(s => s.HumanResource.AccountId == accountId);
+                    break;
+            }
+
+            var scheduleDTOResult = await query.ToListAsync();
+            var scheduleAdditionData = new Dictionary<int, Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>>();
+            List<ScheduleAdditionDataYear> scheduleAdditionDataResult = new List<ScheduleAdditionDataYear>();
+
+            foreach (var scheduleDto in scheduleDTOResult)
+            {
+                var scheduleAdditionDataDTO = new ScheduleAdditionDataDTO()
+                {
+                    HumanResourceName = scheduleDto.HumanResource.Name,
+                    InterviewerName = scheduleDto.Interviewers.Select(i => i.InterviewerNavigation.Name).ToList()
+                };
+                foreach (var scheduleDetail in scheduleDto.ScheduleDetails)
+                {
+                    scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Name;
+                    scheduleAdditionDataDTO.type = scheduleDetail.ScheduleType ?? (scheduleAdditionDataDTO.InterviewerName.Count > 0 ? 1 : 2);
+                    var scheduleDate = scheduleDetail.StartDate.Value;
+                    if (!scheduleAdditionDataResult.Exists(result => result.Year == scheduleDate.Year))
+                    {
+                        scheduleAdditionDataResult.Add(new ScheduleAdditionDataYear()
+                        {
+                            Year = scheduleDate.Year,
+                            ScheduleAdditionDataMonths = new List<ScheduleAdditionDataMonth>()
+                        });
+                    }
+
+                    var scheduleAdditionDataYear =
+                        scheduleAdditionDataResult.Find(result => result.Year == scheduleDate.Year);
+                    
+                    if (scheduleAdditionDataYear != null && !scheduleAdditionDataYear.ScheduleAdditionDataMonths.Exists(result => result.Month == scheduleDate.Month))
+                    {
+                        scheduleAdditionDataYear.ScheduleAdditionDataMonths.Add(new ScheduleAdditionDataMonth()
+                        {
+                            Month = scheduleDate.Month,
+                            ScheduleAdditionDataDays = new List<ScheduleAdditionDataDay>()
+                        });
+                    }
+                    
+                    var scheduleAdditionDataMonth =
+                        scheduleAdditionDataYear?.ScheduleAdditionDataMonths.Find(result => result.Month == scheduleDate.Month);
+                    
+                    if (scheduleAdditionDataMonth != null && !scheduleAdditionDataMonth.ScheduleAdditionDataDays.Exists(result => result.Day == scheduleDate.Day))
+                    {
+                        scheduleAdditionDataMonth.ScheduleAdditionDataDays.Add(new ScheduleAdditionDataDay()
+                        {
+                            Day = scheduleDate.Day,
+                            ScheduleAdditionDataDTOs = new List<ScheduleAdditionDataDTO>()
+                        });
+                    }
+
+                    var scheduleAdditionDataDay =
+                        scheduleAdditionDataMonth?.ScheduleAdditionDataDays.Find(result => result.Day == scheduleDate.Day);
+                    scheduleAdditionDataDay?.ScheduleAdditionDataDTOs.Add(scheduleAdditionDataDTO);
+                }
+            }
+
+            return new ScheduleResponse()
+            {
+                ScheduleDTOs = scheduleDTOResult,
+                ScheduleAdditionData = scheduleAdditionDataResult
+            };
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
-    }
-
-    public Task<List<Schedule>> GetListScheduleAdvancedSearch(Schedule schedule, int? accountId, int page, int size)
-    {
-        throw new NotImplementedException();
     }
 
     public Task<Schedule?> GetSchedule(int id)
@@ -82,24 +153,24 @@ public class ScheduleRepository : IScheduleRepository
             }
 
             var schedule = new Schedule()
-                {
-                    HumanResourceId = scheduleDTO.HumanResourceId,
-                    Status = scheduleDTO.Status,
-                    CreatedTime = DateTime.Now,
-                    UpdatedTime = DateTime.Now,
-                    CreatedBy = scheduleDTO.CreatedBy,
-                    UpdatedBy = scheduleDTO.UpdatedBy
-                };
+            {
+                HumanResourceId = scheduleDTO.HumanResourceId,
+                Status = scheduleDTO.Status,
+                CreatedTime = DateTime.Now,
+                UpdatedTime = DateTime.Now,
+                CreatedBy = scheduleDTO.CreatedBy,
+                UpdatedBy = scheduleDTO.UpdatedBy
+            };
             _context.Entry(schedule).State = EntityState.Added;
             await _context.SaveChangesAsync();
-            
+
             foreach (var interviewer in scheduleDTO.Interviewers)
             {
                 if (!_context.Profiles.Any(p => p.ProfileId == interviewer.InterviewerId))
                 {
                     throw new Exception("Interviewer is not exist!");
                 }
-                
+
                 interviewer.ScheduleId = schedule.ScheduleId;
                 if (!_context.Interviewers.Any(i =>
                         i.ScheduleId == interviewer.ScheduleId && i.InterviewerId == interviewer.InterviewerId))
@@ -107,14 +178,14 @@ public class ScheduleRepository : IScheduleRepository
                     _context.Entry(interviewer).State = EntityState.Added;
                 }
             }
-            
+
             foreach (var scheduleDetail in scheduleDTO.ScheduleDetails)
             {
                 if (!_context.Profiles.Any(p => p.ProfileId == scheduleDetail.CandidateId))
                 {
                     throw new Exception("Candidate is not exist!");
                 }
-                
+
                 var scheduleDetailEntity = new ScheduleDetail
                 {
                     ScheduleId = schedule.ScheduleId,
@@ -131,6 +202,7 @@ public class ScheduleRepository : IScheduleRepository
                 };
                 _context.Entry(scheduleDetailEntity).State = EntityState.Added;
             }
+
             await _context.SaveChangesAsync();
             return scheduleDTO;
         }
@@ -146,12 +218,12 @@ public class ScheduleRepository : IScheduleRepository
         try
         {
             var schedule = await _context.Schedules.FindAsync(scheduleDTO.ScheduleId);
-            
+
             if (schedule == null)
             {
                 throw new Exception("Schedule not found!");
             }
-            
+
             schedule = new Schedule()
             {
                 ScheduleId = schedule.ScheduleId,
@@ -162,16 +234,16 @@ public class ScheduleRepository : IScheduleRepository
                 CreatedBy = schedule.CreatedBy,
                 UpdatedBy = scheduleDTO.UpdatedBy
             };
-            
+
             _context.Entry(schedule).State = EntityState.Modified;
-            
+
             foreach (var interviewer in scheduleDTO.Interviewers)
             {
                 if (!_context.Profiles.Any(p => p.ProfileId == interviewer.InterviewerId))
                 {
                     throw new Exception("Interviewer is not exist!");
                 }
-                
+
                 interviewer.ScheduleId = schedule.ScheduleId;
                 if (!_context.Interviewers.Any(i =>
                         i.ScheduleId == interviewer.ScheduleId && i.InterviewerId == interviewer.InterviewerId))
@@ -179,14 +251,14 @@ public class ScheduleRepository : IScheduleRepository
                     _context.Entry(interviewer).State = EntityState.Added;
                 }
             }
-            
+
             foreach (var scheduleDetail in scheduleDTO.ScheduleDetails)
             {
                 if (!_context.Profiles.Any(p => p.ProfileId == scheduleDetail.CandidateId))
                 {
                     throw new Exception("Candidate is not exist!");
                 }
-                
+
                 var scheduleDetailEntity = new ScheduleDetail
                 {
                     ScheduleId = schedule.ScheduleId,
@@ -203,6 +275,7 @@ public class ScheduleRepository : IScheduleRepository
                 };
                 _context.Entry(scheduleDetailEntity).State = EntityState.Added;
             }
+
             await _context.SaveChangesAsync();
             return scheduleDTO;
         }
