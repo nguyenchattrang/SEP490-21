@@ -64,6 +64,8 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.Email).HasMaxLength(255);
 
+                entity.Property(e => e.ExamCode).HasMaxLength(50);
+
                 entity.Property(e => e.ExpirationTimestamp).HasColumnType("datetime");
             });
 

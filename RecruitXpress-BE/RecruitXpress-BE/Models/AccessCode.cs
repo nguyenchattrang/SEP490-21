@@ -9,5 +9,6 @@ namespace RecruitXpress_BE.Models
         public string Email { get; set; } = null!;
         public string Code { get; set; } = null!;
         public DateTime ExpirationTimestamp { get; set; }
+        public string? ExamCode { get; set; }
     }
 }

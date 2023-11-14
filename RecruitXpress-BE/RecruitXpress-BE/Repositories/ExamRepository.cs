@@ -109,7 +109,7 @@ namespace RecruitXpress_BE.Repositories
         public async Task<List<ExamDTO>> GetListExamWithSpecializedExamId(ExamRequest request, int sid)
         {
             var query = _context.Exams
-            .Where(e=> e.SpecializedExamId==sid)
+            .Where(e => e.SpecializedExamId == sid)
             .Include(e => e.Account)
             .AsQueryable();
 
@@ -198,8 +198,16 @@ namespace RecruitXpress_BE.Repositories
             return _mapper.Map<ExamDTO>(exam);
         }
 
-        public async Task<List<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code)
+        public async Task<List<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code, string expertEmail)
         {
+            var allowed = await _context.AccessCodes
+                 .Where(s => s.ExamCode.Contains(code) && s.Email.Equals(expertEmail) && s.ExpirationTimestamp > DateTime.Now).FirstOrDefaultAsync();
+          
+            if (allowed == null || !allowed.ExamCode.Equals(code))
+            {
+                throw new ArgumentException("Không có quyền truy cập");
+            }
+
             var specializedExam = await _context.SpecializedExams
                  .Include(s => s.CreatedByNavigation)
                  .FirstOrDefaultAsync(s => s.Code.Contains(code));
@@ -358,17 +366,19 @@ namespace RecruitXpress_BE.Repositories
             }
         }
 
-        public async Task AssignExpertToSystem(string email)
+        public async Task AssignExpertToSystem(string email, string examCode)
         {
             var a = new AccessCode
             {
                 Email = email,
                 Code = GenerateUniqueCode(),
-                ExpirationTimestamp = DateTime.Now.AddDays(1),
+                ExamCode = examCode,
+                ExpirationTimestamp = DateTime.Now.AddDays(Constant.ExpireExamDays),
             };
             _context.AccessCodes.AddAsync(a);
             await _context.SaveChangesAsync();
-            _sender.Send(email, "Grant access", "Mật khẩu của bạn là: " + a.Code);
+            _sender.Send(email, "Grant access", "Bạn được cấp quyền chấm bài cho bài thi có Examcode là: "+examCode +
+                ".\nMật khẩu của bạn là: " + a.Code);
         }
         public async Task GradeExam(GradeExamRequest e)
         {
