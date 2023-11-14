@@ -67,7 +67,7 @@ namespace RecruitXpress_BE.Controllers
                     }
 
                     var token = TokenHelper.GenerateRandomToken(64);
-                    string url = _configuration["Website:ClientUrl"] + "/verification-success?token=" + token;
+                    string url = _configuration["Website:ClientUrl"] + "/verification-success/" + token;
                     string subject = "Xác nhận địa chỉ Email của bạn";
                     var emailtoken = new EmailToken
                     {

@@ -167,12 +167,18 @@ namespace RecruitXpress_BE.Repositories
             {
                 if (!calculatedQuestionIds.Contains((int)detail.QuestionId))
                 {
+
                     // Get the correct answers for this question (assuming you have a data structure that stores correct answers)
                     List<int> correctAnswers = GetCorrectAnswers((int)detail.QuestionId);
 
                     // Check if the user's answers are in the list of correct answers
-                    List<int> userAnswers = GetUserAnswers(generalTest, (int)detail.QuestionId);
-
+                    if(detail.Answer==null)
+                    {
+                        continue;
+                    }    
+                        List<int> userAnswers = GetUserAnswers(generalTest, (int)detail.QuestionId);
+                    if(userAnswers.Count==0)
+                        continue;
                     if (userAnswers.Count > correctAnswers.Count)
                     {
                         // If the user selected more answers than there are correct options, no points are awarded.
@@ -200,7 +206,7 @@ namespace RecruitXpress_BE.Repositories
                     calculatedQuestionIds.Add((int)detail.QuestionId);
                 }
             }
-            var score = (float)userScore / (ConstantQuestion.easy+ConstantQuestion.medium+ConstantQuestion.hard);
+            var score = (float)userScore / generalTest.GeneralTestDetails.Select(q => q.QuestionId).Distinct().Count();
             var roundedScore = (int)Math.Ceiling(score * 10);
             return roundedScore;
         }
@@ -213,8 +219,7 @@ namespace RecruitXpress_BE.Repositories
         {
             // Assuming that GeneralTest has a collection of GeneralTestDetail objects
             // and you want to retrieve the user's selected answers for a specific question.
-
-            var userAnswers = generalTest.GeneralTestDetails
+                var userAnswers = generalTest.GeneralTestDetails
                 .Where(detail => detail.QuestionId == questionId)
                 .Select(detail => (int)detail.Answer)
                 .ToList();
