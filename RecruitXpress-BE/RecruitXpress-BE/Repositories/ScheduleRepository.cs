@@ -73,8 +73,7 @@ public class ScheduleRepository : IScheduleRepository
             }
 
             var scheduleDTOResult = await query.ToListAsync();
-            var scheduleAdditionData = new Dictionary<int, Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>>();
-            List<ScheduleAdditionDataYear> scheduleAdditionDataResult = new List<ScheduleAdditionDataYear>();
+            var scheduleAdditionDataResult = new List<ScheduleAdditionDataYear>();
 
             foreach (var scheduleDto in scheduleDTOResult)
             {
@@ -129,7 +128,6 @@ public class ScheduleRepository : IScheduleRepository
 
             return new ScheduleResponse()
             {
-                ScheduleDTOs = scheduleDTOResult,
                 ScheduleAdditionData = scheduleAdditionDataResult
             };
         }
@@ -252,13 +250,12 @@ public class ScheduleRepository : IScheduleRepository
                     throw new Exception("Interviewer is not exist!");
                 }
 
+                if (_context.Interviewers.Any(i =>
+                        i.ScheduleId == schedule.ScheduleId && i.InterviewerId == interviewerProfile.ProfileId))
+                    continue;
                 interviewer.ScheduleId = schedule.ScheduleId;
                 interviewer.InterviewerId = interviewerProfile.ProfileId;
-                if (!_context.Interviewers.Any(i =>
-                        i.ScheduleId == interviewer.ScheduleId && i.InterviewerId == interviewerProfile.ProfileId))
-                {
-                    _context.Entry(interviewer).State = EntityState.Added;
-                }
+                _context.Entry(interviewer).State = EntityState.Added;
             }
 
             foreach (var scheduleDetail in scheduleDTO.ScheduleDetails)
@@ -268,22 +265,41 @@ public class ScheduleRepository : IScheduleRepository
                 {
                     throw new Exception("Candidate is not exist!");
                 }
+
+                var scheduleDetailEntity = await _context.ScheduleDetails.Where(sd =>
+                    sd.ScheduleId == scheduleDTO.ScheduleId && sd.CandidateId == candidateProfile.ProfileId).FirstOrDefaultAsync();
                 
-                var scheduleDetailEntity = new ScheduleDetail
+                if (scheduleDetailEntity == null)
                 {
-                    ScheduleId = schedule.ScheduleId,
-                    CandidateId = candidateProfile.ProfileId,
-                    Status = scheduleDetail.Status,
-                    ScheduleType = scheduleDetail.ScheduleType,
-                    StartDate = scheduleDetail.StartDate,
-                    EndDate = scheduleDetail.EndDate,
-                    Note = scheduleDetail.Note,
-                    CreatedTime = DateTime.Now,
-                    UpdatedTime = DateTime.Now,
-                    CreatedBy = scheduleDTO.CreatedBy,
-                    UpdatedBy = scheduleDTO.UpdatedBy
-                };
-                _context.Entry(scheduleDetailEntity).State = EntityState.Added;
+                    scheduleDetailEntity = new ScheduleDetail
+                    {
+                        ScheduleId = schedule.ScheduleId,
+                        CandidateId = candidateProfile.ProfileId,
+                        Status = scheduleDetail.Status,
+                        ScheduleType = scheduleDetail.ScheduleType,
+                        StartDate = scheduleDetail.StartDate,
+                        EndDate = scheduleDetail.EndDate,
+                        Note = scheduleDetail.Note,
+                        CreatedTime = DateTime.Now,
+                        UpdatedTime = DateTime.Now,
+                        CreatedBy = scheduleDTO.CreatedBy,
+                        UpdatedBy = scheduleDTO.UpdatedBy
+                    };
+                    _context.Entry(scheduleDetailEntity).State = EntityState.Added;
+                }
+                else
+                {
+                    scheduleDetailEntity.UpdatedTime = DateTime.Now;
+                    scheduleDetailEntity.Status = scheduleDetail.Status;
+                    scheduleDetailEntity.ScheduleType = scheduleDetail.ScheduleType;
+                    scheduleDetailEntity.StartDate = scheduleDetail.StartDate;
+                    scheduleDetailEntity.EndDate = scheduleDetail.EndDate;
+                    scheduleDetailEntity.Note = scheduleDetail.Note;
+                    scheduleDetailEntity.UpdatedBy = scheduleDetail.UpdatedBy;
+                    scheduleDetailEntity.UpdatedTime = DateTime.Now;
+                    _context.Entry(scheduleDetail).State = EntityState.Modified;
+                }
+                
             }
 
             await _context.SaveChangesAsync();
@@ -313,4 +329,5 @@ public class ScheduleRepository : IScheduleRepository
         await _context.SaveChangesAsync();
         return true;
     }
+    
 }
