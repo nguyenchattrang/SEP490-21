@@ -19,6 +19,7 @@ namespace RecruitXpress_BE.Models
         public int? CreatedBy { get; set; }
         public int? Status { get; set; }
         public string? Code { get; set; }
+        public string? ExpertEmail { get; set; }
 
         public virtual Account? CreatedByNavigation { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }

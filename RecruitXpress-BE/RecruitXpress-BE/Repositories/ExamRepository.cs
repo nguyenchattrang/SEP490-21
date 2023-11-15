@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
@@ -14,11 +15,13 @@ namespace RecruitXpress_BE.Repositories
         private readonly RecruitXpressContext _context;
         private readonly IMapper _mapper;
         private readonly IEmailSender _sender;
-        public ExamRepository(RecruitXpressContext context, IMapper mapper, IEmailSender sender)
+        private readonly IConfiguration _configuration;
+        public ExamRepository(RecruitXpressContext context, IMapper mapper, IEmailSender sender, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _sender = sender;
+            _configuration = configuration;
         }
 
         public async Task<List<ExamDTO>> GetAllExams(ExamRequest request)
@@ -109,7 +112,7 @@ namespace RecruitXpress_BE.Repositories
         public async Task<List<ExamDTO>> GetListExamWithSpecializedExamId(ExamRequest request, int sid)
         {
             var query = _context.Exams
-            .Where(e=> e.SpecializedExamId==sid)
+            .Where(e => e.SpecializedExamId == sid)
             .Include(e => e.Account)
             .AsQueryable();
 
@@ -198,8 +201,16 @@ namespace RecruitXpress_BE.Repositories
             return _mapper.Map<ExamDTO>(exam);
         }
 
-        public async Task<List<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code)
+        public async Task<List<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code, string expertEmail)
         {
+            var allowed = await _context.AccessCodes
+                 .Where(s => s.ExamCode.Contains(code) && s.Email.Equals(expertEmail) && s.ExpirationTimestamp > DateTime.Now).FirstOrDefaultAsync();
+          
+            if (allowed == null || !allowed.ExamCode.Equals(code))
+            {
+                throw new ArgumentException("Không có quyền truy cập");
+            }
+
             var specializedExam = await _context.SpecializedExams
                  .Include(s => s.CreatedByNavigation)
                  .FirstOrDefaultAsync(s => s.Code.Contains(code));
@@ -358,17 +369,28 @@ namespace RecruitXpress_BE.Repositories
             }
         }
 
-        public async Task AssignExpertToSystem(string email)
+        public async Task AssignExpertToSystem(string email, string examCode)
         {
             var a = new AccessCode
             {
                 Email = email,
                 Code = GenerateUniqueCode(),
-                ExpirationTimestamp = DateTime.Now.AddDays(1),
+                ExamCode = examCode,
+                ExpirationTimestamp = DateTime.Now.AddDays(Constant.ExpireExamDays),
             };
             _context.AccessCodes.AddAsync(a);
+            var sExam=   _context.SpecializedExams.Where(s=> s.Code == examCode).FirstOrDefault();
+             if(  sExam.ExpertEmail==null)
+            { sExam.ExpertEmail = email; }
+             else
+            {
+                sExam.ExpertEmail = sExam.ExpertEmail + "; "+ email ;
+            }    
             await _context.SaveChangesAsync();
-            _sender.Send(email, "Grant access", "Mật khẩu của bạn là: " + a.Code);
+            string url = _configuration["Website:ClientUrl"] + "/LoginExpert";
+            string urlExam = _configuration["Website:ClientUrl"] + "/Exam/"+examCode;
+            _sender.Send(email, "Grant access", "Bạn được cấp quyền chấm bài cho bài thi có Examcode là: "+examCode +
+                ".\nMật khẩu của bạn là: " + a.Code + ".\n Địa chỉ truy cập đăng nhập: "+url + ".\n Địa chỉ chấm bài: "+urlExam);
         }
         public async Task GradeExam(GradeExamRequest e)
         {
