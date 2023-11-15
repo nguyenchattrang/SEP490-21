@@ -30,7 +30,7 @@ namespace RecruitXpress_BE.Controllers
             var exam = await _repository.GetSpecializedExamById(examId);
             if (exam == null)
             {
-                return NotFound();
+                return NotFound("Không tìm thấy exam Id");
             }
             return Ok(exam);
         }
@@ -40,7 +40,7 @@ namespace RecruitXpress_BE.Controllers
             var exam = await _repository.GetSpecializedExamByCode(code);
             if (exam == null)
             {
-                return NotFound();
+                return NotFound("Không tìm thấy exam code");
             }
             return Ok(exam);
         }
