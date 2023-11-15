@@ -351,7 +351,8 @@ namespace RecruitXpress_BE.Controllers
             {
                 Token = tokenString,
                 Email = user.Email,
-                RoleId = 5
+                RoleId = 5,
+                ExamCode = user.ExamCode,
             });
         }
 
