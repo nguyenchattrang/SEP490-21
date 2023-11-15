@@ -62,7 +62,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("AllJobApplication")]
-        public async Task<IActionResult> listJobApplication([FromQuery] JobApplicationRequest request, int roleId, int? accountId)
+        public async Task<IActionResult> listJobApplication([FromQuery] JobApplicationRequest request, int? accountId)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(q => q.Job)
                 .Include(q => q.Template).AsQueryable();
                
-                if (accountId != null && roleId ==2 )
+                if (accountId != null)
                 {
                     query = query.Where(x=> x.AssignedFor== accountId);
                 }
@@ -244,7 +244,10 @@ namespace RecruitXpress_BE.Controllers
                     else return BadRequest("Khong tim thay du lieu profile cua user nay");
                 }
                 var query = _context.JobApplications
-                .Include(q => q.Profile)
+                .Include(q => q.Profile).ThenInclude(x => x.Schedules)
+                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
+                .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job)
                 .Include(q => q.Template).Where(x=> x.ProfileId == profileId).AsQueryable();
 
