@@ -16,6 +16,8 @@ namespace RecruitXpress_BE.Controllers
             _repository = repository;
         }
 
+
+
         // GET: api/GeneralTest
         [HttpGet]
         public async Task<IActionResult> GetAllGeneralTests([FromQuery] GeneralTestRequest request)
@@ -48,6 +50,12 @@ namespace RecruitXpress_BE.Controllers
         public async Task<IActionResult> CreateGeneralTest([FromBody] GeneralTest generalTestDTO)
         {
             await _repository.CreateGeneralTest(generalTestDTO);
+            return CreatedAtAction("GetGeneralTest", new { id = generalTestDTO.GeneralTestId }, generalTestDTO);
+        }
+        [HttpPost("SubmitTest")]
+        public async Task<IActionResult> SubmitTest([FromBody] GeneralTest generalTestDTO)
+        {
+            await _repository.SubmitGeneralTest(generalTestDTO);
             return CreatedAtAction("GetGeneralTest", new { id = generalTestDTO.GeneralTestId }, generalTestDTO);
         }
 

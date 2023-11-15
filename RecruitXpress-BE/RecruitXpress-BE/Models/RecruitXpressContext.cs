@@ -16,12 +16,15 @@ namespace RecruitXpress_BE.Models
         {
         }
 
+        public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<CandidateCv> CandidateCvs { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
         public virtual DbSet<Cvtemplate> Cvtemplates { get; set; } = null!;
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
         public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
         public virtual DbSet<EmailToken> EmailTokens { get; set; } = null!;
+        public virtual DbSet<Evaluate> Evaluates { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<FamilyInformation> FamilyInformations { get; set; } = null!;
         public virtual DbSet<GeneralTest> GeneralTests { get; set; } = null!;
@@ -38,6 +41,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<ScheduleDetail> ScheduleDetails { get; set; } = null!;
+        public virtual DbSet<SpecializedExam> SpecializedExams { get; set; } = null!;
         public virtual DbSet<UserAnalytic> UserAnalytics { get; set; } = null!;
         public virtual DbSet<WishList> WishLists { get; set; } = null!;
         public virtual DbSet<WorkExperience> WorkExperiences { get; set; } = null!;
@@ -47,13 +51,24 @@ namespace RecruitXpress_BE.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("server =(local)\\SQLEXPRESS01; database = RecruitXpress;uid=sa;pwd=123456; TrustServerCertificate=True ");
+                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                optionsBuilder.UseSqlServer(config.GetConnectionString("RecruitXpress"));
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AccessCode>(entity =>
+            {
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.Email).HasMaxLength(255);
+
+                entity.Property(e => e.ExamCode).HasMaxLength(50);
+
+                entity.Property(e => e.ExpirationTimestamp).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("Account");
@@ -83,40 +98,12 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__Account__RoleID__38996AB5");
             });
 
-            modelBuilder.Entity<ComputerProficiency>(entity =>
-            {
-                entity.ToTable("ComputerProficiency");
-
-                entity.Property(e => e.ComputerProficiencyId).HasColumnName("ComputerProficiencyID");
-
-                entity.Property(e => e.Date).HasColumnType("date");
-
-                entity.Property(e => e.Description)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
-
-                entity.Property(e => e.SkillLevel)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.TechnicalSkills)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.Profile)
-                    .WithMany(p => p.ComputerProficiencies)
-                    .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__ComputerP__Profi__1332DBDC");
-            });
-
-            modelBuilder.Entity<Cvtemplate>(entity =>
+            modelBuilder.Entity<CandidateCv>(entity =>
             {
                 entity.HasKey(e => e.TemplateId)
                     .HasName("PK__CVTempla__F87ADD070A716C45");
 
-                entity.ToTable("CVTemplate");
+                entity.ToTable("CandidateCV");
 
                 entity.Property(e => e.TemplateId).HasColumnName("TemplateID");
 
@@ -130,9 +117,41 @@ namespace RecruitXpress_BE.Models
                     .HasColumnName("URL");
 
                 entity.HasOne(d => d.Account)
-                    .WithMany(p => p.Cvtemplates)
+                    .WithMany(p => p.CandidateCvs)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK__CVTemplat__Accou__4AB81AF0");
+            });
+
+            modelBuilder.Entity<ComputerProficiency>(entity =>
+            {
+                entity.ToTable("ComputerProficiency");
+
+                entity.Property(e => e.ComputerProficiencyId).HasColumnName("ComputerProficiencyID");
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.ComputerProficiencies)
+                    .HasForeignKey(d => d.ProfileId)
+                    .HasConstraintName("FK__ComputerP__Profi__1332DBDC");
+            });
+
+            modelBuilder.Entity<Cvtemplate>(entity =>
+            {
+                entity.ToTable("CVTemplate");
+
+                entity.Property(e => e.CvtemplateId).HasColumnName("CVTemplateID");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Thumbnail).HasMaxLength(255);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.Cvtemplates)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_CVTemplate_Account");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>
@@ -145,31 +164,11 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.Certifications).HasColumnType("text");
 
-                entity.Property(e => e.DegreeEarned)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.EducationalLevel)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.FieldOfStudy)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.Gpa).HasColumnName("GPA");
-
-                entity.Property(e => e.InstitutionName)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
 
                 entity.Property(e => e.ResearchProjects).HasColumnType("text");
-
-                entity.Property(e => e.Time)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.EducationalBackgrounds)
@@ -186,15 +185,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.TemplateId).HasColumnName("TemplateID");
 
-                entity.Property(e => e.Body).HasColumnType("text");
-
-                entity.Property(e => e.Header).HasColumnType("text");
-
-                entity.Property(e => e.SendTo).HasColumnType("text");
-
-                entity.Property(e => e.Title)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.SendTo).IsUnicode(false);
             });
 
             modelBuilder.Entity<EmailToken>(entity =>
@@ -214,6 +205,23 @@ namespace RecruitXpress_BE.Models
                     .WithMany(p => p.EmailTokens)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK__EmailToke__Accou__681373AD");
+            });
+
+            modelBuilder.Entity<Evaluate>(entity =>
+            {
+                entity.ToTable("Evaluate");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EvaluaterEmailContact).HasMaxLength(255);
+
+                entity.Property(e => e.EvaluaterPhoneContact).HasMaxLength(50);
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.Evaluates)
+                    .HasForeignKey(d => d.ProfileId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Evaluate__Profil__41B8C09B");
             });
 
             modelBuilder.Entity<Exam>(entity =>
@@ -246,6 +254,11 @@ namespace RecruitXpress_BE.Models
                     .WithMany(p => p.Exams)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK__Exam__AccountID__76969D2E");
+
+                entity.HasOne(d => d.SpecializedExam)
+                    .WithMany(p => p.Exams)
+                    .HasForeignKey(d => d.SpecializedExamId)
+                    .HasConstraintName("FK_Exam_SpecializedExam");
             });
 
             modelBuilder.Entity<FamilyInformation>(entity =>
@@ -257,9 +270,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.FamilyId).HasColumnName("FamilyID");
 
-                entity.Property(e => e.Address)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.Address).IsUnicode(false);
 
                 entity.Property(e => e.Birthdays).HasColumnType("date");
 
@@ -267,23 +278,17 @@ namespace RecruitXpress_BE.Models
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
-                entity.Property(e => e.EducationLevel)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.EducationLevel).IsUnicode(false);
 
                 entity.Property(e => e.Email)
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FamilyName)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.FamilyName).IsUnicode(false);
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
 
-                entity.Property(e => e.RelationshipStatus)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.RelationshipStatus).IsUnicode(false);
 
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.FamilyInformations)
@@ -302,10 +307,6 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.Description).HasColumnType("text");
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
-
-                entity.Property(e => e.TestName)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.GeneralTests)
@@ -344,21 +345,21 @@ namespace RecruitXpress_BE.Models
 
             modelBuilder.Entity<Interviewer>(entity =>
             {
-                entity.Property(e => e.InterviewerId).HasColumnName("InterviewerID");
+                entity.HasKey(e => new { e.InterviewerId, e.ScheduleId });
 
-                entity.Property(e => e.AccountId).HasColumnName("AccountID");
+                entity.ToTable("Interviewer");
 
-                entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
-
-                entity.HasOne(d => d.Account)
+                entity.HasOne(d => d.InterviewerNavigation)
                     .WithMany(p => p.Interviewers)
-                    .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__Interview__Accou__6754599E");
+                    .HasForeignKey(d => d.InterviewerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Interviewer_Profile");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Interviewers)
                     .HasForeignKey(d => d.ScheduleId)
-                    .HasConstraintName("FK__Interview__Sched__68487DD7");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Interviewer_Schedule");
             });
 
             modelBuilder.Entity<JobApplication>(entity =>
@@ -403,41 +404,11 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.ApplicationDeadline).HasColumnType("date");
 
-                entity.Property(e => e.ApplicationInstructions).HasColumnType("text");
+                entity.Property(e => e.Company).HasMaxLength(255);
 
-                entity.Property(e => e.Company)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ContactPerson)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ContactPerson).HasMaxLength(255);
 
                 entity.Property(e => e.DatePosted).HasColumnType("date");
-
-                entity.Property(e => e.Description).HasColumnType("text");
-
-                entity.Property(e => e.EmploymentType)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Industry)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Location)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Requirements).HasColumnType("text");
-
-                entity.Property(e => e.SalaryRange)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Title)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<LanguageProficiency>(entity =>
@@ -446,27 +417,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.LanguageProficiencyId).HasColumnName("LanguageProficiencyID");
 
-                entity.Property(e => e.Certifications)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Language)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.LanguageExperiences).HasColumnType("text");
-
-                entity.Property(e => e.Notes).HasColumnType("text");
-
-                entity.Property(e => e.ProficiencyLevel)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
-
-                entity.Property(e => e.TestScores)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.LanguageProficiencies)
@@ -484,10 +435,6 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Description)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Notification>(entity =>
@@ -498,8 +445,6 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Description).HasColumnType("text");
-
                 entity.Property(e => e.ReceiverId).HasColumnName("ReceiverID");
 
                 entity.Property(e => e.SenderId).HasColumnName("SenderID");
@@ -508,10 +453,6 @@ namespace RecruitXpress_BE.Models
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("TargetURL");
-
-                entity.Property(e => e.Title)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Receiver)
                     .WithMany(p => p.NotificationReceivers)
@@ -529,8 +470,6 @@ namespace RecruitXpress_BE.Models
                 entity.ToTable("Option");
 
                 entity.Property(e => e.OptionId).HasColumnName("OptionID");
-
-                entity.Property(e => e.OptionText).HasMaxLength(255);
 
                 entity.Property(e => e.QuestionId).HasColumnName("QuestionID");
 
@@ -550,9 +489,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.AccountId).HasColumnName("AccountID");
 
-                entity.Property(e => e.Address)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.Address).HasMaxLength(100);
 
                 entity.Property(e => e.Article).HasColumnType("text");
 
@@ -570,9 +507,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.Imperfection).HasColumnType("text");
 
-                entity.Property(e => e.Name)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Name).HasMaxLength(100);
 
                 entity.Property(e => e.PhoneNumber)
                     .HasMaxLength(20)
@@ -580,7 +515,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.ResearchWork).HasColumnType("text");
 
-                entity.Property(e => e.Skills).IsUnicode(false);
+                entity.Property(e => e.Skills).HasMaxLength(100);
 
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
@@ -625,52 +560,79 @@ namespace RecruitXpress_BE.Models
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RoleName)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.RoleName).HasMaxLength(100);
             });
 
             modelBuilder.Entity<Schedule>(entity =>
             {
                 entity.ToTable("Schedule");
 
-                entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
 
-                entity.Property(e => e.Date).HasColumnType("date");
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
-                entity.Property(e => e.Hr)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("HR");
+                entity.Property(e => e.UpdatedBy).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.HumanResource)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.HumanResourceId)
+                    .HasConstraintName("FK_Schedule_Profile");
             });
 
             modelBuilder.Entity<ScheduleDetail>(entity =>
             {
-                entity.Property(e => e.ScheduleDetailId).HasColumnName("ScheduleDetailID");
+                entity.ToTable("ScheduleDetail");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedBy).HasMaxLength(50);
 
-                entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
-                entity.Property(e => e.Result)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
 
-                entity.Property(e => e.ScheduleId).HasColumnName("ScheduleID");
+                entity.Property(e => e.Note).HasMaxLength(250);
 
-                entity.Property(e => e.Strengths).HasColumnType("text");
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Weaknesses).HasColumnType("text");
+                entity.Property(e => e.UpdatedBy).HasMaxLength(50);
 
-                entity.HasOne(d => d.Profile)
+                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Candidate)
                     .WithMany(p => p.ScheduleDetails)
-                    .HasForeignKey(d => d.ProfileId)
-                    .HasConstraintName("FK__ScheduleD__Profi__06CD04F7");
+                    .HasForeignKey(d => d.CandidateId)
+                    .HasConstraintName("FK_ScheduleDetail_Profile");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.ScheduleDetails)
                     .HasForeignKey(d => d.ScheduleId)
-                    .HasConstraintName("FK__ScheduleD__Sched__05D8E0BE");
+                    .HasConstraintName("FK_ScheduleDetail_Schedule");
+            });
+
+            modelBuilder.Entity<SpecializedExam>(entity =>
+            {
+                entity.HasKey(e => e.ExamId)
+                    .HasName("PK__Speciali__297521C76A3469C5");
+
+                entity.ToTable("SpecializedExam");
+
+                entity.Property(e => e.Code).HasMaxLength(100);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ExamName).HasMaxLength(255);
+
+                entity.Property(e => e.ExpertEmail).HasMaxLength(255);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.SpecializedExams)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_SpecializedExam_Account");
             });
 
             modelBuilder.Entity<UserAnalytic>(entity =>
@@ -718,27 +680,19 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.Achievements).HasColumnType("text");
 
-                entity.Property(e => e.Company)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Company).HasMaxLength(256);
 
-                entity.Property(e => e.EmploymentType)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.EmploymentType).HasMaxLength(256);
 
-                entity.Property(e => e.JobTitle)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.JobTitle).HasMaxLength(256);
 
-                entity.Property(e => e.Location)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.Location).HasMaxLength(256);
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
 
                 entity.Property(e => e.Responsibilities).HasColumnType("text");
 
-                entity.Property(e => e.SkillsUsed).IsUnicode(false);
+                entity.Property(e => e.SkillsUsed).HasMaxLength(256);
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
 
@@ -754,33 +708,21 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.TrainingId).HasColumnName("TrainingID");
 
-                entity.Property(e => e.CertificationOffered)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.CertificationOffered).IsUnicode(false);
 
-                entity.Property(e => e.Duration)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Duration).IsUnicode(false);
 
                 entity.Property(e => e.EndDate).HasColumnType("date");
 
-                entity.Property(e => e.FormatName)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.FormatName).IsUnicode(false);
 
-                entity.Property(e => e.Language)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Language).IsUnicode(false);
 
-                entity.Property(e => e.Location)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.Location).IsUnicode(false);
 
                 entity.Property(e => e.ProfileId).HasColumnName("ProfileID");
 
-                entity.Property(e => e.SkillsCovered)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.SkillsCovered).IsUnicode(false);
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
 

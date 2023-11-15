@@ -15,10 +15,12 @@ namespace RecruitXpress_BE.Controllers
     public class AccountController : ControllerBase
     {
         public IAccountRepository _accountRepository;
-        public AccountController( IAccountRepository repository)
+        private readonly RecruitXpressContext _context;
+        public AccountController( IAccountRepository repository, RecruitXpressContext context)
         {
             
             _accountRepository = repository;
+            _context = context;
         }
         //GET: api/AccountManagement
         [HttpGet]
@@ -91,6 +93,19 @@ namespace RecruitXpress_BE.Controllers
             {
                 return NotFound("Không kết quả");
             }
+        }
+        [HttpGet("getAccountByRole")]
+        public async Task<IActionResult> getMyCV(int status)
+        {
+            if (status == null) return BadRequest("Status dau ?");
+
+            var listAccount = await _context.Accounts.Include(x=>x.Profiles).Where(x => x.RoleId == status).ToListAsync();
+
+            if (listAccount == null)
+            {
+                return BadRequest("Khong tim thay du lieu");
+            }
+            return Ok(listAccount);
         }
     }
 }

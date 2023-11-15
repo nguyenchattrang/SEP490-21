@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
 using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using System.Collections;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RecruitXpress_BE.Repositories
@@ -18,6 +20,7 @@ namespace RecruitXpress_BE.Repositories
             _context = context;
             _mapper = mapper;
         }
+
 
 
         public async Task<IEnumerable<GeneralTestDTO>> GetAllGeneralTests(GeneralTestRequest request)
@@ -85,9 +88,11 @@ namespace RecruitXpress_BE.Repositories
                 }
             }
 
+            var pageNumber = request.Page > 0 ? request.Page : 1;
+            var pageSize = request.Size > 0 ? request.Size : 20;
             var generalTests = await query
-                .Skip(request.Offset)
-                .Take(request.Limit)
+               .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var generalTestDTOs = _mapper.Map<List<GeneralTestDTO>>(generalTests);
@@ -143,6 +148,86 @@ namespace RecruitXpress_BE.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task SubmitGeneralTest(GeneralTest generalTest)
+        {
+            generalTest.CreatedAt = DateTime.Now; // Set the CreatedAt property to the current date and time
+            generalTest.Score = CalculateUserScore(generalTest);
+            _context.GeneralTests.Add(generalTest);
+
+            await _context.SaveChangesAsync();
+        }
+        private int CalculateUserScore(GeneralTest generalTest)
+        {
+            int userScore = 0;
+
+            var calculatedQuestionIds = new HashSet<int>(); // Store question IDs for which the score has been calculated.
+
+            foreach (var detail in generalTest.GeneralTestDetails)
+            {
+                if (!calculatedQuestionIds.Contains((int)detail.QuestionId))
+                {
+
+                    // Get the correct answers for this question (assuming you have a data structure that stores correct answers)
+                    List<int> correctAnswers = GetCorrectAnswers((int)detail.QuestionId);
+
+                    // Check if the user's answers are in the list of correct answers
+                    if(detail.Answer==null)
+                    {
+                        continue;
+                    }    
+                        List<int> userAnswers = GetUserAnswers(generalTest, (int)detail.QuestionId);
+                    if(userAnswers.Count==0)
+                        continue;
+                    if (userAnswers.Count > correctAnswers.Count)
+                    {
+                        // If the user selected more answers than there are correct options, no points are awarded.
+                        userScore += 0;
+                    }
+                    else
+                    {
+                        int correctOptionsCount = correctAnswers.Count;
+
+                        if (correctAnswers.All(ca => userAnswers.Contains(ca)))
+                        {
+                            // User's answers match all the correct answers.
+                            // Increment the user's score based on the number of correct options.
+                            userScore += 1;
+                        }
+                        else
+                        {
+                            // User's answers don't match all the correct answers.
+                            // No points are awarded.
+                            userScore += 0;
+                        }
+                    }
+
+                    // Mark this question as calculated to avoid repetition.
+                    calculatedQuestionIds.Add((int)detail.QuestionId);
+                }
+            }
+            var score = (float)userScore / generalTest.GeneralTestDetails.Select(q => q.QuestionId).Distinct().Count();
+            var roundedScore = (int)Math.Ceiling(score * 10);
+            return roundedScore;
+        }
+
+        private List<int> GetCorrectAnswers(int questionId)
+        {
+            return _context.Options.Where(o => o.QuestionId == questionId && o.IsCorrect == true).Select(o => o.OptionId).ToList();
+        }
+        private List<int> GetUserAnswers(GeneralTest generalTest, int questionId)
+        {
+            // Assuming that GeneralTest has a collection of GeneralTestDetail objects
+            // and you want to retrieve the user's selected answers for a specific question.
+                var userAnswers = generalTest.GeneralTestDetails
+                .Where(detail => detail.QuestionId == questionId)
+                .Select(detail => (int)detail.Answer)
+                .ToList();
+
+            return userAnswers;
+        }
+
+
     }
 }
 

@@ -12,11 +12,14 @@ namespace RecruitXpress_BE.Models
         }
 
         public int ScheduleId { get; set; }
-        public DateTime? Date { get; set; }
-        public int? Round { get; set; }
-        public string? Hr { get; set; }
+        public int? HumanResourceId { get; set; }
         public int? Status { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public DateTime? UpdatedTime { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
 
+        public virtual Profile? HumanResource { get; set; }
         public virtual ICollection<Interviewer> Interviewers { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
     }

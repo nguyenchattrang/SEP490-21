@@ -31,9 +31,9 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                if(accountId == null) return BadRequest("Account is not null");
+                if (accountId == null) return BadRequest("Account is not null");
                 var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == accountId);
-                var CV = _context.Cvtemplates.FirstOrDefault(x => x.AccountId == accountId);
+                var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
                 if (profile == null)
                 {
                     return BadRequest("Hãy cập nhật thông tin cá nhân đầy đủ trước khi nộp hồ sơ");
@@ -42,18 +42,18 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ ");
                 }
-                
-                    var jobApp = new JobApplication
-                    {
-                        JobId = jobId,
-                        ProfileId = profile.ProfileId,
-                        TemplateId = CV.TemplateId,
-                        Status = 1
-                    };
-                     _context.Add(jobApp);
-                    await _context.SaveChangesAsync();
-                    return Ok("Nộp hồ sơ thành công");
-                
+
+                var jobApp = new JobApplication
+                {
+                    JobId = jobId,
+                    ProfileId = profile.ProfileId,
+                    TemplateId = CV.TemplateId,
+                    Status = 1
+                };
+                _context.Add(jobApp);
+                await _context.SaveChangesAsync();
+                return Ok("Nộp hồ sơ thành công");
+
 
             }
             catch (Exception ex)
@@ -62,18 +62,23 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("AllJobApplication")]
-        public async Task<IActionResult> listJobApplication([FromQuery] JobApplicationRequest request)
+        public async Task<IActionResult> listJobApplication([FromQuery] JobApplicationRequest request, int? accountId)
         {
             try
             {
-                //var listJob = await _context.JobApplications.Include(x => x.Profile)
-                //    .Include(x => x.Job).Include(x=>x.Template).Where(x=> x.Status ==1 ).ToListAsync();
-                //if (listJob == null) return NotFound("Khong tim thay ban ghi ");
-                //return Ok(listJob);
-                var query =  _context.JobApplications
-                .Include(q => q.Profile)
+               
+                var query = _context.JobApplications
+                .Include(q => q.Profile).ThenInclude(x=> x.Schedules)
+                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
+                .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x=> x.GeneralTestDetails)
                 .Include(q => q.Job)
                 .Include(q => q.Template).AsQueryable();
+               
+                if (accountId != null)
+                {
+                    query = query.Where(x=> x.AssignedFor== accountId);
+                }
 
                 if (request.Location != null)
                 {
@@ -93,11 +98,19 @@ namespace RecruitXpress_BE.Controllers
                 if (request.SalaryRange != null)
                 {
                     query = query.Where(s => s.Job != null && s.Job.SalaryRange != null && s.Job.SalaryRange.Contains(request.SalaryRange));
-                }  
+                }
 
                 if (request.ApplicationDeadline != null)
                 {
                     query = query.Where(s => s.Job != null && s.Job.ApplicationDeadline != null && s.Job.ApplicationDeadline.Equals(request.ApplicationDeadline));
+                }
+                if (request.Title != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.Title != null && s.Job.Title.Equals(request.Title));
+                }
+                if (request.Company != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.Company != null && s.Job.Company.Equals(request.Company));
                 }
                 if (request.NameCandidate != null)
                 {
@@ -111,7 +124,10 @@ namespace RecruitXpress_BE.Controllers
                 {
                     query = query.Where(s => s.Profile != null && s.Profile.Email != null && s.Profile.Email.Contains(request.EmailCandidate));
                 }
-
+                if (request.Status != null)
+                {
+                    query = query.Where(s => s.Status != null && s.Status ==(request.Status));
+                }
                 if (request.SortBy != null)
                 {
                     switch (request.SortBy)
@@ -121,7 +137,11 @@ namespace RecruitXpress_BE.Controllers
                                 ? query.OrderBy(j => j.Job.Location)
                                 : query.OrderByDescending(j => j.Job.Location);
                             break;
-
+                        case "Status":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Status)
+                                : query.OrderByDescending(j => j.Status);
+                            break;
                         case "EmploymentType":
                             query = request.OrderByAscending
                                 ? query.OrderBy(j => j.Job.EmploymentType)
@@ -157,7 +177,21 @@ namespace RecruitXpress_BE.Controllers
                                 ? query.OrderBy(j => j.Profile.Email)
                                 : query.OrderByDescending(j => j.Profile.Email);
                             break;
-
+                        case "Title":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Title)
+                                : query.OrderByDescending(j => j.Job.Title);
+                            break;
+                        case "Company":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Company)
+                                : query.OrderByDescending(j => j.Job.Company);
+                            break;
+                        case "DatePosted":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.DatePosted)
+                                : query.OrderByDescending(j => j.Job.DatePosted);
+                            break;
                         default:
                             query = request.OrderByAscending
                                    ? query.OrderBy(j => j.Job.ApplicationDeadline)
@@ -165,10 +199,25 @@ namespace RecruitXpress_BE.Controllers
                             break;
                     }
                 }
+                if (!string.IsNullOrEmpty(request.SearchString))
+                {
+                    query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
+                     s.Profile.PhoneNumber.Contains(request.SearchString) ||
+                     s.Profile.Name.Contains(request.SearchString) ||
+                     s.Job.SalaryRange.Contains(request.SearchString) ||
+                     s.Job.Industry.Contains(request.SearchString) ||
+                     s.Job.Location.Contains(request.SearchString) ||
+                     s.Job.Title.Contains(request.SearchString)||
+                     s.Job.Company.Contains(request.SearchString));
+                     
+                }
+                var pageNumber = request.Page > 0 ? request.Page : 1;
+                var pageSize = request.Size > 0 ? request.Size : 20;
                 var jobApplications = await query
-                .Skip(request.Offset)
-                 .Take(request.Limit)
-                 .ToListAsync();
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
                 var jobApplicationDTOs = _mapper.Map<List<JobApplicationDTO>>(jobApplications);
 
                 return Ok(jobApplicationDTOs);
@@ -176,25 +225,173 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception ex)
             {
-               return BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet("GetSumited")]
-        public async Task<IActionResult>getJobApplicationSubmitted(int accountId)
+        public async Task<IActionResult> getJobApplicationSubmitted([FromQuery] JobApplicationRequest request,int accountId)
         {
             try
             {
-                var account = _context.Profiles.FirstOrDefault (x=> x.AccountId== accountId);
-                if(account == null)
+                var profileId = 0;
+                if(accountId != null)
                 {
-                    return BadRequest("Account khong co profile");
+                    var getAccountId = _context.Profiles.Where(x=> x.AccountId == accountId).FirstOrDefault();
+                    if (getAccountId != null)
+                    {
+                        profileId = getAccountId.ProfileId;
+                    }
+                    else return BadRequest("Khong tim thay du lieu profile cua user nay");
                 }
-                var listJob = await _context.JobApplications.Include(x=> x.Job).Where(x => x.ProfileId == account.ProfileId).ToListAsync();
-                if(listJob == null)
+                var query = _context.JobApplications
+                .Include(q => q.Profile).ThenInclude(x => x.Schedules)
+                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
+                .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
+                .Include(q => q.Job)
+                .Include(q => q.Template).Where(x=> x.ProfileId == profileId).AsQueryable();
+
+                if (request.Location != null)
                 {
-                    return NotFound("Khong co thong tin");
+                    query = query.Where(s => s.Job != null && s.Job.Location != null && s.Job.Location.Contains(request.Location));
                 }
-                return Ok(listJob);
+
+                if (request.EmploymentType != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.EmploymentType != null && s.Job.EmploymentType.Contains(request.EmploymentType));
+                }
+
+                if (request.Industry != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry.Contains(request.Industry));
+                }
+
+                if (request.SalaryRange != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.SalaryRange != null && s.Job.SalaryRange.Contains(request.SalaryRange));
+                }
+
+                if (request.ApplicationDeadline != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.ApplicationDeadline != null && s.Job.ApplicationDeadline.Equals(request.ApplicationDeadline));
+                }
+                if (request.Title != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.Title != null && s.Job.Title.Equals(request.Title));
+                }
+                if (request.Company != null)
+                {
+                    query = query.Where(s => s.Job != null && s.Job.Company != null && s.Job.Company.Equals(request.Company));
+                }
+                if (request.NameCandidate != null)
+                {
+                    query = query.Where(s => s.Profile != null && s.Profile.Name != null && s.Profile.Name.Contains(request.NameCandidate));
+                }
+                if (request.PhoneCandidate != null)
+                {
+                    query = query.Where(s => s.Profile != null && s.Profile.PhoneNumber != null && s.Profile.PhoneNumber.Contains(request.PhoneCandidate));
+                }
+                if (request.EmailCandidate != null)
+                {
+                    query = query.Where(s => s.Profile != null && s.Profile.Email != null && s.Profile.Email.Contains(request.EmailCandidate));
+                }
+                if (request.Status != null)
+                {
+                    query = query.Where(s => s.Status != null && s.Status == (request.Status));
+                }
+                if (request.SortBy != null)
+                {
+                    switch (request.SortBy)
+                    {
+                        case "Location":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Location)
+                                : query.OrderByDescending(j => j.Job.Location);
+                            break;
+                        case "Status":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Status)
+                                : query.OrderByDescending(j => j.Status);
+                            break;
+                        case "EmploymentType":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.EmploymentType)
+                                : query.OrderByDescending(j => j.Job.EmploymentType);
+                            break;
+                        case "Industry":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Industry)
+                                : query.OrderByDescending(j => j.Job.Industry);
+                            break;
+                        case "SalaryRange":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.SalaryRange)
+                                : query.OrderByDescending(j => j.Job.SalaryRange);
+                            break;
+                        case "ApplicationDeadline":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.ApplicationDeadline)
+                                : query.OrderByDescending(j => j.Job.ApplicationDeadline);
+                            break;
+                        case "NameCandidate":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Profile.Name)
+                                : query.OrderByDescending(j => j.Profile.Name);
+                            break;
+                        case "PhoneCandidate":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Profile.PhoneNumber)
+                                : query.OrderByDescending(j => j.Profile.PhoneNumber);
+                            break;
+                        case "EmailCandidate":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Profile.Email)
+                                : query.OrderByDescending(j => j.Profile.Email);
+                            break;
+                        case "Title":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Title)
+                                : query.OrderByDescending(j => j.Job.Title);
+                            break;
+                        case "Company":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.Company)
+                                : query.OrderByDescending(j => j.Job.Company);
+                            break;
+                        case "DatePosted":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Job.DatePosted)
+                                : query.OrderByDescending(j => j.Job.DatePosted);
+                            break;
+                        default:
+                            query = request.OrderByAscending
+                                   ? query.OrderBy(j => j.Job.ApplicationDeadline)
+                                   : query.OrderByDescending(j => j.Job.ApplicationDeadline);
+                            break;
+                    }
+                }
+                if (!string.IsNullOrEmpty(request.SearchString))
+                {
+                    query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
+                     s.Profile.PhoneNumber.Contains(request.SearchString) ||
+                     s.Profile.Name.Contains(request.SearchString) ||
+                     s.Job.SalaryRange.Contains(request.SearchString) ||
+                     s.Job.Industry.Contains(request.SearchString) ||
+                     s.Job.Location.Contains(request.SearchString) ||
+                     s.Job.Title.Contains(request.SearchString) ||
+                     s.Job.Company.Contains(request.SearchString));
+
+                }
+                var pageNumber = request.Page > 0 ? request.Page : 1;
+                var pageSize = request.Size > 0 ? request.Size : 20;
+                var jobApplications = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                var jobApplicationDTOs = _mapper.Map<List<JobApplicationDTO>>(jobApplications);
+
+                return Ok(jobApplicationDTOs);
 
             }
             catch (Exception ex)
@@ -207,9 +404,9 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var detailJob = await _context.JobApplications.Include(x => x.Job).Include(x=> x.Template)
-                    .FirstOrDefaultAsync(x=> x.ApplicationId == jobApplyId);
-                if(detailJob == null)
+                var detailJob = await _context.JobApplications.Include(x => x.Job).Include(x => x.Template)
+                    .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
+                if (detailJob == null)
                 {
                     return NotFound("Khong co ket qua");
                 }
@@ -221,8 +418,8 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("PutJobApp")]
-        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? profileId,int? Status)
+        [HttpPut("UpdateStatus")]
+        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? Status)
         {
             try
             {
@@ -231,10 +428,14 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return NotFound("Khong co ket qua");
                 }
-                if(Status != null)
+                if (Status != null)
                 {
-                    detailJob.Status = 2;
-                     _context.Update(detailJob);
+                    detailJob.Status = Status;
+                    if (accountId != null)
+                    {
+                        detailJob.AssignedFor = accountId;
+                    }
+                    _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     return Ok("Cập nhật trạng thái thành công");
                 }
@@ -247,7 +448,7 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("PutJobApp1")]
+        [HttpPut("Resubmit")]
         public async Task<IActionResult> ResubmitjobApplication(int jobApplyId, int profileId)
         {
             try
@@ -258,14 +459,14 @@ namespace RecruitXpress_BE.Controllers
                     return NotFound("Khong tim thay ban ghi submit");
                 }
                 var account = _context.Profiles.FirstOrDefaultAsync(x => x.ProfileId == profileId);
-                if(account == null)
+                if (account == null)
                 {
                     return BadRequest("Account khong co profile ");
                 }
-                var check = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == account.Id);
+                var check = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == account.Id);
                 if (check == null)
                 {
-                    if(check.TemplateId == detailJob.TemplateId)
+                    if (check.TemplateId == detailJob.TemplateId)
                     {
                         return BadRequest("Ban da submit job nay roi, de submit lai voi CV moi hay update CV cua ban");
                     }

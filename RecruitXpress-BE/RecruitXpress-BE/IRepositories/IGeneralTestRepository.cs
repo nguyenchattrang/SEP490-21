@@ -11,5 +11,6 @@ namespace RecruitXpress_BE.IRepositories
         Task CreateGeneralTest(GeneralTest generalTest);
         Task UpdateGeneralTest(int generalTestId, GeneralTest generalTest);
         Task<bool> DeleteGeneralTest(int generalTestId);
+        Task SubmitGeneralTest(GeneralTest generalTest);
     }
 }

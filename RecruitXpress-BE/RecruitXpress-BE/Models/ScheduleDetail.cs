@@ -7,16 +7,18 @@ namespace RecruitXpress_BE.Models
     {
         public int ScheduleDetailId { get; set; }
         public int? ScheduleId { get; set; }
-        public int? ProfileId { get; set; }
-        public TimeSpan? TimeStart { get; set; }
-        public TimeSpan? TimeEnd { get; set; }
-        public string? Strengths { get; set; }
-        public string? Weaknesses { get; set; }
-        public string? Result { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public int? CreatedBy { get; set; }
+        public int? CandidateId { get; set; }
+        public int? ScheduleType { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string? Note { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public DateTime? UpdatedTime { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
+        public int? Status { get; set; }
 
-        public virtual Profile? Profile { get; set; }
+        public virtual Profile? Candidate { get; set; }
         public virtual Schedule? Schedule { get; set; }
     }
 }

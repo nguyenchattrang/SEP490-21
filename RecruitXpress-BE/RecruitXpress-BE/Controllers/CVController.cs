@@ -28,7 +28,7 @@ namespace RecruitXpress_BE.Controllers
             {
                 if (accountId != null)
                 {
-                    var check = await _context.Cvtemplates.SingleOrDefaultAsync(x => x.AccountId == accountId);
+                    var check = await _context.CandidateCvs.SingleOrDefaultAsync(x => x.AccountId == accountId);
                     if(check != null)
                     {
                         await DeleteCVEsxit(accountId);
@@ -42,7 +42,8 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Please upload file");
                 }
-                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CVTemplates"));
+                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -62,16 +63,16 @@ namespace RecruitXpress_BE.Controllers
                     await fileData.CopyToAsync(fileStream);
                 }
                
-                var fileMeterial = new Cvtemplate()
+                var fileMeterial = new CandidateCv()
                 {
                     AccountId = accountId,
                     Status = 1,
-                    Url = path + "\\" + fileName,
+                    Url = "\\" + fileName,
                     CreatedAt = DateTime.Now,
 
                 };
                
-                    var result = _context.Cvtemplates.Add(fileMeterial);
+                    var result = _context.CandidateCvs.Add(fileMeterial);
                     await _context.SaveChangesAsync();
                     return Ok("Thêm CV thành công ");
                 
@@ -85,12 +86,14 @@ namespace RecruitXpress_BE.Controllers
         [HttpGet("cvtemplateId")]
         public async Task<IActionResult> DownloadCV(int cvId)
         {
-            var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.TemplateId == cvId);
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
             if (result == null)
             {
                 return NotFound("File not found!");
             }
-            var filePath = result.Url;
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+            
+            var filePath = path + result.Url;
            
             if (!System.IO.File.Exists(filePath))
             {
@@ -106,14 +109,15 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                 var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.TemplateId == cvId);
+                var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
                 if(result == null)
                 {
                     return NotFound("File not found!");
                 }
-                var filePath = result.Url;
+                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+                var filePath = path + result.Url;
                 System.IO.File.Delete(filePath);
-                _context.Cvtemplates.Remove(result);
+                _context.CandidateCvs.Remove(result);
                 await _context.SaveChangesAsync();
                 return Ok("Xóa thành công");
             }
@@ -127,14 +131,15 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var result = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == accountId);
+                var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accountId);
                 if (result == null)
                 {
                     return BadRequest("Xoa CV fail");
                 }
-                var filePath = result.Url;
+                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+                var filePath = path + result.Url;
                 System.IO.File.Delete(filePath);
-                _context.Cvtemplates.Remove(result);
+                _context.CandidateCvs.Remove(result);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
@@ -148,7 +153,7 @@ namespace RecruitXpress_BE.Controllers
         {
             if (accountId == null) return BadRequest("AccountId dau ?");
             
-            var cv = await _context.Cvtemplates.FirstOrDefaultAsync(x => x.AccountId == accountId);
+            var cv = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accountId);
             if (cv == null)
             {
                 return BadRequest("Khong tim thay CV");

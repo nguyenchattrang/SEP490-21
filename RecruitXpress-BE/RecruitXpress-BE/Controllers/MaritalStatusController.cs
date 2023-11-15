@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -11,37 +13,48 @@ namespace RecruitXpress_BE.Controllers
 
     public class MaritalStatusController : ControllerBase
     {
-        public readonly IMaritalStatusRepository _maritalStatusRepository;
-        public MaritalStatusController(IMaritalStatusRepository repository)
+        private readonly RecruitXpressContext _context;
+        public IMapper _mapper;
+        public MaritalStatusController(RecruitXpressContext context, IMapper mapper)
         {
-
-            _maritalStatusRepository = repository;
+            _context = context;
+            _mapper = mapper;
         }
         //GET: api/MaritalStatusManagement
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MaritalStatus>>> GetListMaritalStatus() => await _maritalStatusRepository.GetListMaritalStatus();
-
-        //GET: api/MaritalStatusManagement/{id}
-        [HttpGet("id")]
-        public async Task<ActionResult<MaritalStatus>> GetMaritalStatus(int id)
+        [HttpGet("get")]
+        public async Task<IActionResult> GetMaritalStatus(int accountId)
         {
-            var maritalStatus = await _maritalStatusRepository.GetMaritalStatus(id);
-            if (maritalStatus == null)
+            if(accountId == null)
             {
-                return NotFound();
+                return BadRequest("AccountId dau ?");
+            }
+            var profile = await _context.Profiles.FirstOrDefaultAsync(x=> x.AccountId ==accountId);
+            if(profile == null)
+            {
+                return BadRequest("Chua co profile");
             }
 
-            return maritalStatus;
+            var result = await _context.MaritalStatuses.FirstOrDefaultAsync(x=>x.StatusId == profile.StatusId);
+            if(result == null)
+            {
+                return StatusCode(404, "Khong co du lieu");
+            }
+            return Ok(result);
         }
 
         //POST: api/MaritalStatusManagement
         [HttpPost]
-        public async Task<ActionResult<MaritalStatus>> AddMaritalStatus(MaritalStatus maritalStatus)
+        public async Task<IActionResult> AddMaritalStatus(MaritalStatus maritalStatus,int accountId)
         {
             try
             {
-                var result = await _maritalStatusRepository.AddMaritalStatus(maritalStatus);
-                return CreatedAtAction(nameof(AddMaritalStatus), result);
+                var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
+                if (profile == null) return NotFound("Account chua co profile");
+
+                var create = _context.MaritalStatuses.Add(maritalStatus).Entity;
+                profile.StatusId = create.StatusId;
+                _context.SaveChanges();
+                return Ok("Thêm thành công");
             }
             catch (Exception e)
             {
@@ -52,37 +65,44 @@ namespace RecruitXpress_BE.Controllers
 
         //PUT: api/MaritalStatusManagement/{id}
         [HttpPut("id")]
-        public async Task<ActionResult<MaritalStatus>> UpdateMaritalStatus(int id, MaritalStatus maritalStatus)
+        public async Task<IActionResult> UpdateMaritalStatus(MaritalStatus maritalStatus)
         {
-            //if (id != maritalStatus.StatusId)
-            //{
-            //    return BadRequest();
-            //}
+           
             try
             {
-                var result = await _maritalStatusRepository.UpdateMaritalStatus(id, maritalStatus);
-                return CreatedAtAction(nameof(UpdateMaritalStatus), result);
+                _context.Entry(maritalStatus).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return Ok("Cập nhật thành công");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return NotFound();
+                
+                return BadRequest(e.Message);
             }
         }
 
         //DELETE: api/MaritalStatusManagement
         [HttpDelete("id")]
-        public IActionResult DeleteMaritalStatus(int id)
+        public async Task<IActionResult> DeleteMaritalStatus(int martialStatusId)
         {
             try
             {
-                _maritalStatusRepository.DeleteMaritalStatus(id);
-                return Ok();
+                var result = await _context.MaritalStatuses.FirstOrDefaultAsync(x => x.StatusId == martialStatusId);
+                if (result != null)
+                {
+                    _context.Remove(result);
+                    await _context.SaveChangesAsync();
+                    return Ok("Thành công");
+                }
+                else
+                {
+                    return NotFound("Không tồn tại");
+                }
+
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return NotFound();
+                return BadRequest(e.Message);
             }
         }
     }
