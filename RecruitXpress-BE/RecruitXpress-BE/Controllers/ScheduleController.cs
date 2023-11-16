@@ -38,7 +38,7 @@ public class ScheduleController : ControllerBase
             }
             catch (Exception e)
             {
-                return StatusCode(500, "Server error!");
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -53,7 +53,7 @@ public class ScheduleController : ControllerBase
             }
             catch (Exception e)
             {
-                return BadRequest("Add Schedule failed!");
+                return BadRequest(e.Message);
             }
         }
 
@@ -69,7 +69,7 @@ public class ScheduleController : ControllerBase
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return BadRequest("Update Job Posting failed!");
+                return BadRequest(e.Message);
             }
         }
         
@@ -86,13 +86,13 @@ public class ScheduleController : ControllerBase
                 }
                 else
                 {
-                    return NotFound("Job Posting not found!");
+                    return NotFound("Schedule not found!");
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return StatusCode(500, "Delete Job Posting failed!");
+                return StatusCode(500, e.Message);
             }
         }
     
