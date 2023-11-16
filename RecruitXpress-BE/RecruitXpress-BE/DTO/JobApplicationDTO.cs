@@ -18,6 +18,31 @@ namespace RecruitXpress_BE.DTO
 
         public virtual CvtemplateDTO? Template { get; set; }
 
+        public virtual ICollection<GeneralTestDetail> GeneralTestDetails { get; set; }
+        public virtual GeneralTestDTO? GeneralTest { get; set; }
+        public virtual ScheduleDTO? Schedule { get; set; }
+        public virtual ScheduleDetailDTO? ScheduleDetail { get; set; }
+        public virtual EvaluateDTO? Evaluate { get; set; }
+
+        public virtual ExamDTO? Exam { get; set; }
+
+
+    }
+    public partial class ScheduleDetailDTO
+    {
+        public int ScheduleDetailId { get; set; }
+        public int? ScheduleId { get; set; }
+        public int? CandidateId { get; set; }
+        public int? ScheduleType { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string? Note { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public DateTime? UpdatedTime { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
+        public int? Status { get; set; }
+
     }
     public partial class LoggingDTO
     {
