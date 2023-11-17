@@ -23,7 +23,7 @@ namespace RecruitXpress_BE.Repositories
 
 
 
-        public async Task<IEnumerable<GeneralTestDTO>> GetAllGeneralTests(GeneralTestRequest request)
+        public async Task<ApiResponse<GeneralTestDTO>> GetAllGeneralTests(GeneralTestRequest request)
         {
             var query = _context.GeneralTests
                 .Include(gt => gt.GeneralTestDetails)
@@ -87,6 +87,7 @@ namespace RecruitXpress_BE.Repositories
                         break;
                 }
             }
+            var totalCount = await query.CountAsync();
 
             var pageNumber = request.Page > 0 ? request.Page : 1;
             var pageSize = request.Size > 0 ? request.Size : 20;
@@ -97,7 +98,12 @@ namespace RecruitXpress_BE.Repositories
 
             var generalTestDTOs = _mapper.Map<List<GeneralTestDTO>>(generalTests);
 
-            return generalTestDTOs;
+            var response = new ApiResponse<GeneralTestDTO>
+            {
+                Items = generalTestDTOs,
+                TotalCount = totalCount,
+            };
+            return response;
         }
 
 

@@ -6,7 +6,7 @@ namespace RecruitXpress_BE.IRepositories
 {
     public interface IEmailTemplateRepository
     {
-        Task<List<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request);
+        Task<ApiResponse<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request);
 
         Task<EmailTemplate> GetEmailTemplateById(int templateId);
         Task CreateEmailTemplate(EmailTemplate emailTemplate);

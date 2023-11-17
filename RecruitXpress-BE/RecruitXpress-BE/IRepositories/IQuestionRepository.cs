@@ -8,7 +8,7 @@ namespace RecruitXpress_BE.IRepositories
     {
         Task SetUpLevelOfGeneralTests(int easy, int medium, int hard);
         Task<IEnumerable<ExamQuestionDTO>> GenerateATest();
-        Task<IEnumerable<QuestionDTO>> GetAllQuestions(QuestionRequest request);
+        Task<ApiResponse<QuestionDTO>> GetAllQuestions(QuestionRequest request);
 
         Task CreateQuestion(Question question);
 
