@@ -7,7 +7,7 @@ namespace RecruitXpress_BE.IRepositories
     public interface ISpecializedExamRepository
     {
 
-        Task<IEnumerable<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest specializedExamRequest);
+        Task<ApiResponse<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest request);
         Task<SpecializedExamDTO> GetSpecializedExamById(int examId);
         Task<SpecializedExamDTO> GetSpecializedExamByCode(string code);
         Task AddSpecializedExam(SpecializedExam exam);

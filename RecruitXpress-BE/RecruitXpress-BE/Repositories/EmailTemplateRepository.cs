@@ -16,7 +16,7 @@ namespace RecruitXpress_BE.Repositories
             _sender = sender;
         }
 
-        public async Task<List<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request)
+        public async Task<ApiResponse<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request)
         {
             IQueryable<EmailTemplate> query = _context.EmailTemplates;
 
@@ -77,15 +77,23 @@ namespace RecruitXpress_BE.Repositories
                         break;
                 }
             }
+            var totalCount = await query.CountAsync();
 
             var pageNumber = request.Page > 0 ? request.Page : 1;
             var pageSize = request.Size > 0 ? request.Size : 20;
-            var questions = await query
+            var emails = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            return await query.ToListAsync();
+
+
+            var response = new ApiResponse<EmailTemplate>
+            {
+                Items = emails,
+                TotalCount = totalCount,
+            };
+            return response;
         }
 
         public async Task<EmailTemplate> GetEmailTemplateById(int templateId)

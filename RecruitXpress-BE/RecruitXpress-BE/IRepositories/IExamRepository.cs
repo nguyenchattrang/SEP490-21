@@ -5,9 +5,9 @@ namespace RecruitXpress_BE.IRepositories
 {
     public interface IExamRepository
     {
-        Task<List<ExamDTO>> GetAllExams(ExamRequest request);
-        Task<List<ExamDTO>> GetListExamWithSpecializedExamId(ExamRequest request, int sid);
-        Task<List<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code, string expertEmail);
+        Task<ApiResponse<ExamDTO>> GetAllExams(ExamRequest request);
+        Task<ApiResponse<ExamDTO>> GetListExamWithSpecializedExamId(ExamRequest request, int sid);
+        Task<ApiResponse<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code, string expertEmail);
         Task<ExamDTO> GetExamById(int examId);
         Task<Exam> CreateExamWithFile(ExamRequestClass exam, IFormFile fileData);
         Task UpdateExam(Exam exam);

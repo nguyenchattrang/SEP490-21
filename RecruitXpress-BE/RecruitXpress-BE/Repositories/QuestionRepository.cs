@@ -56,7 +56,7 @@ namespace RecruitXpress_BE.Repositories
 
             return generatedTest;
         }
-        public async Task<IEnumerable<QuestionDTO>> GetAllQuestions(QuestionRequest request)
+        public async Task<ApiResponse<QuestionDTO>> GetAllQuestions(QuestionRequest request)
         {
             var query = _context.Questions
                 .Include(q => q.Options)
@@ -106,15 +106,23 @@ namespace RecruitXpress_BE.Repositories
                 }
             }
 
+            var totalCount = await query.CountAsync();
+
             var pageNumber = request.Page > 0 ? request.Page : 1;
             var pageSize = request.Size > 0 ? request.Size : 20;
             var questions = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
             var questionDTOs = _mapper.Map<List<QuestionDTO>>(questions);
 
-            return questionDTOs;
+            var response = new ApiResponse<QuestionDTO>
+            {
+                Items = questionDTOs,
+                TotalCount = totalCount,
+            };
+            return response;
         }
 
 

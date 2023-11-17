@@ -18,7 +18,7 @@ namespace RecruitXpress_BE.Repositories
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest request)
+        public async Task<ApiResponse<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest request)
         {
             var query = _context.SpecializedExams.Include(s => s.CreatedByNavigation).AsQueryable();
 
@@ -91,6 +91,8 @@ namespace RecruitXpress_BE.Repositories
                         break;
                 }
             }
+            //dem
+            var totalCount = await query.CountAsync();
 
             var pageNumber = request.Page > 0 ? request.Page : 1;
             var pageSize = request.Size > 0 ? request.Size : 20;
@@ -100,7 +102,15 @@ namespace RecruitXpress_BE.Repositories
                 .Take(pageSize)
                 .ToListAsync();
             var specializedExamDTOs = _mapper.Map<List<SpecializedExamDTO>>(specializedExams);
-            return specializedExamDTOs;
+
+        
+
+            var response = new ApiResponse<SpecializedExamDTO>
+            {
+                Items = specializedExamDTOs,
+                TotalCount = totalCount,
+            };
+            return response;
         }
 
         public async Task<SpecializedExamDTO> GetSpecializedExamById(int examId)
