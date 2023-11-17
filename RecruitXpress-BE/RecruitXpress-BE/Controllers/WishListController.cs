@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -18,7 +19,7 @@ public class WishListController : ControllerBase
 
     //GET: api/WishList
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<WishList>>> GetListWishLists(int accountId, string? searchString, string? orderBy,
+    public async Task<ActionResult<IEnumerable<WishListDTO>>> GetListWishLists(int accountId, string? searchString, string? orderBy,
         bool? isSortAscending, int page, int size) =>
         await _wishListRepository.GetListWishLists(accountId, searchString, orderBy, isSortAscending, page, size);
 

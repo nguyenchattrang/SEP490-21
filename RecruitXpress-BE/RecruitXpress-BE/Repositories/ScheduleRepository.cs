@@ -33,6 +33,7 @@ public class ScheduleRepository : IScheduleRepository
                 .Include(s => s.HumanResource)
                 .Include(s => s.ScheduleDetails)
                 .ThenInclude(sd => sd.Candidate)
+                .ThenInclude(ja => ja.Profile)
                 .Include(s => s.Interviewers)
                 .ThenInclude(i => i.InterviewerNavigation)
                 .Select(s => new ScheduleDTO()
@@ -65,7 +66,7 @@ public class ScheduleRepository : IScheduleRepository
                     break;
                 case Constant.ROLE.CANDIDATE:
                     query = query.Where(s =>
-                        s.ScheduleDetails.Select(sd => sd.Candidate.AccountId).Contains(accountId));
+                        s.ScheduleDetails.Select(sd => sd.Candidate.Profile.AccountId).Contains(accountId));
                     break;
                 default:
                     query = query.Where(s => s.HumanResource.AccountId == accountId);
@@ -84,7 +85,7 @@ public class ScheduleRepository : IScheduleRepository
                 };
                 foreach (var scheduleDetail in scheduleDto.ScheduleDetails)
                 {
-                    scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Name;
+                    scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Profile.Name;
                     scheduleAdditionDataDTO.type = scheduleDetail.ScheduleType ?? (scheduleAdditionDataDTO.InterviewerName.Count > 0 ? 1 : 2);
                     var scheduleDate = scheduleDetail.StartDate.Value;
                     if (!scheduleAdditionDataResult.Exists(result => result.Year == scheduleDate.Year))
@@ -185,7 +186,7 @@ public class ScheduleRepository : IScheduleRepository
 
             foreach (var scheduleDetail in scheduleDTO.ScheduleDetails)
             {
-                var candidateProfile = await _context.Profiles.Where(p => p.AccountId == scheduleDetail.CandidateId).FirstOrDefaultAsync();
+                var candidateProfile = await _context.Profiles.Where(p => p.AccountId == scheduleDetail.Candidate.Profile.AccountId).FirstOrDefaultAsync();
                 if (candidateProfile == null)
                 {
                     throw new Exception("Candidate is not exist!");
@@ -260,7 +261,7 @@ public class ScheduleRepository : IScheduleRepository
 
             foreach (var scheduleDetail in scheduleDTO.ScheduleDetails)
             {
-                var candidateProfile = await _context.Profiles.Where(p => p.AccountId == scheduleDetail.CandidateId).FirstOrDefaultAsync();
+                var candidateProfile = await _context.Profiles.Where(p => p.AccountId == scheduleDetail.Candidate.Profile.AccountId).FirstOrDefaultAsync();
                 if (candidateProfile == null)
                 {
                     throw new Exception("Candidate is not exist!");
