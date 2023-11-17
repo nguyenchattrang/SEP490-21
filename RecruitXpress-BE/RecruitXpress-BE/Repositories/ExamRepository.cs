@@ -24,7 +24,7 @@ namespace RecruitXpress_BE.Repositories
             _configuration = configuration;
         }
 
-        public async Task<List<ExamDTO>> GetAllExams(ExamRequest request)
+        public async Task<ApiResponse<ExamDTO>> GetAllExams(ExamRequest request)
         {
             var query = _context.Exams
        .Include(e => e.Account)
@@ -96,6 +96,7 @@ namespace RecruitXpress_BE.Repositories
                         break;
                 }
             }
+            var totalCount = await query.CountAsync();
 
             var pageNumber = request.Page > 0 ? request.Page : 1;
             var pageSize = request.Size > 0 ? request.Size : 20;
@@ -106,10 +107,17 @@ namespace RecruitXpress_BE.Repositories
                 .ToListAsync();
 
             var examDTOs = _mapper.Map<List<ExamDTO>>(exams);
-            return examDTOs;
+           
+
+            var response = new ApiResponse<ExamDTO>
+            {
+                Items = examDTOs,
+                TotalCount = totalCount,
+            };
+            return response;
         }
 
-        public async Task<List<ExamDTO>> GetListExamWithSpecializedExamId(ExamRequest request, int sid)
+        public async Task<ApiResponse<ExamDTO>> GetListExamWithSpecializedExamId(ExamRequest request, int sid)
         {
             var query = _context.Exams
             .Where(e => e.SpecializedExamId == sid)
@@ -182,7 +190,7 @@ namespace RecruitXpress_BE.Repositories
                         break;
                 }
             }
-
+            var totalCount = await query.CountAsync();
             var pageNumber = request.Page > 0 ? request.Page : 1;
             var pageSize = request.Size > 0 ? request.Size : 20;
 
@@ -192,7 +200,12 @@ namespace RecruitXpress_BE.Repositories
                 .ToListAsync();
 
             var examDTOs = _mapper.Map<List<ExamDTO>>(exams);
-            return examDTOs;
+            var response = new ApiResponse<ExamDTO>
+            {
+                Items = examDTOs,
+                TotalCount = totalCount,
+            };
+            return response;
         }
 
         public async Task<ExamDTO> GetExamById(int examId)
@@ -201,7 +214,7 @@ namespace RecruitXpress_BE.Repositories
             return _mapper.Map<ExamDTO>(exam);
         }
 
-        public async Task<List<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code, string expertEmail)
+        public async Task<ApiResponse<ExamDTO>> GetListExamWithSpecializedExamCode(ExamRequest request, string code, string expertEmail)
         {
             var allowed = await _context.AccessCodes
                  .Where(s => s.ExamCode.Contains(code) && s.Email.Equals(expertEmail) && s.ExpirationTimestamp > DateTime.Now).FirstOrDefaultAsync();
@@ -286,7 +299,7 @@ namespace RecruitXpress_BE.Repositories
                         break;
                 }
             }
-
+            var totalCount = await query.CountAsync();
             var pageNumber = request.Page > 0 ? request.Page : 1;
             var pageSize = request.Size > 0 ? request.Size : 20;
 
@@ -296,7 +309,12 @@ namespace RecruitXpress_BE.Repositories
                 .ToListAsync();
 
             var examDTOs = _mapper.Map<List<ExamDTO>>(exams);
-            return examDTOs;
+            var response = new ApiResponse<ExamDTO>
+            {
+                Items = examDTOs,
+                TotalCount = totalCount,
+            };
+            return response;
         }
         public async Task<Exam> CreateExamWithFile(ExamRequestClass exam, IFormFile fileData)
         {

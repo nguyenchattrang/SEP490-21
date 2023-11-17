@@ -6,7 +6,7 @@ namespace RecruitXpress_BE.IRepositories
 {
     public interface IGeneralTestRepository
     {
-        Task<IEnumerable<GeneralTestDTO>> GetAllGeneralTests(GeneralTestRequest request);
+        Task<ApiResponse<GeneralTestDTO>> GetAllGeneralTests(GeneralTestRequest request);
         Task<GeneralTestDTO> GetGeneralTestById(int generalTestId);
         Task CreateGeneralTest(GeneralTest generalTest);
         Task UpdateGeneralTest(int generalTestId, GeneralTest generalTest);
