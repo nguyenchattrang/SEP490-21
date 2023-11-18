@@ -23,7 +23,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet("ShortListing")]
-        public async Task<IActionResult> GetShortListing(int jobId)
+      /*  public async Task<IActionResult> GetShortListing(int jobId)
         {
             try
             {
@@ -31,19 +31,19 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Thieu jobId");
                 }
-            var profile = await _context.ShortListings.Where(x=> x.JobId == jobId && x.Status ==1).ToListAsync();
-            if (profile == null)
-            {
-                return NotFound("Không kết quả");
-            }
+                var profile = await _context.ShortListings.Where(x => x.JobId == jobId && x.Status == 1).ToListAsync();
+                if (profile == null)
+                {
+                    return NotFound("Không kết quả");
+                }
 
-            return Ok(profile);
+                return Ok(profile);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
 
         //POST: api/ProfileManagement
         [HttpPost]
@@ -57,7 +57,7 @@ namespace RecruitXpress_BE.Controllers
                     var data = shortlisting;
                     data.CreatedAt = DateTime.Now;
                     data.Status = 1;
-                    _context.ShortListings.Add(data);
+               /*     _context.ShortListings.Add(data);*/
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿/*using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.IRepositories;
@@ -48,11 +48,11 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("getAll")]
-        public async Task<IActionResult> GetAll()
+  *//*      public async Task<IActionResult> GetAll()
         {
             try
             {
-                var data = await _context.ReferenceCheckings.Include(x=>x.Profile).ToListAsync();
+               *//* var data = await _context.ReferenceCheckings.Include(x=>x.Profile).ToListAsync();*//*
                 if (data == null)
                 {
                     return NotFound("Không kết quả");
@@ -63,7 +63,7 @@ namespace RecruitXpress_BE.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*//*
         //POST: api/ProfileManagement
         [HttpPost]
         public async Task<IActionResult> AddReference(ReferenceChecking referenceChecking, int accountId)
@@ -80,7 +80,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     var data = referenceChecking;
                     data.ProfileId = profile.AccountId;
-                    _context.ReferenceCheckings.Add(data);
+              *//*      _context.ReferenceCheckings.Add(data);*//*
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }
@@ -118,3 +118,4 @@ namespace RecruitXpress_BE.Controllers
        
     }
 }
+*/

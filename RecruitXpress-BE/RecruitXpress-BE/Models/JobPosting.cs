@@ -8,7 +8,6 @@ namespace RecruitXpress_BE.Models
         public JobPosting()
         {
             JobApplications = new HashSet<JobApplication>();
-            ShortListings = new HashSet<ShortListing>();
             WishLists = new HashSet<WishList>();
         }
 
@@ -28,7 +27,6 @@ namespace RecruitXpress_BE.Models
         public int? Status { get; set; }
 
         public virtual ICollection<JobApplication> JobApplications { get; set; }
-        public virtual ICollection<ShortListing> ShortListings { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
     }
 }
