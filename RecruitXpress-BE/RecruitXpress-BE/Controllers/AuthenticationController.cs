@@ -256,7 +256,7 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            var user = await _context.Accounts.Include(a => a.Role).SingleOrDefaultAsync(u => u.Account1 == model.Username);
+            var user = await _context.Accounts.Include(a => a.Role).Include(r => r.Profiles).Include(c => c.CandidateCvs).SingleOrDefaultAsync(u => u.Account1 == model.Username);
 
 
             if (user != null)
@@ -289,6 +289,7 @@ namespace RecruitXpress_BE.Controllers
                         new Claim("UserId", user.AccountId.ToString()),
                         new Claim(ClaimTypes.Name, user.Account1),
                         new Claim(ClaimTypes.Role, user.Role.RoleName),
+                       
                     },
                     expires: DateTime.Now.AddHours(6),
                     signingCredentials: signinCredentials
@@ -300,7 +301,9 @@ namespace RecruitXpress_BE.Controllers
                     Token = tokenString,
                     AccountId = user.AccountId,
                     UserName = user.Account1,
-                    RoleId = user.RoleId
+                    RoleId = user.RoleId,
+                    IsProfile = (user.Profiles != null && user.Profiles.Any()).ToString().ToLower(),
+                    IsCV = (user.CandidateCvs != null && user.CandidateCvs.Any()).ToString().ToLower(),
                 });
             }
 
@@ -327,91 +330,91 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(403, "Code của bạn đã hết hạn để đăng nhập");
             }
             else
-            {     
+            {
 
-            // Retrieve the secret key from appsettings.json
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                // Retrieve the secret key from appsettings.json
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
-            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-            var tokeOptions = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Audience"],
-                audience: _configuration["Jwt:Issuer"],
-                claims: new List<Claim>()
-                {
+                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var tokeOptions = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Audience"],
+                    audience: _configuration["Jwt:Issuer"],
+                    claims: new List<Claim>()
+                    {
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                         new Claim("UserId", user.Email),
                         new Claim(ClaimTypes.Role, "Expert"),
-                },
-                expires: DateTime.Now.AddHours(6),
-                signingCredentials: signinCredentials
-            );
+                    },
+                    expires: DateTime.Now.AddHours(6),
+                    signingCredentials: signinCredentials
+                );
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-            return Ok(new
-            {
-                Token = tokenString,
-                Email = user.Email,
-                RoleId = 5,
-                ExamCode = user.ExamCode,
-            });
-        }
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+                return Ok(new
+                {
+                    Token = tokenString,
+                    Email = user.Email,
+                    RoleId = 5,
+                    ExamCode = user.ExamCode,
+                });
+            }
 
             return Unauthorized();
-    }
-
-
-    private bool CheckPassword(Account? user, LoginModel? login)
-    {
-        if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
-        {
-            return true;
         }
 
 
-        else return false;
-    }
-
-    [HttpPost("RevokeToken")]
-    public async Task<IActionResult> RevokeToken(string token)
-    {
-        try
+        private bool CheckPassword(Account? user, LoginModel? login)
         {
-            var emailtoken = await _context.EmailTokens.SingleOrDefaultAsync(t => t.Token == token);
-            if (emailtoken != null)
+            if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
             {
-                emailtoken.IsRevoked = true;
-                _context.Update(emailtoken);
-                await _context.SaveChangesAsync();
-                return Ok();
+                return true;
             }
-            else
-            {
-                return BadRequest("Invalid Token");
-            }
+
+
+            else return false;
         }
-        catch
+
+        [HttpPost("RevokeToken")]
+        public async Task<IActionResult> RevokeToken(string token)
         {
-            return StatusCode(500);
+            try
+            {
+                var emailtoken = await _context.EmailTokens.SingleOrDefaultAsync(t => t.Token == token);
+                if (emailtoken != null)
+                {
+                    emailtoken.IsRevoked = true;
+                    _context.Update(emailtoken);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Invalid Token");
+                }
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("auth/google")]
+        public ActionResult<string> GoogleAuth(string redirectUrl)
+        {
+            return _googleService.GetAuthUrl(redirectUrl);
+        }
+
+        [HttpGet]
+        [Route("/auth/callback")]
+        public async Task<IActionResult> Callback()
+        {
+            string code = HttpContext.Request.Query["code"];
+            string scope = HttpContext.Request.Query["scope"];
+
+            //get token method
+            var token = await _googleService.GetTokens(code);
+            return Ok(token);
         }
     }
-
-    [HttpGet]
-    [Route("auth/google")]
-    public ActionResult<string> GoogleAuth(string redirectUrl)
-    {
-        return _googleService.GetAuthUrl(redirectUrl);
-    }
-
-    [HttpGet]
-    [Route("/auth/callback")]
-    public async Task<IActionResult> Callback()
-    {
-        string code = HttpContext.Request.Query["code"];
-        string scope = HttpContext.Request.Query["scope"];
-
-        //get token method
-        var token = await _googleService.GetTokens(code);
-        return Ok(token);
-    }
-}
 }
