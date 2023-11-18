@@ -18,7 +18,7 @@ namespace RecruitXpress_BE.Models
         public string? UpdatedBy { get; set; }
         public int? Status { get; set; }
 
-        public virtual Profile? Candidate { get; set; }
+        public virtual JobApplication? Candidate { get; set; }
         public virtual Schedule? Schedule { get; set; }
     }
 }

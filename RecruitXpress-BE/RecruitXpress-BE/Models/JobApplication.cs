@@ -5,6 +5,11 @@ namespace RecruitXpress_BE.Models
 {
     public partial class JobApplication
     {
+        public JobApplication()
+        {
+            ScheduleDetails = new HashSet<ScheduleDetail>();
+        }
+
         public int ApplicationId { get; set; }
         public int? JobId { get; set; }
         public int? ProfileId { get; set; }
@@ -16,5 +21,6 @@ namespace RecruitXpress_BE.Models
         public virtual JobPosting? Job { get; set; }
         public virtual Profile? Profile { get; set; }
         public virtual CandidateCv? Template { get; set; }
+        public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
     }
 }

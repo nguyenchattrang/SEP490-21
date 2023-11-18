@@ -68,9 +68,9 @@ namespace RecruitXpress_BE.Controllers
             {
                
                 var query = _context.JobApplications
-                .Include(q => q.Profile).ThenInclude(x=> x.ScheduleDetails).ThenInclude(x=> x.Schedule)
+              /*  .Include(q => q.Profile).ThenInclude(x=> x.ScheduleDetails).ThenInclude(x=> x.Schedule)*/
                 .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-                .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)
+              /*  .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)*/
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x=> x.GeneralTestDetails)
                 .Include(q => q.Job)
                 .Include(q => q.Template).AsQueryable();
@@ -244,9 +244,9 @@ namespace RecruitXpress_BE.Controllers
                     else return BadRequest("Khong tim thay du lieu profile cua user nay");
                 }
                 var query = _context.JobApplications
-                .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails).ThenInclude(x => x.Schedule)
+         /*       .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails).ThenInclude(x => x.Schedule)*/
                 .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-                .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)
+          /*      .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)*/
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job)
                 .Include(q => q.Template).Where(x=> x.ProfileId == profileId).AsQueryable();

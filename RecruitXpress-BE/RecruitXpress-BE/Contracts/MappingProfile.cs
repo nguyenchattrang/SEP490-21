@@ -14,8 +14,8 @@ namespace RecruitXpress_BE.Contracts
         {
             CreateMap<JobApplication, JobApplicationDTO>()
                 .ForMember(dest => dest.GeneralTest, opt => opt.MapFrom(src => src.Profile.GeneralTests))
-             /*   .ForMember(dest => dest.Schedule, opt => opt.MapFrom(src => src.Profile.Schedules))*/
-                .ForMember(dest => dest.ScheduleDetail, opt => opt.MapFrom(src => src.Profile.ScheduleDetails))
+                .ForMember(dest => dest.Schedule, opt => opt.MapFrom(src => src.Profile.Schedules))
+                /*         .ForMember(dest => dest.ScheduleDetail, opt => opt.MapFrom(src => src.Profile.ScheduleDetails))*/
                 .ForMember(dest => dest.Evaluate, opt => opt.MapFrom(src => src.Profile.Evaluates))
                 .ForMember(dest => dest.Exam, opt => opt.MapFrom(src => src.Profile.Account.Exams));
             CreateMap<ComputerProficiency, ComputerProficiencyDTO>();

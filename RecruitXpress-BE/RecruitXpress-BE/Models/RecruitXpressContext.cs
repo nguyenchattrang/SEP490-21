@@ -38,9 +38,11 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<Option> Options { get; set; } = null!;
         public virtual DbSet<Profile> Profiles { get; set; } = null!;
         public virtual DbSet<Question> Questions { get; set; } = null!;
+        public virtual DbSet<ReferenceChecking> ReferenceCheckings { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<ScheduleDetail> ScheduleDetails { get; set; } = null!;
+        public virtual DbSet<ShortListing> ShortListings { get; set; } = null!;
         public virtual DbSet<SpecializedExam> SpecializedExams { get; set; } = null!;
         public virtual DbSet<UserAnalytic> UserAnalytics { get; set; } = null!;
         public virtual DbSet<WishList> WishLists { get; set; } = null!;
@@ -548,6 +550,18 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK_Question_Account");
             });
 
+            modelBuilder.Entity<ReferenceChecking>(entity =>
+            {
+                entity.ToTable("ReferenceChecking");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("date");
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.ReferenceCheckings)
+                    .HasForeignKey(d => d.ProfileId)
+                    .HasConstraintName("FK__Reference__Profi__37FA4C37");
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("Role");
@@ -602,12 +616,32 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.Candidate)
                     .WithMany(p => p.ScheduleDetails)
                     .HasForeignKey(d => d.CandidateId)
-                    .HasConstraintName("FK_ScheduleDetail_Profile");
+                    .HasConstraintName("FK_ScheduleDetail_JobApplication");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.ScheduleDetails)
                     .HasForeignKey(d => d.ScheduleId)
                     .HasConstraintName("FK_ScheduleDetail_Schedule");
+            });
+
+            modelBuilder.Entity<ShortListing>(entity =>
+            {
+                entity.HasKey(e => e.ListId)
+                    .HasName("PK__ShortLis__E3832805B6BF7C24");
+
+                entity.ToTable("ShortListing");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("date");
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.ShortListings)
+                    .HasForeignKey(d => d.JobId)
+                    .HasConstraintName("FK__ShortList__JobId__351DDF8C");
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.ShortListings)
+                    .HasForeignKey(d => d.ProfileId)
+                    .HasConstraintName("FK__ShortList__Profi__3429BB53");
             });
 
             modelBuilder.Entity<SpecializedExam>(entity =>

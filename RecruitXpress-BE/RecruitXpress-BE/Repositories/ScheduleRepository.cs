@@ -64,8 +64,8 @@ public class ScheduleRepository : IScheduleRepository
                         s.Interviewers.Select(i => i.InterviewerNavigation.AccountId).Contains(accountId));
                     break;
                 case Constant.ROLE.CANDIDATE:
-                    query = query.Where(s =>
-                        s.ScheduleDetails.Select(sd => sd.Candidate.AccountId).Contains(accountId));
+              /*      query = query.Where(s =>
+                        s.ScheduleDetails.Select(sd => sd.Candidate.AccountId).Contains(accountId));*/
                     break;
                 default:
                     query = query.Where(s => s.HumanResource.AccountId == accountId);
@@ -84,7 +84,7 @@ public class ScheduleRepository : IScheduleRepository
                 };
                 foreach (var scheduleDetail in scheduleDto.ScheduleDetails)
                 {
-                    scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Name;
+                /*    scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Name;*/
                     scheduleAdditionDataDTO.type = scheduleDetail.ScheduleType ?? (scheduleAdditionDataDTO.InterviewerName.Count > 0 ? 1 : 2);
                     var scheduleDate = scheduleDetail.StartDate.Value;
                     if (!scheduleAdditionDataResult.Exists(result => result.Year == scheduleDate.Year))
