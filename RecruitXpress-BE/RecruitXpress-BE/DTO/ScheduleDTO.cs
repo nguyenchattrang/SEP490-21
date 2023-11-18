@@ -26,7 +26,6 @@ public class ScheduleDTO
 
 public class ScheduleResponse
 {
-    public List<ScheduleDTO> ScheduleDTOs { get; set; }
     public List<ScheduleAdditionDataYear> ScheduleAdditionData { get; set; }
 }
 
