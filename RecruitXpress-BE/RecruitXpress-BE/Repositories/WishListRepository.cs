@@ -17,20 +17,33 @@ public class WishListRepository : IWishListRepository
     public async Task<List<WishList>> GetListWishLists()
         => await _context.WishLists.ToListAsync();
 
-    public async Task<List<WishList>> GetListWishLists(int accountId, string? searchString, string? sortBy,
-        bool? isSortAscending, int? page, int? size)
-        => await GetAdvancedSearchWishListQuery(
+    public async Task<List<WishListDTO>> GetListWishLists(int accountId, string? searchString, string? sortBy,
+        bool? isSortAscending, int page, int size)
+    {
+        var query = GetAdvancedSearchWishListQuery(
             accountId,
             new JobPostingSearchDTO()
             {
                 SearchString = searchString,
                 SortBy = sortBy,
                 IsSortAscending = isSortAscending == true
-            },
-            page,
-            size
-        ).ToListAsync();
-    
+            }
+        );
+
+        return await query
+            .Select(w => new WishListDTO()
+            {
+                WishlistId = w.WishlistId,
+                AccountId = w.AccountId,
+                Status = w.Status,
+                JobId = w.JobId,
+                Job = w.Job,
+                TotalCount = query.Count()
+            })
+            .Skip((page - 1) * size).Take(size)
+            .ToListAsync();
+    }
+
     public async Task<List<WishList?>> GetWishList(int accountId)
         => await _context.WishLists.Where(wishList => wishList.AccountId == accountId).ToListAsync();
 
@@ -48,6 +61,7 @@ public class WishListRepository : IWishListRepository
             {
                 _context.Entry(oldWishList).State = EntityState.Deleted;
             }
+
             await _context.SaveChangesAsync();
             return wishList;
         }
@@ -71,7 +85,7 @@ public class WishListRepository : IWishListRepository
         return true;
     }
 
-    private IQueryable<WishList> GetAdvancedSearchWishListQuery(int accountId, JobPostingSearchDTO searchDto, int? page, int? size)
+    private IQueryable<WishList> GetAdvancedSearchWishListQuery(int accountId, JobPostingSearchDTO searchDto)
     {
         var query = _context.WishLists
             .Include(w => w.Job)
@@ -80,7 +94,7 @@ public class WishListRepository : IWishListRepository
 
         if (!string.IsNullOrEmpty(searchDto.SearchString))
         {
-            query = query.Where(w => 
+            query = query.Where(w =>
                 w.Job.Title.Contains(searchDto.SearchString) || w.Job.Description.Contains(searchDto.SearchString));
         }
 
@@ -126,11 +140,12 @@ public class WishListRepository : IWishListRepository
                 "ApplicationDeadline" => searchDto.IsSortAscending
                     ? query.OrderBy(w => w.Job.ApplicationDeadline)
                     : query.OrderByDescending(w => w.Job.ApplicationDeadline),
-                _ => searchDto.IsSortAscending ? query.OrderBy(w => w.Job.JobId) : query.OrderByDescending(w => w.Job.JobId)
+                _ => searchDto.IsSortAscending
+                    ? query.OrderBy(w => w.Job.JobId)
+                    : query.OrderByDescending(w => w.Job.JobId)
             };
         }
-        
-        return query.Skip(((page ?? 1) - 1) * (size ?? 20)).Take(size ?? 20);
+
+        return query;
     }
-    
 }
