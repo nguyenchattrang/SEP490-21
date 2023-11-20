@@ -95,9 +95,9 @@ namespace RecruitXpress_BE.Controllers
                     query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry.Contains(request.Industry));
                 }
 
-                if (request.SalaryRange != null)
+                if (request is { MinSalary: not null, MaxSalary: not null }) 
                 {
-                    query = query.Where(s => s.Job != null && s.Job.SalaryRange != null && s.Job.SalaryRange.Contains(request.SalaryRange));
+                    query = query.Where(s => s.Job != null && s.Job.MinSalary >= request.MinSalary && s.Job.MaxSalary <= request.MaxSalary);
                 }
 
                 if (request.ApplicationDeadline != null)
@@ -154,8 +154,8 @@ namespace RecruitXpress_BE.Controllers
                             break;
                         case "SalaryRange":
                             query = request.OrderByAscending
-                                ? query.OrderBy(j => j.Job.SalaryRange)
-                                : query.OrderByDescending(j => j.Job.SalaryRange);
+                                ? query.OrderBy(j => j.Job.MinSalary)
+                                : query.OrderByDescending(j => j.Job.MinSalary);
                             break;
                         case "ApplicationDeadline":
                             query = request.OrderByAscending
@@ -204,7 +204,7 @@ namespace RecruitXpress_BE.Controllers
                     query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
                      s.Profile.PhoneNumber.Contains(request.SearchString) ||
                      s.Profile.Name.Contains(request.SearchString) ||
-                     s.Job.SalaryRange.Contains(request.SearchString) ||
+                     // s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.Industry.Contains(request.SearchString) ||
                      s.Job.Location.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString)||
@@ -266,9 +266,9 @@ namespace RecruitXpress_BE.Controllers
                     query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry.Contains(request.Industry));
                 }
 
-                if (request.SalaryRange != null)
+                if (request is { MinSalary: not null, MaxSalary: not null }) 
                 {
-                    query = query.Where(s => s.Job != null && s.Job.SalaryRange != null && s.Job.SalaryRange.Contains(request.SalaryRange));
+                    query = query.Where(s => s.Job != null && s.Job.MinSalary >= request.MinSalary && s.Job.MaxSalary <= request.MaxSalary);
                 }
 
                 if (request.ApplicationDeadline != null)
@@ -325,8 +325,8 @@ namespace RecruitXpress_BE.Controllers
                             break;
                         case "SalaryRange":
                             query = request.OrderByAscending
-                                ? query.OrderBy(j => j.Job.SalaryRange)
-                                : query.OrderByDescending(j => j.Job.SalaryRange);
+                                ? query.OrderBy(j => j.Job.MinSalary)
+                                : query.OrderByDescending(j => j.Job.MinSalary);
                             break;
                         case "ApplicationDeadline":
                             query = request.OrderByAscending
@@ -375,7 +375,7 @@ namespace RecruitXpress_BE.Controllers
                     query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
                      s.Profile.PhoneNumber.Contains(request.SearchString) ||
                      s.Profile.Name.Contains(request.SearchString) ||
-                     s.Job.SalaryRange.Contains(request.SearchString) ||
+                     // s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.Industry.Contains(request.SearchString) ||
                      s.Job.Location.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||

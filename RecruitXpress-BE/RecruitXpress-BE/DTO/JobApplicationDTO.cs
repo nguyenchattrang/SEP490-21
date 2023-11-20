@@ -71,7 +71,8 @@ namespace RecruitXpress_BE.DTO
     public string? EmploymentType { get; set; }
     public string? Industry { get; set; }
     public string? Requirements { get; set; }
-    public string? SalaryRange { get; set; }
+    public long? MinSalary { get; set; }
+    public long? MaxSalary { get; set; }
     public DateTime? ApplicationDeadline { get; set; }
     public DateTime? DatePosted { get; set; }
     public string? ContactPerson { get; set; }

@@ -30,7 +30,8 @@ namespace RecruitXpress_BE.DTO
         public string? Location { get; set; }
         public string? EmploymentType { get; set; }
         public string? Industry { get; set; }
-        public string? SalaryRange { get; set; }
+        public long? MinSalary { get; set; }
+        public long? MaxSalary { get; set; }
         public string? NameCandidate { get; set; }
         public string? PhoneCandidate { get; set; }
         public string? EmailCandidate { get; set; }

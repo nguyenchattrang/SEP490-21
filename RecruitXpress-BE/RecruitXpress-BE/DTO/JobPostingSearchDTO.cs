@@ -8,8 +8,10 @@ public class JobPostingSearchDTO
     public string? Location { get; set; }
     public string? EmploymentType { get; set; }
     public string? Industry { get; set; }
-    public string? SalaryRange { get; set; }
+    public double? MinSalary { get; set; }
+    public double? MaxSalary { get; set; }
     public DateTime? ApplicationDeadline { get; set; }
+    public int? status { get; set; }
     
     public string? SortBy { get; set; }
 
