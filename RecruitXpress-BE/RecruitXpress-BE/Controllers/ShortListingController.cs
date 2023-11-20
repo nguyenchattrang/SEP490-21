@@ -23,7 +23,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet("ShortListing")]
-      /*  public async Task<IActionResult> GetShortListing(int jobId)
+        public async Task<IActionResult> GetShortListing(int jobId)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace RecruitXpress_BE.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }*/
+        }
 
         //POST: api/ProfileManagement
         [HttpPost]
@@ -57,7 +57,7 @@ namespace RecruitXpress_BE.Controllers
                     var data = shortlisting;
                     data.CreatedAt = DateTime.Now;
                     data.Status = 1;
-               /*     _context.ShortListings.Add(data);*/
+                    _context.ShortListings.Add(data);
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }
