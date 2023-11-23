@@ -20,7 +20,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<ApiResponse<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest request)
         {
-            var query = _context.SpecializedExams.Include(s => s.CreatedByNavigation).Include(s=> s.Job).AsQueryable();
+            var query = _context.SpecializedExams.Include(s => s.CreatedByNavigation).Include(s => s.Job).AsQueryable();
 
             if (!string.IsNullOrEmpty(request.ExamName))
             {
@@ -111,7 +111,7 @@ namespace RecruitXpress_BE.Repositories
                 .ToListAsync();
             var specializedExamDTOs = _mapper.Map<List<SpecializedExamDTO>>(specializedExams);
 
-        
+
 
             var response = new ApiResponse<SpecializedExamDTO>
             {
@@ -202,6 +202,18 @@ namespace RecruitXpress_BE.Repositories
             if (exam.Code != null)
             {
                 originalExam.Code = exam.Code;
+            }
+            if (exam.JobId != null)
+            {
+                originalExam.JobId = exam.JobId;
+            }
+            if (exam.JobId != null)
+            {
+                originalExam.JobId = exam.JobId;
+            }
+            if (exam.ExpertEmail != null)
+            {
+                originalExam.ExpertEmail = exam.ExpertEmail;
             }
 
             // Save changes to the database
