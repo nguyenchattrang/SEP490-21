@@ -445,9 +445,6 @@ namespace RecruitXpress_BE.Controllers
                         case 1:
                             _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
                             break;
-                        case 2:
-                            _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
-                            break;
                         case 7:
                             _emailTemplateRepository.SendEmailUpdateProfile(jobApplyId);
                             break;
