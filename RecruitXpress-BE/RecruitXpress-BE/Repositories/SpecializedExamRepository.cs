@@ -20,7 +20,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<ApiResponse<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest request)
         {
-            var query = _context.SpecializedExams.Include(s => s.CreatedByNavigation).AsQueryable();
+            var query = _context.SpecializedExams.Include(s => s.CreatedByNavigation).Include(s=> s.Job).AsQueryable();
 
             if (!string.IsNullOrEmpty(request.ExamName))
             {
@@ -40,6 +40,14 @@ namespace RecruitXpress_BE.Repositories
             if (request.Status != null)
             {
                 query = query.Where(e => e.Status == request.Status);
+            }
+            if (request.JobId != null)
+            {
+                query = query.Where(e => e.JobId == request.JobId);
+            }
+            if (!string.IsNullOrEmpty(request.ExpertEmail))
+            {
+                query = query.Where(e => e.ExpertEmail.Contains(request.ExpertEmail));
             }
 
             if (request.StartDate.HasValue)
