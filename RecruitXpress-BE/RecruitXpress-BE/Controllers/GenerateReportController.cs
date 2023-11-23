@@ -11,6 +11,7 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using AutoMapper;
 using RecruitXpress_BE.DTO;
 using System.Runtime.Intrinsics.X86;
+using System;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -32,52 +33,77 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                if (month != null && year != null)
+                if (month == null && year == null)
                 {
-                    //so luong job trong he thong
-                    var countJobNumber = _context.JobPostings.Count();
+                    // so luong job trong he thong
+                    var countJobNumber = await _context.JobPostings.CountAsync();
 
-                    //so luong job da dong trong he thong
-                    var countJobNumberClosed = _context.JobPostings.Where(x => x.Status == 0).Count();
+                    // so luong job da dong trong he thong
+                    var countJobNumberClosed = await _context.JobPostings
+                        .Where(x => x.Status == 0)
+                        .CountAsync();
 
-                    //so luong job dang hoat dongtrong he thong
-                    var countJobNumberOpen = _context.JobPostings.Where(x => x.Status == 1).Count();
+                    // so luong job dang hoat dong trong he thong
+                    var countJobNumberOpen = await _context.JobPostings
+                        .Where(x => x.Status == 1)
+                        .CountAsync();
 
-                    //so luong job het han trong he thong
-                    var countJobNumberEnded = _context.JobPostings.Where(x => x.Status == 2).Count();
+                    // so luong job het han trong he thong
+                    var countJobNumberEnded = await _context.JobPostings
+                        .Where(x => x.Status == 2)
+                        .CountAsync();
 
-                    //so luong nganh nghe cua job trong he thong
-                    var industriesNumber = _context.JobPostings
-                     .Select(job => job.Industry).Distinct()
-                     .Count();
-                    //so luong cong ty cua job trong he thong
-                    var companyNumber = _context.JobPostings
-                     .Select(job => job.Company).Distinct()
-                     .Count();
-                    //so luong dia chi cua job trong he thong
-                    var locationNumber = _context.JobPostings
-                    .Select(job => job.Location).Distinct()
-                    .Count();
-                    //so luong ung vien trong he thong
-                    var candidateNumber = _context.Profiles
-                    .Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien da apply
-                    var candidateNumberAppliedJob = _context.JobApplications
-                    .Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien duoc chap thuan 
-                    var acceptedCandidateNumber = _context.JobApplications
-                    .Where(x => x.Status == 6).Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien bi tu choi
-                    var rejectdCandidateNumber = _context.JobApplications
-                    .Where(x => x.Status == 0).Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien dang trong qua trinh apply
-                    var onGoingCandidateNumber = _context.JobApplications
-                    .Where(x => x.Status != 0 && x.Status != 6).Select(c => c.ProfileId).Distinct()
-                    .Count();
+                    // so luong nganh nghe cua job trong he thong
+                    var industriesNumber = await _context.JobPostings
+                        .Select(job => job.Industry)
+                        .Distinct()
+                        .CountAsync();
+
+                    // so luong cong ty cua job trong he thong
+                    var companyNumber = await _context.JobPostings
+                        .Select(job => job.Company)
+                        .Distinct()
+                        .CountAsync();
+
+                    // so luong dia chi cua job trong he thong
+                    var locationNumber = await _context.JobPostings
+                        .Select(job => job.Location)
+                        .Distinct()
+                        .CountAsync();
+
+                    // so luong ung vien trong he thong
+                    var candidateNumber = await _context.Profiles
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    // so luong ung vien da apply
+                    var candidateNumberAppliedJob = await _context.JobApplications
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    // so luong ung vien duoc chap thuan 
+                    var acceptedCandidateNumber = await _context.JobApplications
+                        .Where(x => x.Status == 6)
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    // so luong ung vien bi tu choi
+                    var rejectedCandidateNumber = await _context.JobApplications
+                        .Where(x => x.Status == 0)
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    // so luong ung vien dang trong qua trinh apply
+                    var onGoingCandidateNumber = await _context.JobApplications
+                        .Where(x => x.Status != 0 && x.Status != 6)
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
                     var responseData = new
                     {
                         jobNumber = countJobNumber,
@@ -90,7 +116,7 @@ namespace RecruitXpress_BE.Controllers
                         candidateNumber = candidateNumber,
                         candidateNumberAppliedJob = candidateNumberAppliedJob,
                         acceptedCandidateNumber = acceptedCandidateNumber,
-                        rejectdCandidateNumber = rejectdCandidateNumber,
+                        rejectdCandidateNumber = rejectedCandidateNumber,
                         onGoingCandidateNumber = onGoingCandidateNumber
 
                     };
@@ -98,61 +124,167 @@ namespace RecruitXpress_BE.Controllers
                 }
                 else
                 {
+                    if (month == null && year != null)
+                    {
+                        // so luong job trong he thong
+                        var countJobNumber1 = await _context.JobPostings
+                            .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Year == year)
+                            .CountAsync();
+
+                        // so luong job da dong trong he thong
+                        var countJobNumberClosed1 = await _context.JobPostings
+                            .Where(x => x.Status == 0 && x.DatePosted.HasValue && x.DatePosted.Value.Year == year)
+                            .CountAsync();
+
+                        var countJobNumberOpen1 = await _context.JobPostings
+                            .Where(x => x.Status == 1 && x.DatePosted.HasValue && x.DatePosted.Value.Year == year)
+                            .CountAsync();
+
+                        var countJobNumberEnded1 = await _context.JobPostings
+                            .Where(x => x.Status == 2 && x.DatePosted.HasValue && x.DatePosted.Value.Year == year)
+                            .CountAsync();
+
+                        var industriesNumber1 = await _context.JobPostings
+                            .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Year == year)
+                            .Select(job => job.Industry)
+                            .Distinct()
+                            .CountAsync();
+
+                        var companyNumber1 = await _context.JobPostings
+                            .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Year == year)
+                            .Select(job => job.Company)
+                            .Distinct()
+                            .CountAsync();
+
+                        var locationNumber1 = await _context.JobPostings
+                            .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Year == year)
+                            .Select(job => job.Location)
+                            .Distinct()
+                            .CountAsync();
+
+                        var candidateNumber1 = await _context.Profiles
+                            .Select(c => c.ProfileId)
+                            .Distinct()
+                            .CountAsync();
+
+                        var candidateNumberAppliedJob1 = await _context.JobApplications
+                            .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Year == year)
+                            .Select(c => c.ProfileId)
+                            .Distinct()
+                            .CountAsync();
+
+                        var acceptedCandidateNumber1 = await _context.JobApplications
+                            .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Year == year && x.Status == 6)
+                            .Select(c => c.ProfileId)
+                            .Distinct()
+                            .CountAsync();
+
+                        var rejectedCandidateNumber1 = await _context.JobApplications
+                            .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Year == year && x.Status == 0)
+                            .Select(c => c.ProfileId)
+                            .Distinct()
+                            .CountAsync();
+
+                        var onGoingCandidateNumber1 = await _context.JobApplications
+                            .Where(x => x.Status != 0 && x.Status != 6 && x.CreatedAt.HasValue && x.CreatedAt.Value.Year == year)
+                            .Select(c => c.ProfileId)
+                            .Distinct()
+                            .CountAsync();
+
+                        var responseData1 = new
+                        {
+                            jobNumber = countJobNumber1,
+                            JobNumberClosed = countJobNumberClosed1,
+                            JobNumberOpen = countJobNumberOpen1,
+                            JobNumberEnded = countJobNumberEnded1,
+                            IndustriesNumber = industriesNumber1,
+                            LocationNumber = locationNumber1,
+                            CompanyNumber = companyNumber1,
+                            CandidateNumber = candidateNumber1,
+                            CandidateNumberAppliedJob = candidateNumberAppliedJob1,
+                            AcceptedCandidateNumber = acceptedCandidateNumber1,
+                            RejectedCandidateNumber = rejectedCandidateNumber1,
+                            OnGoingCandidateNumber = onGoingCandidateNumber1
+                        };
+
+                        return Ok(responseData1);
+
+                    }
                     //so luong job trong he thong
-                    var countJobNumber = _context.JobPostings.Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-                    x.DatePosted.Value.Year == year).Count();
+                    var countJobNumber = await _context.JobPostings
+                    .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month && x.DatePosted.Value.Year == year)
+                    .CountAsync();
 
                     //so luong job da dong trong he thong
-                    var countJobNumberClosed = _context.JobPostings.Where(x => x.Status == 0 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-                    x.DatePosted.Value.Year == year).Count();
+                    var countJobNumberClosed = await _context.JobPostings
+                    .Where(x => x.Status == 0 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                        x.DatePosted.Value.Year == year)
+                    .CountAsync();
 
-                    //so luong job dang hoat dongtrong he thong
-                    var countJobNumberOpen = _context.JobPostings.Where(x => x.Status == 1 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-                    x.DatePosted.Value.Year == year).Count();
+                    var countJobNumberOpen = await _context.JobPostings
+                        .Where(x => x.Status == 1 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                                    x.DatePosted.Value.Year == year)
+                        .CountAsync();
 
-                    //so luong job het han trong he thong
-                    var countJobNumberEnded = _context.JobPostings.Where(x => x.Status == 2 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-                    x.DatePosted.Value.Year == year).Count();
+                    var countJobNumberEnded = await _context.JobPostings
+                        .Where(x => x.Status == 2 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                                    x.DatePosted.Value.Year == year)
+                        .CountAsync();
 
-                    //so luong nganh nghe cua job trong he thong
-                    var industriesNumber = _context.JobPostings
-                     .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-                    x.DatePosted.Value.Year == year).Select(job => job.Industry).Distinct()
-                     .Count();  
-                    //so luong cong ty cua job trong he thong
-                    var companyNumber = _context.JobPostings
-                     .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-                    x.DatePosted.Value.Year == year).Select(job => job.Company).Distinct()
-                     .Count();
-                    //so luong dia chi cua job trong he thong
-                    var locationNumber = _context.JobPostings
-                    .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-                    x.DatePosted.Value.Year == year).Select(job => job.Location).Distinct()
-                    .Count();
-                    //so luong ung vien trong he thong
-                    var candidateNumber = _context.Profiles
-                    .Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien da apply
-                    var candidateNumberAppliedJob = _context.JobApplications
-                    .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-                    x.CreatedAt.Value.Year == year).Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien duoc chap thuan 
-                    var acceptedCandidateNumber = _context.JobApplications
-                     .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-                    x.CreatedAt.Value.Year == year && x.Status == 6).Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien bi tu choi
-                    var rejectdCandidateNumber = _context.JobApplications
-                     .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-                    x.CreatedAt.Value.Year == year && x.Status == 0).Select(c => c.ProfileId).Distinct()
-                    .Count();
-                    //so luong ung vien dang trong qua trinh apply
-                    var onGoingCandidateNumber = _context.JobApplications
-                    .Where(x => x.Status != 0 && x.Status != 6 && x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-                    x.CreatedAt.Value.Year == year).Select(c => c.ProfileId).Distinct()
-                    .Count();
+                    var industriesNumber = await _context.JobPostings
+                        .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                                    x.DatePosted.Value.Year == year)
+                        .Select(job => job.Industry)
+                        .Distinct()
+                        .CountAsync();
+
+                    var companyNumber = await _context.JobPostings
+                        .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                                    x.DatePosted.Value.Year == year)
+                        .Select(job => job.Company)
+                        .Distinct()
+                        .CountAsync();
+
+                    var locationNumber = await _context.JobPostings
+                        .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                                    x.DatePosted.Value.Year == year)
+                        .Select(job => job.Location)
+                        .Distinct()
+                        .CountAsync();
+
+                    var candidateNumber = await _context.Profiles
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    var candidateNumberAppliedJob = await _context.JobApplications
+                        .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
+                                    x.CreatedAt.Value.Year == year)
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    var acceptedCandidateNumber = await _context.JobApplications
+                        .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
+                                    x.CreatedAt.Value.Year == year && x.Status == 6)
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    var rejectedCandidateNumber = await _context.JobApplications
+                        .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
+                                    x.CreatedAt.Value.Year == year && x.Status == 0)
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
+                    var onGoingCandidateNumber = await _context.JobApplications
+                        .Where(x => x.Status != 0 && x.Status != 6 && x.CreatedAt.HasValue &&
+                                    x.CreatedAt.Value.Month == month && x.CreatedAt.Value.Year == year)
+                        .Select(c => c.ProfileId)
+                        .Distinct()
+                        .CountAsync();
+
                     var responseData = new
                     {
                         jobNumber = countJobNumber,
@@ -165,15 +297,12 @@ namespace RecruitXpress_BE.Controllers
                         candidateNumber = candidateNumber,
                         candidateNumberAppliedJob = candidateNumberAppliedJob,
                         acceptedCandidateNumber = acceptedCandidateNumber,
-                        rejectdCandidateNumber = rejectdCandidateNumber,
+                        rejectdCandidateNumber = rejectedCandidateNumber,
                         onGoingCandidateNumber = onGoingCandidateNumber
 
                     };
                     return Ok(responseData);
                 }
-
-
-
 
             }
             catch (Exception ex)
@@ -181,61 +310,6 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[HttpGet("ReportForJob")]
-        //public async Task<IActionResult> generateToday()
-        //{
-        //    try
-        //    {
-                
-        //            //so luong cong ty cua job trong he thong
-        //            var companyNumber = _context.JobPostings
-        //             .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-        //            x.DatePosted.Value.Year == year).Select(job => job.Company).Distinct()
-        //             .Count();
-        //            //so luong dia chi cua job trong he thong
-        //            var locationNumber = _context.JobPostings
-        //            .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
-        //            x.DatePosted.Value.Year == year).Select(job => job.Location).Distinct()
-        //            .Count();
-        //            //so luong ung vien trong he thong
-        //            var candidateNumber = _context.Profiles
-        //            .Select(c => c.ProfileId).Distinct()
-        //            .Count();
-        //            //so luong ung vien trong he thong
-                    
-        //            //so luong ung vien da apply
-        //            var candidateNumberAppliedJob = _context.JobApplications
-        //            .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-        //            x.CreatedAt.Value.Year == year).Select(c => c.ProfileId).Distinct()
-        //            .Count();
-        //            //so luong ung vien duoc chap thuan 
-        //            var acceptedCandidateNumber = _context.JobApplications
-        //             .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-        //            x.CreatedAt.Value.Year == year && x.Status == 6).Select(c => c.ProfileId).Distinct()
-        //            .Count();
-        //            //so luong ung vien bi tu choi
-        //            var rejectdCandidateNumber = _context.JobApplications
-        //             .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-        //            x.CreatedAt.Value.Year == year && x.Status == 0).Select(c => c.ProfileId).Distinct()
-        //            .Count();
-        //            //so luong ung vien dang trong qua trinh apply
-        //            var onGoingCandidateNumber = _context.JobApplications
-        //            .Where(x => x.Status != 0 && x.Status != 6 && x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
-        //            x.CreatedAt.Value.Year == year).Select(c => c.ProfileId).Distinct()
-        //            .Count();
-        //            var responseData = new
-        //            {
-                       
-
-        //            };
-        //            return Ok(responseData);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
 
         [HttpGet("ReportForEvaluate")]
         public async Task<IActionResult> generateReportEvaluate(int profileId)
@@ -275,5 +349,146 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("ReportForJobLast4Month")]
+        public async Task<IActionResult> generateReportJobLast4Month()
+        {
+            try
+            {
+                    var month = DateTime.Today.Month;
+                    var year = DateTime.Today.Year;
+                     if (month -4 < 1)
+                        {
+                            year = year - 1;
+                        }
+
+                    var responseData = new
+                    {
+                       
+
+                    };
+                    return Ok(responseData);
+                
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        private async Task<Object> YourAsyncOperation(int month, int year)
+        {
+            var countJobNumber = await _context.JobPostings
+                   .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month && x.DatePosted.Value.Year == year)
+                   .CountAsync();
+
+            //so luong job da dong trong he thong
+            var countJobNumberClosed = await _context.JobPostings
+            .Where(x => x.Status == 0 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                x.DatePosted.Value.Year == year)
+            .CountAsync();
+
+            var countJobNumberOpen = await _context.JobPostings
+                .Where(x => x.Status == 1 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                            x.DatePosted.Value.Year == year)
+                .CountAsync();
+
+            var countJobNumberEnded = await _context.JobPostings
+                .Where(x => x.Status == 2 && x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                            x.DatePosted.Value.Year == year)
+                .CountAsync();
+
+            var industriesNumber = await _context.JobPostings
+                .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                            x.DatePosted.Value.Year == year)
+                .Select(job => job.Industry)
+                .Distinct()
+                .CountAsync();
+
+            var companyNumber = await _context.JobPostings
+                .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                            x.DatePosted.Value.Year == year)
+                .Select(job => job.Company)
+                .Distinct()
+                .CountAsync();
+
+            var locationNumber = await _context.JobPostings
+                .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month &&
+                            x.DatePosted.Value.Year == year)
+                .Select(job => job.Location)
+                .Distinct()
+                .CountAsync();
+
+            var candidateNumber = await _context.Profiles
+                .Select(c => c.ProfileId)
+                .Distinct()
+                .CountAsync();
+
+            var candidateNumberAppliedJob = await _context.JobApplications
+                .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
+                            x.CreatedAt.Value.Year == year)
+                .Select(c => c.ProfileId)
+                .Distinct()
+                .CountAsync();
+
+            var acceptedCandidateNumber = await _context.JobApplications
+                .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
+                            x.CreatedAt.Value.Year == year && x.Status == 6)
+                .Select(c => c.ProfileId)
+                .Distinct()
+                .CountAsync();
+
+            var rejectedCandidateNumber = await _context.JobApplications
+                .Where(x => x.CreatedAt.HasValue && x.CreatedAt.Value.Month == month &&
+                            x.CreatedAt.Value.Year == year && x.Status == 0)
+                .Select(c => c.ProfileId)
+                .Distinct()
+                .CountAsync();
+
+            var onGoingCandidateNumber = await _context.JobApplications
+                .Where(x => x.Status != 0 && x.Status != 6 && x.CreatedAt.HasValue &&
+                            x.CreatedAt.Value.Month == month && x.CreatedAt.Value.Year == year)
+                .Select(c => c.ProfileId)
+                .Distinct()
+                .CountAsync();
+
+            var responseData = new
+            {
+                jobNumber = countJobNumber,
+                JobNumberClosed = countJobNumberClosed,
+                JobNumberOpen = countJobNumberOpen,
+                JobNumberEnded = countJobNumberEnded,
+                industriesNumber = industriesNumber,
+                locationNumber = locationNumber,
+                companyNumber = companyNumber,
+                candidateNumber = candidateNumber,
+                candidateNumberAppliedJob = candidateNumberAppliedJob,
+                acceptedCandidateNumber = acceptedCandidateNumber,
+                rejectdCandidateNumber = rejectedCandidateNumber,
+                onGoingCandidateNumber = onGoingCandidateNumber
+
+            };
+            return responseData;
+        }
+
+        // Define YourObject class as needed
+        public class YourObject
+        {
+            public int JobNumber { get; set; }
+            public int JobNumberClosed { get; set; }
+            public int JobNumberOpen { get; set; }
+            public int JobNumberEnded { get; set; }
+            public int IndustriesNumber { get; set; }
+            public int LocationNumber { get; set; }
+            public int CompanyNumber { get; set; }
+            public int CandidateNumber { get; set; }
+            public int CandidateNumberAppliedJob { get; set; }
+            public int AcceptedCandidateNumber { get; set; }
+            public int RejectedCandidateNumber { get; set; }
+            public int OnGoingCandidateNumber { get; set; }
+        }
+
     }
 }
