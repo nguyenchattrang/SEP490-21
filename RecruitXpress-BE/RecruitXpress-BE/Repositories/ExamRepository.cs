@@ -402,15 +402,13 @@ namespace RecruitXpress_BE.Repositories
             var sExam = _context.SpecializedExams.Where(s => s.Code == examCode).FirstOrDefault();
             if (sExam == null)
                 throw new Exception("Không tìm thấy bài thi chuyên môn");
-            if (sExam.ExpertEmail == null)
-            { sExam.ExpertEmail = email; }
-            else
+            if (sExam.ExpertEmail != null)
             {
                 var oldExperts = _context.AccessCodes.Where(a => a.ExamCode == examCode).ToList();
                 if (oldExperts != null)
                     _context.RemoveRange(oldExperts);
-                sExam.ExpertEmail = sExam.ExpertEmail + "; " + email;
             }
+            sExam.ExpertEmail = email;
             await _context.SaveChangesAsync();
             string url = _configuration["Website:ClientUrl"] + "/loginforexpert";
             string urlExam = _configuration["Website:ClientUrl"] + "/Exam/" + examCode;

@@ -16,5 +16,6 @@ namespace RecruitXpress_BE.DTO
         public string? ExpertEmail { get; set; }
         public int? JobId { get; set; }
         public virtual AccountDTO? CreatedByAccount { get; set; }
+        public string JobTitle { get; set; }
     }
 }
