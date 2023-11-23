@@ -25,7 +25,11 @@ public class JobPostingDTO
     public string? ApplicationInstructions { get; set; }
     public int? Status { get; set; }
     public bool IsPreferred { get; set; }
-    public int TotalCount  { get; set; }
 
     public virtual ICollection<JobApplication> JobApplications { get; set; }
+}
+
+public class JobPostingResponse : ApiResponse<JobPostingDTO>
+{
+    
 }

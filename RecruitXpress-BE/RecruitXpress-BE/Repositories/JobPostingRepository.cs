@@ -44,19 +44,23 @@ public class JobPostingRepository : IJobPostingRepository
                 DatePosted = jobPosting.DatePosted,
                 Status = jobPosting.Status,
                 IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId),
-                TotalCount = jobPostings.Count()
             })
             .Skip((page - 1) * size).Take(size)
             .ToListAsync();
     }
 
-    public async Task<List<JobPostingDTO>> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
-        int page, int size)
+    public async Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
+        int? page, int? size)
     {
         try
         {
             var query = GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId);
-            return await query
+            
+            if (page != null && size != null)
+            {
+                query = query.Skip(((int)page - 1) * (int)size).Take((int)size);
+            }
+            var jobPostingDTO =  await query
                 .Select(jobPosting => new JobPostingDTO()
                 {
                     JobId = jobPosting.JobId,
@@ -67,15 +71,17 @@ public class JobPostingRepository : IJobPostingRepository
                     Industry = jobPosting.Industry,
                     ApplicationDeadline = jobPosting.ApplicationDeadline,
                     Requirements = jobPosting.Requirements,
-                    DatePosted = jobPosting.DatePosted,
+                    DatePosted = DateTime.Now,
                     Status = jobPosting.Status,
                     MinSalary = jobPosting.MinSalary,
                     MaxSalary = jobPosting.MaxSalary,
-                    // IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId),
-                    TotalCount = query.Count()
-                })
-                .Skip((page - 1) * size).Take(size)
-                .ToListAsync();
+                    IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
+                }).ToListAsync();
+            return new JobPostingResponse()
+            {
+                Items = jobPostingDTO,
+                TotalCount = await query.CountAsync()
+            };
         }
         catch (Exception e)
         {

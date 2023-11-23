@@ -50,7 +50,12 @@ namespace RecruitXpress_BE.Helper
             public static int PASSINTERVIEW = 7;
             public static int ACCEPTED = 8;
             public static int CANCEL = 9;
-          
+        }
+        
+        public static class SCHEDULE_TYPE
+        {
+            public static int EXAM = 2;
+            public static int INTERVIEW = 1;
         }
     }
     public static class ConstantQuestion
