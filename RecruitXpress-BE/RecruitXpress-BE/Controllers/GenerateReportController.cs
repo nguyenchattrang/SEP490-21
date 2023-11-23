@@ -106,18 +106,18 @@ namespace RecruitXpress_BE.Controllers
 
                     var responseData = new
                     {
-                        jobNumber = countJobNumber,
+                        JobNumber = countJobNumber,
                         JobNumberClosed = countJobNumberClosed,
                         JobNumberOpen = countJobNumberOpen,
                         JobNumberEnded = countJobNumberEnded,
-                        industriesNumber = industriesNumber,
-                        locationNumber = locationNumber,
-                        companyNumber = companyNumber,
-                        candidateNumber = candidateNumber,
-                        candidateNumberAppliedJob = candidateNumberAppliedJob,
-                        acceptedCandidateNumber = acceptedCandidateNumber,
-                        rejectdCandidateNumber = rejectedCandidateNumber,
-                        onGoingCandidateNumber = onGoingCandidateNumber
+                        IndustriesNumber = industriesNumber,
+                        LocationNumber = locationNumber,
+                        CompanyNumber = companyNumber,
+                        CandidateNumber = candidateNumber,
+                        CandidateNumberAppliedJob = candidateNumberAppliedJob,
+                        AcceptedCandidateNumber = acceptedCandidateNumber,
+                        RejectedCandidateNumber = rejectedCandidateNumber,
+                        OnGoingCandidateNumber = onGoingCandidateNumber
 
                     };
                     return Ok(responseData);
@@ -193,7 +193,7 @@ namespace RecruitXpress_BE.Controllers
 
                         var responseData1 = new
                         {
-                            jobNumber = countJobNumber1,
+                            JobNumber = countJobNumber1,
                             JobNumberClosed = countJobNumberClosed1,
                             JobNumberOpen = countJobNumberOpen1,
                             JobNumberEnded = countJobNumberEnded1,
@@ -287,18 +287,18 @@ namespace RecruitXpress_BE.Controllers
 
                     var responseData = new
                     {
-                        jobNumber = countJobNumber,
+                        JobNumber = countJobNumber,
                         JobNumberClosed = countJobNumberClosed,
                         JobNumberOpen = countJobNumberOpen,
                         JobNumberEnded = countJobNumberEnded,
-                        industriesNumber = industriesNumber,
-                        locationNumber = locationNumber,
-                        companyNumber = companyNumber,
-                        candidateNumber = candidateNumber,
-                        candidateNumberAppliedJob = candidateNumberAppliedJob,
-                        acceptedCandidateNumber = acceptedCandidateNumber,
-                        rejectdCandidateNumber = rejectedCandidateNumber,
-                        onGoingCandidateNumber = onGoingCandidateNumber
+                        IndustriesNumber = industriesNumber,
+                        LocationNumber = locationNumber,
+                        CompanyNumber = companyNumber,
+                        CandidateNumber = candidateNumber,
+                        CandidateNumberAppliedJob = candidateNumberAppliedJob,
+                        AcceptedCandidateNumber = acceptedCandidateNumber,
+                        RejectedCandidateNumber = rejectedCandidateNumber,
+                        OnGoingCandidateNumber = onGoingCandidateNumber
 
                     };
                     return Ok(responseData);
@@ -357,16 +357,72 @@ namespace RecruitXpress_BE.Controllers
             {
                     var month = DateTime.Today.Month;
                     var year = DateTime.Today.Year;
-                     if (month -4 < 1)
+                     if (month < 4)
                         {
                             year = year - 1;
                         }
+                    int[] monthArray;
+                    if(month == 3)
+                {
+                    monthArray = new int[] { 12, 1, 2, 3 };
 
-                    var responseData = new
+                } else if(month == 2)
+                {
+                    monthArray = new int[] { 11,12, 1, 2};
+                }
+                else if (month == 1)
+                {
+                    monthArray = new int[] { 10,11, 12, 1};
+                }
+                else monthArray = new int[] { month -3, month - 2, month - 1, month - 3 };
+                List<int> jobNumber = new List<int>();
+                List<int> JobNumberClosed = new List<int>();
+                List<int> JobNumberOpen = new List<int>();
+                List<int> JobNumberEnded = new List<int>();
+                List<int> industriesNumber = new List<int>();
+                List<int> locationNumber = new List<int>();
+                List<int> companyNumber = new List<int>();
+                List<int> candidateNumber = new List<int>();
+                List<int> candidateNumberAppliedJob = new List<int>();
+                List<int> acceptedCandidateNumber = new List<int>();
+                List<int> rejectdCandidateNumber = new List<int>();
+                List<int> onGoingCandidateNumber = new List<int>();
+                foreach (var month1 in monthArray)
+                {
+                   var data = await getDataEachMonth(month1, year);
+                    if(data != null)
                     {
-                       
+                        jobNumber.Add(data.JobNumber);
+                        JobNumberClosed.Add(data.JobNumberClosed);
+                        JobNumberOpen.Add(data.JobNumberOpen);
+                        JobNumberEnded.Add(data.JobNumberEnded);
+                        industriesNumber.Add(data.IndustriesNumber);
+                        locationNumber.Add(data.LocationNumber);
+                        companyNumber.Add(data.CompanyNumber);
+                        candidateNumber.Add(data.CandidateNumber);
+                        candidateNumberAppliedJob.Add(data.CandidateNumberAppliedJob);
+                        acceptedCandidateNumber.Add(data.CandidateNumberAppliedJob);
+                        rejectdCandidateNumber.Add(data.CandidateNumberAppliedJob);
+                        onGoingCandidateNumber.Add(data.CandidateNumberAppliedJob);
+                    }
+                }
 
-                    };
+                var responseData = new
+                    {
+                    JobNumber = jobNumber,
+                    JobNumberClosed = JobNumberClosed,
+                    JobNumberOpen = JobNumberOpen,
+                    JobNumberEnded = JobNumberEnded,
+                    IndustriesNumber = industriesNumber,
+                    LocationNumber = locationNumber,
+                    CompanyNumber = companyNumber,
+                    CandidateNumber = candidateNumber,
+                    CandidateNumberAppliedJob = candidateNumberAppliedJob,
+                    AcceptedCandidateNumber = acceptedCandidateNumber,
+                    RejectedCandidateNumber = rejectdCandidateNumber,
+                    OnGoingCandidateNumber = onGoingCandidateNumber
+
+                };
                     return Ok(responseData);
                 
                 
@@ -378,7 +434,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
 
-        private async Task<Object> YourAsyncOperation(int month, int year)
+        private async Task<YourObject> getDataEachMonth(int month, int year)
         {
             var countJobNumber = await _context.JobPostings
                    .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month && x.DatePosted.Value.Year == year)
@@ -454,20 +510,20 @@ namespace RecruitXpress_BE.Controllers
                 .Distinct()
                 .CountAsync();
 
-            var responseData = new
+            var responseData = new YourObject
             {
-                jobNumber = countJobNumber,
+                JobNumber = countJobNumber,
                 JobNumberClosed = countJobNumberClosed,
                 JobNumberOpen = countJobNumberOpen,
                 JobNumberEnded = countJobNumberEnded,
-                industriesNumber = industriesNumber,
-                locationNumber = locationNumber,
-                companyNumber = companyNumber,
-                candidateNumber = candidateNumber,
-                candidateNumberAppliedJob = candidateNumberAppliedJob,
-                acceptedCandidateNumber = acceptedCandidateNumber,
-                rejectdCandidateNumber = rejectedCandidateNumber,
-                onGoingCandidateNumber = onGoingCandidateNumber
+                IndustriesNumber = industriesNumber,
+                LocationNumber = locationNumber,
+                CompanyNumber = companyNumber,
+                CandidateNumber = candidateNumber,
+                CandidateNumberAppliedJob = candidateNumberAppliedJob,
+                AcceptedCandidateNumber = acceptedCandidateNumber,
+                RejectedCandidateNumber = rejectedCandidateNumber,
+                OnGoingCandidateNumber = onGoingCandidateNumber
 
             };
             return responseData;
