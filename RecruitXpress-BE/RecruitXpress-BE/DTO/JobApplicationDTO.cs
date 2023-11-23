@@ -11,6 +11,7 @@ namespace RecruitXpress_BE.DTO
         public int? ProfileId { get; set; }
         public int? TemplateId { get; set; }
         public int? Status { get; set; }
+        public int? AssignedFor { get; set; }
 
         public virtual JobDTO? Job { get; set; }
 
@@ -25,6 +26,7 @@ namespace RecruitXpress_BE.DTO
         public virtual EvaluateDTO? Evaluate { get; set; }
 
         public virtual ExamDTO? Exam { get; set; }
+        public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
 
 
     }
@@ -60,6 +62,12 @@ namespace RecruitXpress_BE.DTO
     {
         public int TemplateId { get; set; }
         public string? Url { get; set; }
+
+    }
+    public partial class AssignedProfileDTO
+    {
+        public int accountId { get; set; }
+        public string? Name { get; set; }
 
     }
     public partial class JobDTO{

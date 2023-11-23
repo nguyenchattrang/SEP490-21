@@ -214,6 +214,7 @@ namespace RecruitXpress_BE.Controllers
                      s.Job.Company.Contains(request.SearchString));
 
                 }
+                var totalCount = await query.CountAsync();
                 var pageNumber = request.Page > 0 ? request.Page : 1;
                 var pageSize = request.Size > 0 ? request.Size : 20;
                 var jobApplications = await query
@@ -222,8 +223,29 @@ namespace RecruitXpress_BE.Controllers
                     .ToListAsync();
 
                 var jobApplicationDTOs = _mapper.Map<List<JobApplicationDTO>>(jobApplications);
+                foreach(var jobApplicationDTO in jobApplicationDTOs)
+                {
+                   var acc = jobApplicationDTO.AssignedFor;
+                         if (acc != null) {
+                        var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == acc);
+                        if (profile != null)
+                        {
+                            var profileDTO = new AssignedProfileDTO
+                            {
+                                accountId = (int)acc,
+                                Name = profile.Name,
+                            };
+                            jobApplicationDTO.AssignedForInfor = profileDTO;
+                        }
+                        }
 
-                return Ok(jobApplicationDTOs);
+                        }
+                var response = new ApiResponse<JobApplicationDTO>
+                {
+                    Items = jobApplicationDTOs,
+                    TotalCount = totalCount,
+                };
+                return Ok(response);
 
             }
             catch (Exception ex)
@@ -385,6 +407,7 @@ namespace RecruitXpress_BE.Controllers
                      s.Job.Company.Contains(request.SearchString));
 
                 }
+                var totalCount = await query.CountAsync();
                 var pageNumber = request.Page > 0 ? request.Page : 1;
                 var pageSize = request.Size > 0 ? request.Size : 20;
                 var jobApplications = await query
@@ -393,8 +416,30 @@ namespace RecruitXpress_BE.Controllers
                     .ToListAsync();
 
                 var jobApplicationDTOs = _mapper.Map<List<JobApplicationDTO>>(jobApplications);
+                foreach (var jobApplicationDTO in jobApplicationDTOs)
+                {
+                    var acc = jobApplicationDTO.AssignedFor;
+                    if (acc != null)
+                    {
+                        var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == acc);
+                        if (profile != null)
+                        {
+                            var profileDTO = new AssignedProfileDTO
+                            {
+                                accountId = (int)acc,
+                                Name = profile.Name,
+                            };
+                            jobApplicationDTO.AssignedForInfor = profileDTO;
+                        }
+                    }
 
-                return Ok(jobApplicationDTOs);
+                }
+                var response = new ApiResponse<JobApplicationDTO>
+                {
+                    Items = jobApplicationDTOs,
+                    TotalCount = totalCount,
+                };
+                return Ok(response);
 
             }
             catch (Exception ex)
