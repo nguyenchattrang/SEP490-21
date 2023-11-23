@@ -19,12 +19,15 @@ namespace RecruitXpress_BE.Controllers
     public class JobApplicationController : ControllerBase
     {
         private readonly RecruitXpressContext _context;
+        private readonly IEmailTemplateRepository _emailTemplateRepository;
         private readonly IMapper _mapper;
 
-        public JobApplicationController(RecruitXpressContext context, IMapper mapper)
+
+        public JobApplicationController(RecruitXpressContext context, IMapper mapper, IEmailTemplateRepository emailTemplateRepository)
         {
             _context = context;
             _mapper = mapper;
+            _emailTemplateRepository = emailTemplateRepository;
         }
         [HttpPost("PostJobApplication")]
         public async Task<IActionResult> submitJobApplication(int jobId, int accountId)
@@ -66,18 +69,18 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-               
+
                 var query = _context.JobApplications
-              /*  .Include(q => q.Profile).ThenInclude(x=> x.ScheduleDetails).ThenInclude(x=> x.Schedule)*/
+                /*  .Include(q => q.Profile).ThenInclude(x=> x.ScheduleDetails).ThenInclude(x=> x.Schedule)*/
                 .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-              /*  .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)*/
-                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x=> x.GeneralTestDetails)
+                /*  .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)*/
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job)
                 .Include(q => q.Template).AsQueryable();
-               
+
                 if (accountId != null)
                 {
-                    query = query.Where(x=> x.AssignedFor== accountId);
+                    query = query.Where(x => x.AssignedFor == accountId);
                 }
 
                 if (request.Location != null)
@@ -95,7 +98,7 @@ namespace RecruitXpress_BE.Controllers
                     query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry.Contains(request.Industry));
                 }
 
-                if (request is { MinSalary: not null, MaxSalary: not null }) 
+                if (request is { MinSalary: not null, MaxSalary: not null })
                 {
                     query = query.Where(s => s.Job != null && s.Job.MinSalary >= request.MinSalary && s.Job.MaxSalary <= request.MaxSalary);
                 }
@@ -126,7 +129,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (request.Status != null)
                 {
-                    query = query.Where(s => s.Status != null && s.Status ==(request.Status));
+                    query = query.Where(s => s.Status != null && s.Status == (request.Status));
                 }
                 if (request.SortBy != null)
                 {
@@ -207,9 +210,9 @@ namespace RecruitXpress_BE.Controllers
                      // s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.Industry.Contains(request.SearchString) ||
                      s.Job.Location.Contains(request.SearchString) ||
-                     s.Job.Title.Contains(request.SearchString)||
+                     s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
-                     
+
                 }
                 var pageNumber = request.Page > 0 ? request.Page : 1;
                 var pageSize = request.Size > 0 ? request.Size : 20;
@@ -229,14 +232,14 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpGet("GetSumited")]
-        public async Task<IActionResult> getJobApplicationSubmitted([FromQuery] JobApplicationRequest request,int accountId)
+        public async Task<IActionResult> getJobApplicationSubmitted([FromQuery] JobApplicationRequest request, int accountId)
         {
             try
             {
                 var profileId = 0;
-                if(accountId != null)
+                if (accountId != null)
                 {
-                    var getAccountId = _context.Profiles.Where(x=> x.AccountId == accountId).FirstOrDefault();
+                    var getAccountId = _context.Profiles.Where(x => x.AccountId == accountId).FirstOrDefault();
                     if (getAccountId != null)
                     {
                         profileId = getAccountId.ProfileId;
@@ -244,12 +247,12 @@ namespace RecruitXpress_BE.Controllers
                     else return BadRequest("Khong tim thay du lieu profile cua user nay");
                 }
                 var query = _context.JobApplications
-         /*       .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails).ThenInclude(x => x.Schedule)*/
+                /*       .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails).ThenInclude(x => x.Schedule)*/
                 .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-          /*      .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)*/
+                /*      .Include(q => q.Profile).ThenInclude(x => x.ScheduleDetails)*/
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job)
-                .Include(q => q.Template).Where(x=> x.ProfileId == profileId).AsQueryable();
+                .Include(q => q.Template).Where(x => x.ProfileId == profileId).AsQueryable();
 
                 if (request.Location != null)
                 {
@@ -266,7 +269,7 @@ namespace RecruitXpress_BE.Controllers
                     query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry.Contains(request.Industry));
                 }
 
-                if (request is { MinSalary: not null, MaxSalary: not null }) 
+                if (request is { MinSalary: not null, MaxSalary: not null })
                 {
                     query = query.Where(s => s.Job != null && s.Job.MinSalary >= request.MinSalary && s.Job.MaxSalary <= request.MaxSalary);
                 }
@@ -435,6 +438,27 @@ namespace RecruitXpress_BE.Controllers
                     {
                         detailJob.AssignedFor = accountId;
                     }
+
+                    switch (Status)
+                    {
+
+                        case 1:
+                            _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
+                            break;
+                        case 2:
+                            _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
+                            break;
+                        case 7:
+                            _emailTemplateRepository.SendEmailUpdateProfile(jobApplyId);
+                            break;
+                        case 8:
+                            _emailTemplateRepository.SendEmailAccepted(jobApplyId);
+                            break;
+                        case 9:
+                            _emailTemplateRepository.SendEmailCanceled(jobApplyId);
+                            break;
+                    }
+
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     return Ok("Cập nhật trạng thái thành công");
