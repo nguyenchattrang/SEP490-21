@@ -374,7 +374,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     monthArray = new int[] { 10,11, 12, 1};
                 }
-                else monthArray = new int[] { month -3, month - 2, month - 1, month - 3 };
+                else monthArray = new int[] { month -3, month - 2, month - 1, month };
                 List<int> jobNumber = new List<int>();
                 List<int> JobNumberClosed = new List<int>();
                 List<int> JobNumberOpen = new List<int>();
