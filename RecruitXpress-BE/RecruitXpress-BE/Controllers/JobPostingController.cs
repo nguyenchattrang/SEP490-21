@@ -19,10 +19,9 @@ namespace RecruitXpress_BE.Controllers
 
         //GET: api/JobPosting
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobPostingDTO>>> GetListJobPostings(string? searchString,
-            string? orderBy, bool? isSortAscending, int? accountId, int page, int size) =>
-            await _jobPostingRepository.GetListJobPostings(searchString, orderBy, isSortAscending, accountId, page,
-                size);
+        [Route("prepareSearch")]
+        public async Task<ActionResult<JobPostingPrepareSearch>> GetJobPostingPrepareSearch() =>
+            await _jobPostingRepository.GetJobPostingPrepareSearch();
 
         //POST: api/JobPosting/AdvancedSearch?page={page}&size={size}
         [HttpPost("AdvancedSearch")]

@@ -17,9 +17,9 @@ namespace RecruitXpress_BE.Models
         public string? Title { get; set; }
         public string? Description { get; set; }
         public string? Company { get; set; }
-        public string? Location { get; set; }
-        public string? EmploymentType { get; set; }
-        public string? Industry { get; set; }
+        public int? Location { get; set; }
+        public int? EmploymentType { get; set; }
+        public int? Industry { get; set; }
         public string? Requirements { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
         public DateTime? DatePosted { get; set; }
@@ -28,7 +28,9 @@ namespace RecruitXpress_BE.Models
         public int? Status { get; set; }
         public long? MinSalary { get; set; }
         public long? MaxSalary { get; set; }
-
+        public virtual EmploymentType? EmploymentTypeNavigation { get; set; }
+        public virtual Industry? IndustryNavigation { get; set; }
+        public virtual District? LocationNavigation { get; set; }
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<ShortListing> ShortListings { get; set; }
         public virtual ICollection<SpecializedExam> SpecializedExams { get; set; }

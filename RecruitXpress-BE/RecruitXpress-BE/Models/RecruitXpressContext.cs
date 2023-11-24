@@ -19,16 +19,20 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
         public virtual DbSet<CandidateCv> CandidateCvs { get; set; } = null!;
+        public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
         public virtual DbSet<Cvtemplate> Cvtemplates { get; set; } = null!;
+        public virtual DbSet<District> Districts { get; set; } = null!;
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
         public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
         public virtual DbSet<EmailToken> EmailTokens { get; set; } = null!;
+        public virtual DbSet<EmploymentType> EmploymentTypes { get; set; } = null!;
         public virtual DbSet<Evaluate> Evaluates { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<FamilyInformation> FamilyInformations { get; set; } = null!;
         public virtual DbSet<GeneralTest> GeneralTests { get; set; } = null!;
         public virtual DbSet<GeneralTestDetail> GeneralTestDetails { get; set; } = null!;
+        public virtual DbSet<Industry> Industries { get; set; } = null!;
         public virtual DbSet<Interviewer> Interviewers { get; set; } = null!;
         public virtual DbSet<JobApplication> JobApplications { get; set; } = null!;
         public virtual DbSet<JobPosting> JobPostings { get; set; } = null!;
@@ -124,6 +128,13 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__CVTemplat__Accou__4AB81AF0");
             });
 
+            modelBuilder.Entity<City>(entity =>
+            {
+                entity.ToTable("City");
+
+                entity.Property(e => e.CityName).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<ComputerProficiency>(entity =>
             {
                 entity.ToTable("ComputerProficiency");
@@ -149,11 +160,18 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Thumbnail).HasMaxLength(255);
+            });
 
-                entity.HasOne(d => d.CreatedByNavigation)
-                    .WithMany(p => p.Cvtemplates)
-                    .HasForeignKey(d => d.CreatedBy)
-                    .HasConstraintName("FK_CVTemplate_Account");
+            modelBuilder.Entity<District>(entity =>
+            {
+                entity.ToTable("District");
+
+                entity.Property(e => e.DistrictName).HasMaxLength(50);
+
+                entity.HasOne(d => d.City)
+                    .WithMany(p => p.Districts)
+                    .HasForeignKey(d => d.CityId)
+                    .HasConstraintName("FK_District_City");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>
@@ -207,6 +225,13 @@ namespace RecruitXpress_BE.Models
                     .WithMany(p => p.EmailTokens)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK__EmailToke__Accou__681373AD");
+            });
+
+            modelBuilder.Entity<EmploymentType>(entity =>
+            {
+                entity.ToTable("EmploymentType");
+
+                entity.Property(e => e.EmploymentTypeName).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Evaluate>(entity =>
@@ -345,6 +370,13 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__GeneralTe__Gener__5AEE82B9");
             });
 
+            modelBuilder.Entity<Industry>(entity =>
+            {
+                entity.ToTable("Industry");
+
+                entity.Property(e => e.IndustryName).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<Interviewer>(entity =>
             {
                 entity.HasKey(e => new { e.InterviewerId, e.ScheduleId });
@@ -411,6 +443,21 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.ContactPerson).HasMaxLength(255);
 
                 entity.Property(e => e.DatePosted).HasColumnType("date");
+
+                entity.HasOne(d => d.EmploymentTypeNavigation)
+                    .WithMany(p => p.JobPostings)
+                    .HasForeignKey(d => d.EmploymentType)
+                    .HasConstraintName("FK_JobPosting_EmploymentType");
+
+                entity.HasOne(d => d.IndustryNavigation)
+                    .WithMany(p => p.JobPostings)
+                    .HasForeignKey(d => d.Industry)
+                    .HasConstraintName("FK_JobPosting_Industry");
+
+                entity.HasOne(d => d.LocationNavigation)
+                    .WithMany(p => p.JobPostings)
+                    .HasForeignKey(d => d.Location)
+                    .HasConstraintName("FK_JobPosting_District");
             });
 
             modelBuilder.Entity<LanguageProficiency>(entity =>

@@ -2,7 +2,6 @@
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
-using Constant = RecruitXpress_BE.Helper.Constant;
 
 namespace RecruitXpress_BE.Repositories;
 
@@ -18,35 +17,14 @@ public class JobPostingRepository : IJobPostingRepository
     public async Task<List<JobPosting>> GetListJobPostings()
         => await _context.JobPostings.ToListAsync();
 
-    public async Task<List<JobPostingDTO>> GetListJobPostings(string? searchString, string? sortBy,
-        bool? isSortAscending, int? accountId, int page, int size)
+    public async Task<JobPostingPrepareSearch> GetJobPostingPrepareSearch()
     {
-        var jobPostings = GetAdvancedSearchJobPostingQuery(
-            new JobPostingSearchDTO()
-            {
-                SearchString = searchString,
-                SortBy = sortBy,
-                IsSortAscending = isSortAscending == true
-            },
-            accountId
-        );
-        return await jobPostings
-            .Select(jobPosting => new JobPostingDTO()
-            {
-                JobId = jobPosting.JobId,
-                Title = jobPosting.Title,
-                Company = jobPosting.Company,
-                Location = jobPosting.Location,
-                EmploymentType = jobPosting.EmploymentType,
-                Industry = jobPosting.Industry,
-                ApplicationDeadline = jobPosting.ApplicationDeadline,
-                Requirements = jobPosting.Requirements,
-                DatePosted = jobPosting.DatePosted,
-                Status = jobPosting.Status,
-                IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId),
-            })
-            .Skip((page - 1) * size).Take(size)
-            .ToListAsync();
+        return new JobPostingPrepareSearch()
+        {
+            Locations = await _context.Districts.Include(d => d.City).ToListAsync(),
+            EmploymentTypes = await _context.EmploymentTypes.ToListAsync(),
+            Industries = await _context.Industries.ToListAsync()
+        };
     }
 
     public async Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
@@ -55,7 +33,7 @@ public class JobPostingRepository : IJobPostingRepository
         try
         {
             var query = GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId);
-            
+            var totalCount = await query.CountAsync();
             if (page != null && size != null)
             {
                 query = query.Skip(((int)page - 1) * (int)size).Take((int)size);
@@ -66,9 +44,9 @@ public class JobPostingRepository : IJobPostingRepository
                     JobId = jobPosting.JobId,
                     Title = jobPosting.Title,
                     Company = jobPosting.Company,
-                    Location = jobPosting.Location,
-                    EmploymentType = jobPosting.EmploymentType,
-                    Industry = jobPosting.Industry,
+                    Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
+                    EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
+                    Industry = jobPosting.IndustryNavigation.IndustryName,
                     ApplicationDeadline = jobPosting.ApplicationDeadline,
                     Requirements = jobPosting.Requirements,
                     DatePosted = DateTime.Now,
@@ -80,7 +58,7 @@ public class JobPostingRepository : IJobPostingRepository
             return new JobPostingResponse()
             {
                 Items = jobPostingDTO,
-                TotalCount = await query.CountAsync()
+                TotalCount = totalCount
             };
         }
         catch (Exception e)
@@ -102,9 +80,9 @@ public class JobPostingRepository : IJobPostingRepository
             JobId = jobPosting.JobId,
             Title = jobPosting.Title,
             Company = jobPosting.Company,
-            Location = jobPosting.Location,
-            EmploymentType = jobPosting.EmploymentType,
-            Industry = jobPosting.Industry,
+            Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
+            EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
+            Industry = jobPosting.IndustryNavigation.IndustryName,
             ApplicationDeadline = jobPosting.ApplicationDeadline,
             Requirements = jobPosting.Requirements,
             DatePosted = jobPosting.DatePosted,
@@ -159,9 +137,13 @@ public class JobPostingRepository : IJobPostingRepository
         return true;
     }
 
-    public IQueryable<JobPosting> GetAdvancedSearchJobPostingQuery(JobPostingSearchDTO searchDto, int? accountId)
+    private IQueryable<JobPosting> GetAdvancedSearchJobPostingQuery(JobPostingSearchDTO searchDto, int? accountId)
     {
-        var query = _context.JobPostings.AsQueryable();
+        var query = _context.JobPostings
+            .Include(j => j.EmploymentTypeNavigation)
+            .Include(j => j.IndustryNavigation)
+            .Include(j => j.LocationNavigation)
+            .AsQueryable();
 
         if (accountId != null)
         {
@@ -180,19 +162,19 @@ public class JobPostingRepository : IJobPostingRepository
                 j.Title.Contains(searchDto.SearchString) || j.Description.Contains(searchDto.SearchString));
         }
 
-        if (!string.IsNullOrEmpty(searchDto.Location))
+        if (searchDto.LocationId != null)
         {
-            query = query.Where(j => j.Location.Contains(searchDto.Location));
+            query = query.Where(j => j.Location == searchDto.LocationId);
         }
 
-        if (!string.IsNullOrEmpty(searchDto.EmploymentType))
+        if (searchDto.EmploymentTypeId != null)
         {
-            query = query.Where(j => j.EmploymentType == searchDto.EmploymentType);
+            query = query.Where(j => j.EmploymentType == searchDto.EmploymentTypeId);
         }
 
-        if (!string.IsNullOrEmpty(searchDto.Industry))
+        if (searchDto.IndustryId != null)
         {
-            query = query.Where(j => j.Industry == searchDto.Industry);
+            query = query.Where(j => j.Industry == searchDto.IndustryId);
         }
 
         if (searchDto is { MinSalary: not null, MaxSalary: not null })
