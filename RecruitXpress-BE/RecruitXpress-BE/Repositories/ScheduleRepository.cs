@@ -226,8 +226,8 @@ public class ScheduleRepository : IScheduleRepository
                     UpdatedBy = scheduleDTO.UpdatedBy
                 };
                 _context.Entry(scheduleDetailEntity).State = EntityState.Added;
-                _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
-                    scheduleDetail.CandidateId, scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM ? 6 : 2);
+                await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
+                    null, scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW ? 6 : 3);
             }
 
             await _context.SaveChangesAsync();
@@ -313,8 +313,8 @@ public class ScheduleRepository : IScheduleRepository
                         UpdatedBy = scheduleDTO.UpdatedBy
                     };
                     _context.Entry(scheduleDetailEntity).State = EntityState.Added;
-                    _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
-                        scheduleDetail.CandidateId, scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW ? 6 : 2);
+                    await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
+                        null, scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW ? 6 : 3);
                 }
                 else
                 {
