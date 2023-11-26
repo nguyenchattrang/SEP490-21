@@ -36,6 +36,7 @@ public class JobPostingRepository : IJobPostingRepository
             {
                 JobId = jobPosting.JobId,
                 Title = jobPosting.Title,
+                Description = jobPosting.Description,
                 Company = jobPosting.Company,
                 Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
                 EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
@@ -43,9 +44,13 @@ public class JobPostingRepository : IJobPostingRepository
                 LocationId = jobPosting.Location,
                 EmploymentTypeId = jobPosting.EmploymentType,
                 IndustryId = jobPosting.Industry,
-                ApplicationDeadline = jobPosting.ApplicationDeadline,
                 Requirements = jobPosting.Requirements,
+                MinSalary = jobPosting.MinSalary,
+                MaxSalary = jobPosting.MaxSalary,
+                ApplicationDeadline = jobPosting.ApplicationDeadline,
                 DatePosted = jobPosting.DatePosted,
+                ContactPerson = jobPosting.ContactPerson,
+                ApplicationInstructions = jobPosting.ApplicationInstructions,
                 Status = jobPosting.Status,
                 IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId),
             })
@@ -83,6 +88,7 @@ public class JobPostingRepository : IJobPostingRepository
                 {
                     JobId = jobPosting.JobId,
                     Title = jobPosting.Title,
+                    Description = jobPosting.Description,
                     Company = jobPosting.Company,
                     Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
                     EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
@@ -90,13 +96,15 @@ public class JobPostingRepository : IJobPostingRepository
                     LocationId = jobPosting.Location,
                     EmploymentTypeId = jobPosting.EmploymentType,
                     IndustryId = jobPosting.Industry,
-                    ApplicationDeadline = jobPosting.ApplicationDeadline,
                     Requirements = jobPosting.Requirements,
-                    DatePosted = DateTime.Now,
-                    Status = jobPosting.Status,
                     MinSalary = jobPosting.MinSalary,
                     MaxSalary = jobPosting.MaxSalary,
-                    IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
+                    ApplicationDeadline = jobPosting.ApplicationDeadline,
+                    DatePosted = jobPosting.DatePosted,
+                    ContactPerson = jobPosting.ContactPerson,
+                    ApplicationInstructions = jobPosting.ApplicationInstructions,
+                    Status = jobPosting.Status,
+                    IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId),
                 }).ToListAsync();
             return new JobPostingResponse()
             {
@@ -122,18 +130,23 @@ public class JobPostingRepository : IJobPostingRepository
         {
             JobId = jobPosting.JobId,
             Title = jobPosting.Title,
+            Description = jobPosting.Description,
             Company = jobPosting.Company,
             Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
             EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
             Industry = jobPosting.IndustryNavigation.IndustryName,
-            ApplicationDeadline = jobPosting.ApplicationDeadline,
             LocationId = jobPosting.Location,
             EmploymentTypeId = jobPosting.EmploymentType,
             IndustryId = jobPosting.Industry,
             Requirements = jobPosting.Requirements,
+            MinSalary = jobPosting.MinSalary,
+            MaxSalary = jobPosting.MaxSalary,
+            ApplicationDeadline = jobPosting.ApplicationDeadline,
             DatePosted = jobPosting.DatePosted,
+            ContactPerson = jobPosting.ContactPerson,
+            ApplicationInstructions = jobPosting.ApplicationInstructions,
             Status = jobPosting.Status,
-            IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
+            IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId),
         };
     }
 
