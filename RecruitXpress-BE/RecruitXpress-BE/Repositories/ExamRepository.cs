@@ -379,6 +379,13 @@ namespace RecruitXpress_BE.Repositories
 
                 // Add the exam to the database
                 _context.Exams.Add(newExam);
+
+
+
+                var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
+                if (specializedExam.JobId == null)
+                    throw new Exception("Chưa có jobId trong bài thi này");
+                await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId, 4);
                 await _context.SaveChangesAsync();
 
                 return newExam;
@@ -439,7 +446,7 @@ namespace RecruitXpress_BE.Repositories
             var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
             if (specializedExam.JobId == null)
                 throw new Exception("Chưa có jobId trong bài thi này");
-            await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId);
+            await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId,5);
 
         }
 
