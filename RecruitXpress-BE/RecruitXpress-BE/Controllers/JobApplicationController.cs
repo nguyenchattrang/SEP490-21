@@ -488,6 +488,7 @@ namespace RecruitXpress_BE.Controllers
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
+                        _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
                     switch (Status)
