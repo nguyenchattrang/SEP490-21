@@ -23,6 +23,27 @@ namespace RecruitXpress_BE.Controllers
         public async Task<ActionResult<JobPostingPrepareSearch>> GetJobPostingPrepareSearch() =>
             await _jobPostingRepository.GetJobPostingPrepareSearch();
 
+        //GET: api/JobPosting
+        [HttpGet]
+        public async Task<ActionResult<JobPostingResponse>> GetListJobPostings([FromQuery] JobPostingSearchDTO jobPostingSearchDto,
+            int? accountId, int? page, int? size)
+        {
+            try
+            {
+                var jobPostings =
+                    await _jobPostingRepository.GetListJobPostingAdvancedSearch(jobPostingSearchDto, accountId,
+                        page,
+                        size);
+                return Ok(jobPostings);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
+
+
         //POST: api/JobPosting/AdvancedSearch?page={page}&size={size}
         [HttpPost("AdvancedSearch")]
         public async Task<ActionResult<JobPostingResponse>> GetListJobPostingsAdvancedSearch(
@@ -31,7 +52,8 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var jobPostings =
-                    await _jobPostingRepository.GetListJobPostingAdvancedSearch(jobPostingSearchDto, accountId, page, size);
+                    await _jobPostingRepository.GetListJobPostingAdvancedSearch(jobPostingSearchDto, accountId, page,
+                        size);
                 return Ok(jobPostings);
             }
             catch (Exception e)
@@ -39,7 +61,6 @@ namespace RecruitXpress_BE.Controllers
                 Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
-            
         }
 
         //GET: api/JobPosting/{id}

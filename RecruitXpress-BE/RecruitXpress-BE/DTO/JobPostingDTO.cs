@@ -16,6 +16,9 @@ public class JobPostingDTO
     public string? Location { get; set; }
     public string? EmploymentType { get; set; }
     public string? Industry { get; set; }
+    public int? LocationId { get; set; }
+    public int? EmploymentTypeId { get; set; }
+    public int? IndustryId { get; set; }
     public string? Requirements { get; set; }
     public long? MinSalary { get; set; }
     public long? MaxSalary { get; set; }
