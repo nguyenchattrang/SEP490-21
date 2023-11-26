@@ -211,6 +211,16 @@ public class ScheduleRepository : IScheduleRepository
                     throw new Exception("Candidate is not exist!");
                 }
 
+                if (scheduleDetail.StartDate >= scheduleDetail.EndDate)
+                {
+                    throw new Exception("The end time must be greater than the start time!");
+                }
+
+                if (scheduleDetail.StartDate < DateTime.Now)
+                {
+                    throw new Exception("The start time must be greater than or equal to the current time!");
+                }
+
                 var scheduleDetailEntity = new ScheduleDetail
                 {
                     ScheduleId = schedule.ScheduleId,

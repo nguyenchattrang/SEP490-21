@@ -28,9 +28,18 @@ namespace RecruitXpress_BE.Controllers
         public async Task<ActionResult<JobPostingResponse>> GetListJobPostingsAdvancedSearch(
             JobPostingSearchDTO jobPostingSearchDto, int? accountId, int? page, int? size)
         {
-            var jobPostings =
-                await _jobPostingRepository.GetListJobPostingAdvancedSearch(jobPostingSearchDto, accountId, page, size);
-            return Ok(jobPostings);
+            try
+            {
+                var jobPostings =
+                    await _jobPostingRepository.GetListJobPostingAdvancedSearch(jobPostingSearchDto, accountId, page, size);
+                return Ok(jobPostings);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+            
         }
 
         //GET: api/JobPosting/{id}

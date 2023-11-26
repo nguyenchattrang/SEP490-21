@@ -88,15 +88,18 @@ public class JobPostingRepository : IJobPostingRepository
             DatePosted = jobPosting.DatePosted,
             Status = jobPosting.Status,
             IsPreferred = jobPosting.WishLists.Any(w => w.AccountId == accountId)
-        };;
-
-        return null;
+        };
     }
 
     public async Task<JobPosting> AddJobPosting(JobPosting jobPosting)
     {
         try
         {
+            if (jobPosting.ApplicationDeadline < DateTime.Now)
+            {
+                throw new Exception("Application deadline must be greater or equal now!");
+            }
+            jobPosting.DatePosted = DateTime.Now;
             _context.Entry(jobPosting).State = EntityState.Added;
             await _context.SaveChangesAsync();
             return jobPosting;
@@ -110,6 +113,11 @@ public class JobPostingRepository : IJobPostingRepository
 
     public async Task<JobPosting> UpdateJobPostings(int id, JobPosting jobPosting)
     {
+        if (jobPosting.ApplicationDeadline < DateTime.Now)
+        {
+            throw new Exception("Application deadline must be greater or equal now!");
+        }
+        jobPosting.DatePosted = DateTime.Now;
         jobPosting.JobId = id;
         _context.Entry(jobPosting).State = EntityState.Modified;
         try
@@ -143,6 +151,7 @@ public class JobPostingRepository : IJobPostingRepository
             .Include(j => j.EmploymentTypeNavigation)
             .Include(j => j.IndustryNavigation)
             .Include(j => j.LocationNavigation)
+            .ThenInclude(d => d.City)
             .AsQueryable();
 
         if (accountId != null)
