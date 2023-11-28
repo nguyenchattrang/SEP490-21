@@ -31,7 +31,9 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Thieu jobId");
                 }
-                var profile = await _context.ShortListings.Include(x => x.Profile).ThenInclude(x => x.Account).ThenInclude(x => x.CandidateCvs).Include(x => x.Job).Where(x => x.Status == 1).ToListAsync();
+                var profile = await _context.ShortListings.Include(x => x.Profile)
+                    .ThenInclude(x => x.Account).ThenInclude(x => x.CandidateCvs)
+                    .Include(x => x.Job).Where(x => x.Status == 1).ToListAsync();
                 if (profile == null)
                 {
                     return NotFound("Không kết quả");
@@ -51,7 +53,9 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                
-                var profile = await _context.ShortListings.Include(x => x.Profile).ThenInclude(x=>x.Account).ThenInclude(x=>x.CandidateCvs).Include(x => x.Job).Where(x => x.Status == 1).ToListAsync();
+                var profile = await _context.ShortListings.Include(x => x.Profile)
+                    .ThenInclude(x=>x.Account).ThenInclude(x=>x.CandidateCvs)
+                    .Include(x => x.Job).Where(x => x.Status == 1).ToListAsync();
                 if (profile == null)
                 {
                     return NotFound("Không kết quả");
@@ -71,21 +75,19 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-               
-                if(shortlisting != null )
+                var oldShortListing = _context.ShortListings.Where(w => w.ProfileId == shortlisting.ProfileId)
+                 .SingleOrDefault(w => w.ProfileId == shortlisting.ProfileId);
+                if (oldShortListing == null)
                 {
-                    var data = shortlisting;
-                    data.CreatedAt = DateTime.Now;
-                    data.Status = 1;
-                    _context.ShortListings.Add(data);
-                    await _context.SaveChangesAsync();
-                    return Ok("Thành công");
+                    _context.Entry(shortlisting).State = EntityState.Added;
                 }
                 else
                 {
-                    return BadRequest("Không có dữ liệu");
+                    _context.Entry(shortlisting).State = EntityState.Deleted;
                 }
-                
+
+                await _context.SaveChangesAsync();
+                return Ok("Them thanh cong");
             }
             catch (Exception e)
             {

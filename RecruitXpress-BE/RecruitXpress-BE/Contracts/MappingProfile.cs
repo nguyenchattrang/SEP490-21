@@ -13,11 +13,12 @@ namespace RecruitXpress_BE.Contracts
         public MappingProfile()
         {
             CreateMap<JobApplication, JobApplicationDTO>();
-               // .ForMember(dest => dest.GeneralTest, opt => opt.MapFrom(src => src.Profile.GeneralTests))
-               // .ForMember(dest => dest.Schedule, opt => opt.MapFrom(src => src.Profile.Schedules))
-               //.ForMember(dest => dest.ScheduleDetail, opt => opt.MapFrom(src => src.ScheduleDetails))
-               // .ForMember(dest => dest.Evaluate, opt => opt.MapFrom(src => src.Profile.Evaluates))
-               // .ForMember(dest => dest.Exam, opt => opt.MapFrom(src => src.Profile.Account.Exams));
+                // .ForMember(dest => dest.GeneralTest, opt => opt.MapFrom(src => src.Profile.GeneralTests))
+                //.ForMember(dest => dest.Schedule, opt => opt.MapFrom(src => src.Profile.Schedules))
+                //.ForMember(dest => dest.ScheduleDetail, opt => opt.MapFrom(src => src.ScheduleDetails))
+                //.ForMember(dest => dest.Evaluate, opt => opt.MapFrom(src => src.Profile.Evaluates))
+                //.ForMember(dest => dest.Exam, opt => opt.MapFrom(src => src.Profile.Account.Exams))
+                //.ForMember(dest => dest.SpecializedExam, opt => opt.MapFrom(src => src.Profile.Account.SpecializedExams));
             CreateMap<ComputerProficiency, ComputerProficiencyDTO>();
             CreateMap<MaritalStatus, MaritalStatusDTO>();
             CreateMap<LanguageProficiency, LanguageProficiencyDTO>();

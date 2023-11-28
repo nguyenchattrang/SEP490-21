@@ -19,13 +19,12 @@ namespace RecruitXpress_BE.DTO
 
         public virtual CvtemplateDTO? Template { get; set; }
 
-        public virtual ICollection<GeneralTestDetail> GeneralTestDetails { get; set; }
-        public virtual GeneralTestDTO? GeneralTest { get; set; }
+        public virtual SpecializedExamDTO? SpecializedExam { get; set; }
         public virtual ScheduleDTO? Schedule { get; set; }
         public virtual ScheduleDetailDTO? ScheduleDetail { get; set; }
         public virtual EvaluateDTO? Evaluate { get; set; }
 
-        public virtual ExamDTO? Exam { get; set; }
+        //public virtual ExamDTO? Exam { get; set; }
         public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
 
 
