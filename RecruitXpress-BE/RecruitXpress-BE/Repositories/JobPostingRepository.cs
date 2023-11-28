@@ -72,16 +72,15 @@ public class JobPostingRepository : IJobPostingRepository
         };
     }
 
-    public async Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId,
-        int? page, int? size)
+    public async Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId)
     {
         try
         {
             var query = GetAdvancedSearchJobPostingQuery(jobPostingSearchDto, accountId);
             var totalCount = await query.CountAsync();
-            if (page != null && size != null)
+            if (jobPostingSearchDto is { Page: not null, Size: not null })
             {
-                query = query.Skip(((int)page - 1) * (int)size).Take((int)size);
+                query = query.Skip(((int)jobPostingSearchDto.Page - 1) * (int)jobPostingSearchDto.Size).Take((int)jobPostingSearchDto.Size);
             }
             var jobPostingDTO =  await query
                 .Select(jobPosting => new JobPostingDTO()
