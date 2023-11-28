@@ -25,7 +25,7 @@ namespace RecruitXpress_BE.DTO
         public virtual ScheduleDetailDTO? ScheduleDetail { get; set; }
         public virtual EvaluateDTO? Evaluate { get; set; }
 
-        public virtual ExamDTO? Exam { get; set; }
+        public virtual SpecializedExamDTO? Exam { get; set; }
         public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
 
 
@@ -49,6 +49,7 @@ namespace RecruitXpress_BE.DTO
     public partial class LoggingDTO
     {
         public int? AccountId { get; set; }
+        public int? StatusId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
@@ -56,6 +57,12 @@ namespace RecruitXpress_BE.DTO
         public string? Avatar { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? Gender { get; set; }
+        public string? Skills { get; set; }
+        public string? Accomplishment { get; set; }
+        public string? Strength { get; set; }
+        public string? Imperfection { get; set; }
+        public string? ResearchWork { get; set; }
+        public string? Article { get; set; }
 
     }
     public partial class CvtemplateDTO

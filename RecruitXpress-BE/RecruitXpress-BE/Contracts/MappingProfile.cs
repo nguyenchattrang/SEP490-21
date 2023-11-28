@@ -24,6 +24,7 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<EducationalBackground, EducationalBackgroundDTO>();
             CreateMap<FamilyInformation, FamilyInformationDTO>();
             CreateMap<training, TrainigDTO>();
+            CreateMap<ShortListing, ShortListingDTO > ();
             CreateMap<WorkExperience, WorkExperienceDTO>();
             CreateMap<GeneralTest, GeneralTestDTO>()
             .ForMember(dest => dest.GeneralTestDetails, opt => opt.MapFrom(src => src.GeneralTestDetails))
