@@ -15,7 +15,18 @@ namespace RecruitXpress_BE.DTO
         }
         public string SearchAll { get; set; } // Search het
     }
+    public class ShortListingRequest : ApiRequest<ShortListingDTO>
+    {
+        public string? SearchString { get; set; }
+        public string? JobTitile { get; set; }
+        public string? NameCandidate { get; set; }
+        public string? PhoneCandidate { get; set; }
+        public string? EmailCandidate { get; set; }
+        public string? Company { get; set; }
 
+        public int? Status { get; set; }
+
+    }
     public class QuestionRequest : ApiRequest<QuestionDTO>
     {
         public string? Name { get; set; }
