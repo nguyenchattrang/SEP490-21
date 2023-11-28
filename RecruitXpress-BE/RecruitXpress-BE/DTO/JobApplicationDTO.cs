@@ -22,7 +22,7 @@ namespace RecruitXpress_BE.DTO
         public virtual ICollection<GeneralTestDetail> GeneralTestDetails { get; set; }
         public virtual GeneralTestDTO? GeneralTest { get; set; }
         public virtual ScheduleDTO? Schedule { get; set; }
-        public virtual ScheduleDetailDTO? ScheduleDetail { get; set; }
+        public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
         public virtual EvaluateDTO? Evaluate { get; set; }
 
         public virtual ExamDTO? Exam { get; set; }

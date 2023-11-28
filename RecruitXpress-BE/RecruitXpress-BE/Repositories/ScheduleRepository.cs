@@ -171,8 +171,11 @@ public class ScheduleRepository : IScheduleRepository
                 throw new Exception("Human Resource is not exist!");
             }
 
+            var scheduleId = _context.Schedules.OrderByDescending(s => s.ScheduleId).FirstOrDefault()?.ScheduleId + 1 ?? 1;
+
             var schedule = new Schedule()
             {
+                ScheduleId = scheduleId,
                 HumanResourceId = hrProfile.ProfileId,
                 Status = scheduleDTO.Status,
                 CreatedTime = DateTime.Now,
@@ -181,7 +184,6 @@ public class ScheduleRepository : IScheduleRepository
                 UpdatedBy = scheduleDTO.UpdatedBy
             };
             _context.Entry(schedule).State = EntityState.Added;
-            await _context.SaveChangesAsync();
 
             foreach (var interviewer in scheduleDTO.Interviewers)
             {
@@ -221,7 +223,18 @@ public class ScheduleRepository : IScheduleRepository
                     throw new Exception("The start time must be greater than or equal to the current time!");
                 }
 
-                var scheduleDetailEntity = new ScheduleDetail
+                var scheduleDetailEntity = await _context.ScheduleDetails.FirstOrDefaultAsync(sd =>
+                    sd.CandidateId == candidateApplication.ApplicationId
+                    && ((sd.StartDate <= scheduleDetail.StartDate && sd.EndDate >= scheduleDetail.StartDate)
+                        || (sd.StartDate <= scheduleDetail.EndDate && sd.EndDate >= scheduleDetail.EndDate)
+                        || (sd.StartDate >= scheduleDetail.StartDate && sd.EndDate <= scheduleDetail.EndDate)));
+
+                if (scheduleDetailEntity != null)
+                {
+                    throw new Exception("Candidate has schedule already!");
+                }
+
+                scheduleDetailEntity = new ScheduleDetail
                 {
                     ScheduleId = schedule.ScheduleId,
                     CandidateId = candidateApplication.ApplicationId,

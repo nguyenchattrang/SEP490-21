@@ -74,6 +74,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
                 .Include(q => q.Profile).ThenInclude(x => x.Schedules)
+                .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
@@ -230,19 +231,19 @@ namespace RecruitXpress_BE.Controllers
                 {
                    var acc = jobApplicationDTO.AssignedFor;
                          if (acc != null) {
-                        var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == acc);
-                        if (profile != null)
-                        {
-                            var profileDTO = new AssignedProfileDTO
-                            {
-                                accountId = (int)acc,
-                                Name = profile.Name,
-                            };
-                            jobApplicationDTO.AssignedForInfor = profileDTO;
-                        }
-                        }
+                             var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == acc);
+                             if (profile != null)
+                             {
+                                 var profileDTO = new AssignedProfileDTO
+                                 {
+                                     accountId = (int)acc,
+                                     Name = profile.Name,
+                                 };
+                                 jobApplicationDTO.AssignedForInfor = profileDTO;
+                             }
+                         }
 
-                        }
+                }
                 var response = new ApiResponse<JobApplicationDTO>
                 {
                     Items = jobApplicationDTOs,
