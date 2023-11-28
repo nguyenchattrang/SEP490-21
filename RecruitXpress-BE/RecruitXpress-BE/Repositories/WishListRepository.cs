@@ -18,8 +18,8 @@ public class WishListRepository : IWishListRepository
     public async Task<List<WishList>> GetListWishLists()
         => await _context.WishLists.ToListAsync();
 
-    public async Task<List<WishListDTO>> GetListWishLists(int accountId, string? searchString, string? sortBy,
-        bool? isSortAscending, int page, int size)
+    public async Task<WishlistResponse> GetListWishLists(int accountId, string? searchString, string? sortBy,
+        bool? isSortAscending, int? page, int? size)
     {
         var query = GetAdvancedSearchWishListQuery(
             accountId,
@@ -31,7 +31,14 @@ public class WishListRepository : IWishListRepository
             }
         );
 
-        return await query
+        var totalCount = await query.CountAsync();
+
+        if (page != null && size != null)
+        {
+            query = query.Skip(((int)page - 1) * (int)size).Take((int)size);
+        }
+
+        var wishlists = await query
             .Select(w => new WishListDTO()
             {
                 WishlistId = w.WishlistId,
@@ -39,10 +46,13 @@ public class WishListRepository : IWishListRepository
                 Status = w.Status,
                 JobId = w.JobId,
                 Job = w.Job,
-                TotalCount = query.Count()
             })
-            .Skip((page - 1) * size).Take(size)
             .ToListAsync();
+        return new WishlistResponse()
+        {
+            Items = wishlists,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<List<WishList?>> GetWishList(int accountId)
@@ -101,17 +111,17 @@ public class WishListRepository : IWishListRepository
 
         if (!string.IsNullOrEmpty(searchDto.Location))
         {
-            query = query.Where(w => w.Job.Location.Contains(searchDto.Location));
+            query = query.Where(w => w.Job.Location == searchDto.LocationId);
         }
 
         if (!string.IsNullOrEmpty(searchDto.EmploymentType))
         {
-            query = query.Where(w => w.Job.EmploymentType == searchDto.EmploymentType);
+            query = query.Where(w => w.Job.EmploymentType == searchDto.EmploymentTypeId);
         }
 
         if (!string.IsNullOrEmpty(searchDto.Industry))
         {
-            query = query.Where(w => w.Job.Industry == searchDto.Industry);
+            query = query.Where(w => w.Job.Industry == searchDto.IndustryId);
         }
 
         if (searchDto.MinSalary != null && searchDto.MaxSalary != null)

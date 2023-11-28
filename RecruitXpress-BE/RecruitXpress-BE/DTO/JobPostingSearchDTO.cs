@@ -1,4 +1,5 @@
-﻿
+﻿using RecruitXpress_BE.Models;
+
 namespace RecruitXpress_BE.DTO;
 
 public class JobPostingSearchDTO
@@ -8,11 +9,14 @@ public class JobPostingSearchDTO
     public string? Location { get; set; }
     public string? EmploymentType { get; set; }
     public string? Industry { get; set; }
+    public int? LocationId { get; set; }
+    public int? EmploymentTypeId { get; set; }
+    public int? IndustryId { get; set; }
     public double? MinSalary { get; set; }
     public double? MaxSalary { get; set; }
     public DateTime? ApplicationDeadline { get; set; }
     public int? status { get; set; }
-    
+
     public string? SortBy { get; set; }
 
     private readonly bool? _isSortAscending;
@@ -23,6 +27,13 @@ public class JobPostingSearchDTO
         init => _isSortAscending = value;
     }
 
-    public int Page { get; set; } = 1;
-    public int Size { get; set; } = 10;
+    public int? Page { get; set; }
+    public int? Size { get; set; }
+}
+
+public class JobPostingPrepareSearch
+{
+    public List<District> Locations { get; set; }
+    public List<EmploymentType> EmploymentTypes { get; set; }
+    public List<Industry> Industries { get; set; }
 }

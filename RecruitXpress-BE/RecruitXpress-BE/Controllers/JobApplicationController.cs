@@ -71,11 +71,14 @@ namespace RecruitXpress_BE.Controllers
             {
 
                 var query = _context.JobApplications
-                .Include(q => q.Profile).ThenInclude(x => x.Schedules).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
                 .Include(q => q.Profile).ThenInclude(x => x.Schedules)
-                .Include(q => q.Profile).ThenInclude(x => x.Account).ThenInclude(x => x.Exams)
-                .Include(q => q.Job)
+                .Include(ja => ja.ScheduleDetails)
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
+                .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).AsQueryable();
 
                 if (accountId != null)
@@ -83,19 +86,19 @@ namespace RecruitXpress_BE.Controllers
                     query = query.Where(x => x.AssignedFor == accountId);
                 }
 
-                if (request.Location != null)
+                if (request.LocationId != null)
                 {
-                    query = query.Where(s => s.Job != null && s.Job.Location != null && s.Job.Location.Contains(request.Location));
+                    query = query.Where(s => s.Job != null && s.Job.Location != null && s.Job.Location == request.LocationId);
                 }
 
-                if (request.EmploymentType != null)
+                if (request.EmploymentTypeId != null)
                 {
-                    query = query.Where(s => s.Job != null && s.Job.EmploymentType != null && s.Job.EmploymentType.Contains(request.EmploymentType));
+                    query = query.Where(s => s.Job != null && s.Job.EmploymentType != null && s.Job.EmploymentType == request.EmploymentTypeId);
                 }
 
-                if (request.Industry != null)
+                if (request.IndustryId != null)
                 {
-                    query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry.Contains(request.Industry));
+                    query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry == request.IndustryId);
                 }
 
                 if (request is { MinSalary: not null, MaxSalary: not null })
@@ -208,8 +211,9 @@ namespace RecruitXpress_BE.Controllers
                      s.Profile.PhoneNumber.Contains(request.SearchString) ||
                      s.Profile.Name.Contains(request.SearchString) ||
                      // s.Job.SalaryRange.Contains(request.SearchString) ||
-                     s.Job.Industry.Contains(request.SearchString) ||
-                     s.Job.Location.Contains(request.SearchString) ||
+                     s.Job.IndustryNavigation.IndustryName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.DistrictName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.City.CityName.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
 
@@ -227,19 +231,19 @@ namespace RecruitXpress_BE.Controllers
                 {
                    var acc = jobApplicationDTO.AssignedFor;
                          if (acc != null) {
-                        var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == acc);
-                        if (profile != null)
-                        {
-                            var profileDTO = new AssignedProfileDTO
-                            {
-                                accountId = (int)acc,
-                                Name = profile.Name,
-                            };
-                            jobApplicationDTO.AssignedForInfor = profileDTO;
-                        }
-                        }
+                             var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == acc);
+                             if (profile != null)
+                             {
+                                 var profileDTO = new AssignedProfileDTO
+                                 {
+                                     accountId = (int)acc,
+                                     Name = profile.Name,
+                                 };
+                                 jobApplicationDTO.AssignedForInfor = profileDTO;
+                             }
+                         }
 
-                        }
+                }
                 var response = new ApiResponse<JobApplicationDTO>
                 {
                     Items = jobApplicationDTOs,
@@ -272,23 +276,25 @@ namespace RecruitXpress_BE.Controllers
                 .Include(q => q.Profile).ThenInclude(x => x.Schedules).ThenInclude(x => x.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
                 .Include(q => q.Profile).ThenInclude(x => x.Schedules)
-                .Include(q => q.Profile).ThenInclude(x => x.Account).ThenInclude(x => x.Exams)
-                .Include(q => q.Job)
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
+                .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).AsQueryable();
 
-                if (request.Location != null)
+                if (request.LocationId != null)
                 {
-                    query = query.Where(s => s.Job != null && s.Job.Location != null && s.Job.Location.Contains(request.Location));
+                    query = query.Where(s => s.Job != null && s.Job.Location != null && s.Job.Location == request.LocationId);
                 }
 
-                if (request.EmploymentType != null)
+                if (request.EmploymentTypeId != null)
                 {
-                    query = query.Where(s => s.Job != null && s.Job.EmploymentType != null && s.Job.EmploymentType.Contains(request.EmploymentType));
+                    query = query.Where(s => s.Job != null && s.Job.EmploymentType != null && s.Job.EmploymentType == request.EmploymentTypeId);
                 }
 
-                if (request.Industry != null)
+                if (request.IndustryId != null)
                 {
-                    query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry.Contains(request.Industry));
+                    query = query.Where(s => s.Job != null && s.Job.Industry != null && s.Job.Industry == request.IndustryId);
                 }
 
                 if (request is { MinSalary: not null, MaxSalary: not null })
@@ -401,8 +407,9 @@ namespace RecruitXpress_BE.Controllers
                      s.Profile.PhoneNumber.Contains(request.SearchString) ||
                      s.Profile.Name.Contains(request.SearchString) ||
                      // s.Job.SalaryRange.Contains(request.SearchString) ||
-                     s.Job.Industry.Contains(request.SearchString) ||
-                     s.Job.Location.Contains(request.SearchString) ||
+                     s.Job.IndustryNavigation.IndustryName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.DistrictName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.City.CityName.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
 
@@ -482,6 +489,7 @@ namespace RecruitXpress_BE.Controllers
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
+                        _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
                     switch (Status)
