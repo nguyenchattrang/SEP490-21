@@ -33,7 +33,13 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                
-                var query = _context.Profiles.Include(a=> a.Account).AsQueryable();
+                var query = _context.Profiles
+                    .Include(x=> x.Account).ThenInclude(x=> x.SpecializedExams)
+                    .Include(x=>x.Schedules).ThenInclude(x=>x.ScheduleDetails)
+                    .Include(x=>x.Account).ThenInclude(x=>x.CandidateCvs)
+                    .Include(x=>x.Evaluates)
+                    .Include(x=>x.ComputerProficiencies)
+                    .AsQueryable();
                
                if(searchString!= null)
                 {
@@ -44,7 +50,7 @@ namespace RecruitXpress_BE.Controllers
 
                 var activityLogging = await query.ToListAsync();
 
-                //var activityLoggingDTO = _mapper.Map<List<ActivityLoggingDTO>>(activityLogging);
+                var activityLoggingDTO = _mapper.Map<List<ActivityLoggingDTO>>(activityLogging);
 
                 return Ok(activityLogging);
 
