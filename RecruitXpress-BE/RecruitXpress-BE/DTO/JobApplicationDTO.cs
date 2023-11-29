@@ -42,6 +42,8 @@ namespace RecruitXpress_BE.DTO
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public int? Status { get; set; }
+        public string? Location { get; set; }
+        public virtual JobApplication? Candidate { get; set; }
 
     }
     public partial class LoggingDTO

@@ -19,7 +19,7 @@ namespace RecruitXpress_BE.Models
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
 
-        public virtual Profile? HumanResource { get; set; }
+        public virtual Account? HumanResource { get; set; }
         public virtual ICollection<Interviewer> Interviewers { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
     }

@@ -7,7 +7,7 @@ public class ScheduleDTO
     public ScheduleDTO()
     {
         Interviewers = new HashSet<Interviewer>();
-        ScheduleDetails = new HashSet<ScheduleDetail>();
+        ScheduleDetails = new HashSet<ScheduleDetailDTO>();
     }
 
     public int ScheduleId { get; set; }
@@ -18,9 +18,9 @@ public class ScheduleDTO
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
 
-    public virtual Profile? HumanResource { get; set; }
+    public virtual Account? HumanResource { get; set; }
     public virtual ICollection<Interviewer> Interviewers { get; set; }
-    public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
+    public virtual ICollection<ScheduleDetailDTO> ScheduleDetails { get; set; }
     // public Dictionary<int, Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>> ScheduleAdditionData { get; set; }
 }
 
@@ -31,8 +31,8 @@ public class ScheduleResponse
 
 public class ScheduleAdditionDataDTO
 {
-    public string HumanResourceName { get; set; }
-    public string CandidateName { get; set; }
+    public string? HumanResourceName { get; set; }
+    public string? CandidateName { get; set; }
     public List<string?> InterviewerName { get; set; }
     public int type { get; set; }
     public string content { get; set; }
