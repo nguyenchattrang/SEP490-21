@@ -50,7 +50,7 @@ namespace RecruitXpress_BE.Controllers
                 var activityLoggingDTO = _mapper.Map<ActivityLoggingDTO>(query);
                 if(activityLoggingDTO == null)
                 {
-                    return BadRequest("không có kêt quả ")
+                    return BadRequest("không có kêt quả ");
                 }
                 return Ok(activityLoggingDTO);
 
