@@ -21,19 +21,21 @@ namespace RecruitXpress_BE.DTO
         }
         public int ProfileId { get; set; }
         public int? AccountId { get; set; }
-        public string? Name { get; set; }
+        public int? StatusId { get; set; }
         public string? Email { get; set; }
+        public string? FullName { get; set; }
+        public DateTime? Dob { get; set; }
+        public string? Gender { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
         public string? Avatar { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-        public string? Gender { get; set; }
         public string? Skills { get; set; }
         public string? Accomplishment { get; set; }
         public string? Strength { get; set; }
         public string? Imperfection { get; set; }
         public string? ResearchWork { get; set; }
         public string? Article { get; set; }
+
 
         public virtual MaritalStatusDTO? Status { get; set; }
         public virtual ICollection<ComputerProficiencyDTO> ComputerProficiencies { get; set; }
