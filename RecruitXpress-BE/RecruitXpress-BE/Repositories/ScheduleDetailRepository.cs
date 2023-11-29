@@ -36,7 +36,7 @@ public class ScheduleDetailRepository : IScheduleDetailRepository
                 sd.ScheduleDetailId == id);
             if (detail == null)
             {
-                throw new Exception("Schedule detail not found!");
+                throw new Exception("Không tìm thấy thông tin chi tiết");
             }
 
             if (scheduleDetail.ScheduleType != null)
@@ -48,7 +48,7 @@ public class ScheduleDetailRepository : IScheduleDetailRepository
             {
                 if (scheduleDetail.EndDate != null && scheduleDetail.StartDate >= scheduleDetail.EndDate)
                 {
-                    throw new Exception("Start date must greater then end date");
+                    throw new Exception("Thời gian bắt đầu phải lớn hơn thời gian kết thúc");
                 }
 
                 detail.StartDate = scheduleDetail.StartDate;
@@ -87,7 +87,7 @@ public class ScheduleDetailRepository : IScheduleDetailRepository
                 sd.ScheduleDetailId == scheduleDetailId);
             if (detail == null)
             {
-                throw new Exception("Schedule detail not found!");
+                throw new Exception("Không tìm thấy thông tin chi tiết!");
             }
 
             _context.Entry(detail).State = EntityState.Deleted;

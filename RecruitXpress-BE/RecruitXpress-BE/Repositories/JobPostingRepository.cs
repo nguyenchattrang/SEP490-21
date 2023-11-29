@@ -31,16 +31,24 @@ public class JobPostingRepository : IJobPostingRepository
         {
             query = query.Skip(((int)page - 1) * (int)size).Take((int)size);
         }
-        var jobPostingDTO =  await query
+
+        var jobPostingDto = await query
             .Select(jobPosting => new JobPostingDTO()
             {
                 JobId = jobPosting.JobId,
                 Title = jobPosting.Title,
                 Description = jobPosting.Description,
                 Company = jobPosting.Company,
-                Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
-                EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
-                Industry = jobPosting.IndustryNavigation.IndustryName,
+                Location = (jobPosting.LocationNavigation != null ? jobPosting.LocationNavigation.DistrictName : null) +
+                           " - " + (jobPosting.LocationNavigation != null
+                               ? jobPosting.LocationNavigation.City != null
+                                   ? jobPosting.LocationNavigation.City.CityName
+                                   : null
+                               : null),
+                EmploymentType = jobPosting.EmploymentTypeNavigation != null
+                    ? jobPosting.EmploymentTypeNavigation.EmploymentTypeName
+                    : null,
+                Industry = jobPosting.IndustryNavigation != null ? jobPosting.IndustryNavigation.IndustryName : null,
                 LocationId = jobPosting.Location,
                 EmploymentTypeId = jobPosting.EmploymentType,
                 IndustryId = jobPosting.Industry,
@@ -57,7 +65,7 @@ public class JobPostingRepository : IJobPostingRepository
             .ToListAsync();
         return new JobPostingResponse()
         {
-            Items = jobPostingDTO,
+            Items = jobPostingDto,
             TotalCount = totalCount
         };
     }
@@ -72,7 +80,8 @@ public class JobPostingRepository : IJobPostingRepository
         };
     }
 
-    public async Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId)
+    public async Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto,
+        int? accountId)
     {
         try
         {
@@ -80,18 +89,30 @@ public class JobPostingRepository : IJobPostingRepository
             var totalCount = await query.CountAsync();
             if (jobPostingSearchDto is { Page: not null, Size: not null })
             {
-                query = query.Skip(((int)jobPostingSearchDto.Page - 1) * (int)jobPostingSearchDto.Size).Take((int)jobPostingSearchDto.Size);
+                query = query.Skip(((int)jobPostingSearchDto.Page - 1) * (int)jobPostingSearchDto.Size)
+                    .Take((int)jobPostingSearchDto.Size);
             }
-            var jobPostingDTO =  await query
+
+            var jobPostingDto = await query
                 .Select(jobPosting => new JobPostingDTO()
                 {
                     JobId = jobPosting.JobId,
                     Title = jobPosting.Title,
                     Description = jobPosting.Description,
                     Company = jobPosting.Company,
-                    Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
-                    EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
-                    Industry = jobPosting.IndustryNavigation.IndustryName,
+                    Location = (jobPosting.LocationNavigation != null
+                                   ? jobPosting.LocationNavigation.DistrictName
+                                   : null) + " - " +
+                               (jobPosting.LocationNavigation != null
+                                   ? jobPosting.LocationNavigation.City != null
+                                       ? jobPosting.LocationNavigation.City.CityName
+                                       : null
+                                   : null),
+                    EmploymentType = jobPosting.EmploymentTypeNavigation != null
+                        ? jobPosting.EmploymentTypeNavigation.EmploymentTypeName
+                        : null,
+                    Industry =
+                        jobPosting.IndustryNavigation != null ? jobPosting.IndustryNavigation.IndustryName : null,
                     LocationId = jobPosting.Location,
                     EmploymentTypeId = jobPosting.EmploymentType,
                     IndustryId = jobPosting.Industry,
@@ -107,7 +128,7 @@ public class JobPostingRepository : IJobPostingRepository
                 }).ToListAsync();
             return new JobPostingResponse()
             {
-                Items = jobPostingDTO,
+                Items = jobPostingDto,
                 TotalCount = totalCount
             };
         }
@@ -125,15 +146,16 @@ public class JobPostingRepository : IJobPostingRepository
             accountId
         ).SingleOrDefaultAsync();
         if (jobPosting == null) return null;
-        return  new JobPostingDTO()
+        return new JobPostingDTO()
         {
             JobId = jobPosting.JobId,
             Title = jobPosting.Title,
             Description = jobPosting.Description,
             Company = jobPosting.Company,
-            Location = jobPosting.LocationNavigation.DistrictName + " - " + jobPosting.LocationNavigation.City.CityName,
-            EmploymentType = jobPosting.EmploymentTypeNavigation.EmploymentTypeName,
-            Industry = jobPosting.IndustryNavigation.IndustryName,
+            Location = jobPosting.LocationNavigation?.DistrictName + " - " +
+                       jobPosting.LocationNavigation?.City?.CityName,
+            EmploymentType = jobPosting.EmploymentTypeNavigation?.EmploymentTypeName,
+            Industry = jobPosting.IndustryNavigation?.IndustryName,
             LocationId = jobPosting.Location,
             EmploymentTypeId = jobPosting.EmploymentType,
             IndustryId = jobPosting.Industry,
@@ -155,8 +177,9 @@ public class JobPostingRepository : IJobPostingRepository
         {
             if (jobPosting.ApplicationDeadline < DateTime.Now)
             {
-                throw new Exception("Application deadline must be greater or equal now!");
+                throw new Exception("Ngày hết hạn phải lớn hơn ngày hiện tại!");
             }
+
             jobPosting.DatePosted = DateTime.Now;
             _context.Entry(jobPosting).State = EntityState.Added;
             await _context.SaveChangesAsync();
@@ -173,8 +196,9 @@ public class JobPostingRepository : IJobPostingRepository
     {
         if (jobPosting.ApplicationDeadline < DateTime.Now)
         {
-            throw new Exception("Application deadline must be greater or equal now!");
+            throw new Exception("Ngày hết hạn phải lớn hơn ngày hiện tại!");
         }
+
         jobPosting.DatePosted = DateTime.Now;
         jobPosting.JobId = id;
         _context.Entry(jobPosting).State = EntityState.Modified;
@@ -216,17 +240,18 @@ public class JobPostingRepository : IJobPostingRepository
         {
             query = query.Include(j => j.WishLists);
         }
-        
+
         if (searchDto.JobId != null)
         {
             query = query.Where(j =>
                 j.JobId == searchDto.JobId);
         }
-        
+
         if (!string.IsNullOrEmpty(searchDto.SearchString))
         {
             query = query.Where(j =>
-                j.Title.Contains(searchDto.SearchString) || j.Description.Contains(searchDto.SearchString));
+                j.Description != null && j.Title != null && (j.Title.Contains(searchDto.SearchString) ||
+                                                             j.Description.Contains(searchDto.SearchString)));
         }
 
         if (searchDto.LocationId != null)
@@ -253,7 +278,7 @@ public class JobPostingRepository : IJobPostingRepository
         {
             query = query.Where(j => j.ApplicationDeadline <= searchDto.ApplicationDeadline);
         }
-        
+
         if (searchDto.status.HasValue)
         {
             query = query.Where(j => j.Status == searchDto.status);
@@ -264,14 +289,18 @@ public class JobPostingRepository : IJobPostingRepository
             query = searchDto.SortBy switch
             {
                 "Location" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.LocationNavigation.DistrictName)
-                    : query.OrderByDescending(j => j.LocationNavigation.DistrictName),
+                    ? query.OrderBy(j => j.LocationNavigation != null ? j.LocationNavigation.DistrictName : null)
+                    : query.OrderByDescending(j =>
+                        j.LocationNavigation != null ? j.LocationNavigation.DistrictName : null),
                 "EmploymentType" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.EmploymentTypeNavigation.EmploymentTypeName)
-                    : query.OrderByDescending(j => j.EmploymentTypeNavigation.EmploymentTypeName),
+                    ? query.OrderBy(j =>
+                        j.EmploymentTypeNavigation != null ? j.EmploymentTypeNavigation.EmploymentTypeName : null)
+                    : query.OrderByDescending(j =>
+                        j.EmploymentTypeNavigation != null ? j.EmploymentTypeNavigation.EmploymentTypeName : null),
                 "Industry" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.IndustryNavigation.IndustryName)
-                    : query.OrderByDescending(j => j.IndustryNavigation.IndustryName),
+                    ? query.OrderBy(j => j.IndustryNavigation != null ? j.IndustryNavigation.IndustryName : null)
+                    : query.OrderByDescending(j =>
+                        j.IndustryNavigation != null ? j.IndustryNavigation.IndustryName : null),
                 "ApplicationDeadline" => searchDto.IsSortAscending
                     ? query.OrderBy(j => j.ApplicationDeadline)
                     : query.OrderByDescending(j => j.ApplicationDeadline),
@@ -282,8 +311,7 @@ public class JobPostingRepository : IJobPostingRepository
         {
             query = searchDto.IsSortAscending ? query.OrderBy(j => j.JobId) : query.OrderByDescending(j => j.JobId);
         }
-        
+
         return query;
     }
-    
 }
