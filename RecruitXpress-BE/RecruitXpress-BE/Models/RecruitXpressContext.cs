@@ -88,6 +88,14 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Dob)
+                    .HasColumnType("date")
+                    .HasColumnName("DOB");
+
+                entity.Property(e => e.FullName).HasMaxLength(255);
+
+                entity.Property(e => e.Gender).HasMaxLength(20);
+
                 entity.Property(e => e.Password)
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -160,6 +168,11 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Thumbnail).HasMaxLength(255);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.Cvtemplates)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_CVTemplate_Account");
             });
 
             modelBuilder.Entity<District>(entity =>
@@ -167,11 +180,6 @@ namespace RecruitXpress_BE.Models
                 entity.ToTable("District");
 
                 entity.Property(e => e.DistrictName).HasMaxLength(50);
-
-                entity.HasOne(d => d.City)
-                    .WithMany(p => p.Districts)
-                    .HasForeignKey(d => d.CityId)
-                    .HasConstraintName("FK_District_City");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>
@@ -544,19 +552,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.Avatar).IsUnicode(false);
 
-                entity.Property(e => e.DateOfBirth).HasColumnType("date");
-
-                entity.Property(e => e.Email)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Gender)
-                    .HasMaxLength(10)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.Imperfection).HasColumnType("text");
-
-                entity.Property(e => e.Name).HasMaxLength(100);
 
                 entity.Property(e => e.PhoneNumber)
                     .HasMaxLength(20)

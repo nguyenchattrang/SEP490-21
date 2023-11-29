@@ -43,9 +43,9 @@ namespace RecruitXpress_BE.Controllers
                
                if(searchString!= null)
                 {
-                    query = query.Where(s => s.Email.Contains(searchString) ||
+                    query = query.Where(s => s.Account.Account1.Contains(searchString) ||
                      s.PhoneNumber.Contains(searchString) ||
-                     s.Name.Contains(searchString));
+                     s.Account.FullName.Contains(searchString));
                 }
 
                 var activityLogging = await query.ToListAsync();

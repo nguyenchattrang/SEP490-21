@@ -27,6 +27,9 @@ namespace RecruitXpress_BE.Models
         public string? Token { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? Status { get; set; }
+        public string? FullName { get; set; }
+        public DateTime? Dob { get; set; }
+        public string? Gender { get; set; }
 
         public virtual Role? Role { get; set; }
         public virtual ICollection<CandidateCv> CandidateCvs { get; set; }

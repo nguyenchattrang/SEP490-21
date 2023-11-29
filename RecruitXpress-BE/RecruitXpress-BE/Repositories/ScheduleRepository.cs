@@ -51,7 +51,7 @@ public class ScheduleRepository : IScheduleRepository
                     {
                         ProfileId = s.HumanResource.ProfileId,
                         AccountId = s.HumanResource.AccountId,
-                        Name = s.HumanResource.Name
+                 /*       Name = s.HumanResource.Name*/
                     },
                     Interviewers = s.Interviewers.Select(i => new Interviewer
                     {
@@ -59,7 +59,7 @@ public class ScheduleRepository : IScheduleRepository
                         {
                             ProfileId = i.InterviewerNavigation.ProfileId,
                             AccountId = i.InterviewerNavigation.AccountId,
-                            Name = i.InterviewerNavigation.Name
+                       /*     Name = i.InterviewerNavigation.Name*/
                         }
                     }).ToList(),
                     ScheduleDetails = s.ScheduleDetails.Where(sd => sd.StartDate > startDate && sd.EndDate < endDate)
@@ -89,12 +89,12 @@ public class ScheduleRepository : IScheduleRepository
             {
                 var scheduleAdditionDataDTO = new ScheduleAdditionDataDTO()
                 {
-                    HumanResourceName = scheduleDto.HumanResource.Name,
-                    InterviewerName = scheduleDto.Interviewers.Select(i => i.InterviewerNavigation.Name).ToList()
+          /*          HumanResourceName = scheduleDto.HumanResource.Name,
+                    InterviewerName = scheduleDto.Interviewers.Select(i => i.InterviewerNavigation.Name).ToList()*/
                 };
                 foreach (var scheduleDetail in scheduleDto.ScheduleDetails)
                 {
-                    scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Profile.Name;
+                 /*   scheduleAdditionDataDTO.CandidateName = scheduleDetail.Candidate.Profile.Name;*/
                     scheduleAdditionDataDTO.type = scheduleDetail.ScheduleType ??
                                                    (scheduleAdditionDataDTO.InterviewerName.Count > 0 ? 1 : 2);
                     var scheduleDate = scheduleDetail.StartDate.Value;
@@ -171,11 +171,11 @@ public class ScheduleRepository : IScheduleRepository
                 throw new Exception("Human Resource is not exist!");
             }
 
-            var scheduleId = _context.Schedules.OrderByDescending(s => s.ScheduleId).FirstOrDefault()?.ScheduleId + 1 ?? 1;
-
+/*            var scheduleId = _context.Schedules.OrderByDescending(s => s.ScheduleId).FirstOrDefault()?.ScheduleId + 1 ?? 1;
+*/
             var schedule = new Schedule()
             {
-                ScheduleId = scheduleId,
+           /*     ScheduleId = scheduleId,*/
                 HumanResourceId = hrProfile.ProfileId,
                 Status = scheduleDTO.Status,
                 CreatedTime = DateTime.Now,
