@@ -24,7 +24,7 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<EducationalBackground, EducationalBackgroundDTO>();
             CreateMap<FamilyInformation, FamilyInformationDTO>();
             CreateMap<training, TrainigDTO>();
-            CreateMap<ShortListing, ShortListingDTO > ();
+            CreateMap<ShortListing, ShortListingDTO >();
             CreateMap<WorkExperience, WorkExperienceDTO>();
             CreateMap<GeneralTest, GeneralTestDTO>()
             .ForMember(dest => dest.GeneralTestDetails, opt => opt.MapFrom(src => src.GeneralTestDetails))
@@ -34,9 +34,17 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<EvaluateDTO, Evaluate>();
             CreateMap<CandidateCv, CvtemplateDTO>().ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
                 .ForMember(dest => dest.TemplateId, opt => opt.MapFrom(src => src.TemplateId));
-            CreateMap<Models.Profile, LoggingDTO>();
+            CreateMap<Models.Profile, LoggingDTO>()
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
+            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
+            .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
 
-
+            CreateMap<Models.Profile, ProfileDTO>()
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
+            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
+            .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
 
 
             // Mapping cua Trang

@@ -59,6 +59,9 @@ namespace RecruitXpress_BE.Controllers
                         {
                             Account1 = model.Email,
                             Password = HashHelper.Encrypt(model.Password, _configuration),
+                            FullName = model.FullName,
+                            Dob = model.Dob,
+                            Gender = model.Gender,
                             RoleId = 2,
                             CreatedAt = DateTime.Now,
                             Status = 0,

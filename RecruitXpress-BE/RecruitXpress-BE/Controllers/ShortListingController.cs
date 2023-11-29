@@ -54,7 +54,7 @@ namespace RecruitXpress_BE.Controllers
                     }
                     if (request.NameCandidate != null)
                     {
-                        query = query.Where(s => s.Profile != null && s.Profile.Name != null && s.Profile.Name.Contains(request.NameCandidate));
+                        query = query.Where(s => s.Profile != null && s.Profile.Account.FullName != null && s.Profile.Account.FullName.Contains(request.NameCandidate));
                     }
                     if (request.PhoneCandidate != null)
                     {
@@ -62,7 +62,7 @@ namespace RecruitXpress_BE.Controllers
                     }
                     if (request.EmailCandidate != null)
                     {
-                        query = query.Where(s => s.Profile != null && s.Profile.Email != null && s.Profile.Email.Contains(request.EmailCandidate));
+                        query = query.Where(s => s.Profile != null && s.Profile.Account.Account1 != null && s.Profile.Account.Account1.Contains(request.EmailCandidate));
                     }
                     if (request.SortBy != null)
                     {
@@ -70,8 +70,8 @@ namespace RecruitXpress_BE.Controllers
                         {
                             case "NameCandidate":
                                 query = request.OrderByAscending
-                                ? query.OrderBy(j => j.Profile.Name)
-                                    : query.OrderByDescending(j => j.Profile.Name);
+                                ? query.OrderBy(j => j.Profile.Account.FullName)
+                                    : query.OrderByDescending(j => j.Profile.Account.FullName);
                                 break;
                             case "PhoneCandidate":
                                 query = request.OrderByAscending
@@ -80,8 +80,8 @@ namespace RecruitXpress_BE.Controllers
                                 break;
                             case "EmailCandidate":
                                 query = request.OrderByAscending
-                                    ? query.OrderBy(j => j.Profile.Email)
-                                    : query.OrderByDescending(j => j.Profile.Email);
+                                    ? query.OrderBy(j => j.Profile.Account.Account1)
+                                    : query.OrderByDescending(j => j.Profile.Account.Account1);
                                 break;
                             case "Title":
                                 query = request.OrderByAscending
@@ -102,9 +102,9 @@ namespace RecruitXpress_BE.Controllers
                     }
                     if (!string.IsNullOrEmpty(request.SearchString))
                     {
-                        query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
+                        query = query.Where(s => s.Profile.Account.Account1.Contains(request.SearchString) ||
                          s.Profile.PhoneNumber.Contains(request.SearchString) ||
-                         s.Profile.Name.Contains(request.SearchString) ||
+                         s.Profile.Account.Account1.Contains(request.SearchString) ||
                          s.Job.Title.Contains(request.SearchString) ||
                          s.Job.Company.Contains(request.SearchString));
 
@@ -151,7 +151,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (request.NameCandidate != null)
                 {
-                    query = query.Where(s => s.Profile != null && s.Profile.Name != null && s.Profile.Name.Contains(request.NameCandidate));
+                    query = query.Where(s => s.Profile != null && s.Profile.Account.FullName != null && s.Profile.Account.FullName.Contains(request.NameCandidate));
                 }
                 if (request.PhoneCandidate != null)
                 {
@@ -159,7 +159,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (request.EmailCandidate != null)
                 {
-                    query = query.Where(s => s.Profile != null && s.Profile.Email != null && s.Profile.Email.Contains(request.EmailCandidate));
+                    query = query.Where(s => s.Profile != null && s.Profile.Account.Account1 != null && s.Profile.Account.Account1.Contains(request.EmailCandidate));
                 }
                 if (request.SortBy != null)
                 {
@@ -167,8 +167,8 @@ namespace RecruitXpress_BE.Controllers
                     {
                         case "NameCandidate":
                             query = request.OrderByAscending
-                            ? query.OrderBy(j => j.Profile.Name)
-                                : query.OrderByDescending(j => j.Profile.Name);
+                            ? query.OrderBy(j => j.Profile.Account.FullName)
+                                : query.OrderByDescending(j => j.Profile.Account.FullName);
                             break;
                         case "PhoneCandidate":
                             query = request.OrderByAscending
@@ -177,8 +177,8 @@ namespace RecruitXpress_BE.Controllers
                             break;
                         case "EmailCandidate":
                             query = request.OrderByAscending
-                                ? query.OrderBy(j => j.Profile.Email)
-                                : query.OrderByDescending(j => j.Profile.Email);
+                                ? query.OrderBy(j => j.Profile.Account.Account1)
+                                : query.OrderByDescending(j => j.Profile.Account.Account1);
                             break;
                         case "Title":
                             query = request.OrderByAscending
@@ -199,9 +199,9 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (!string.IsNullOrEmpty(request.SearchString))
                 {
-                    query = query.Where(s => s.Profile.Email.Contains(request.SearchString) ||
+                    query = query.Where(s => s.Profile.Account.FullName.Contains(request.SearchString) ||
                      s.Profile.PhoneNumber.Contains(request.SearchString) ||
-                     s.Profile.Name.Contains(request.SearchString) ||
+                     s.Profile.Account.Account1.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
 

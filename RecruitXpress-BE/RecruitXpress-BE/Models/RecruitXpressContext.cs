@@ -18,6 +18,7 @@ namespace RecruitXpress_BE.Models
 
         public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<Calendar> Calendars { get; set; } = null!;
         public virtual DbSet<CandidateCv> CandidateCvs { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
@@ -88,6 +89,14 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Dob)
+                    .HasColumnType("date")
+                    .HasColumnName("DOB");
+
+                entity.Property(e => e.FullName).HasMaxLength(255);
+
+                entity.Property(e => e.Gender).HasMaxLength(20);
+
                 entity.Property(e => e.Password)
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -102,6 +111,40 @@ namespace RecruitXpress_BE.Models
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("FK__Account__RoleID__38996AB5");
+            });
+
+            modelBuilder.Entity<Calendar>(entity =>
+            {
+                entity.ToTable("Calendar");
+
+                entity.Property(e => e.CandidatePid).HasColumnName("CandidatePID");
+
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EventName).HasMaxLength(255);
+
+                entity.Property(e => e.InterviewerId).HasColumnName("InterviewerID");
+
+                entity.Property(e => e.Location).HasMaxLength(255);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CandidateP)
+                    .WithMany(p => p.CalendarCandidatePs)
+                    .HasForeignKey(d => d.CandidatePid)
+                    .HasConstraintName("FK_Calendar_Account2");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.CalendarCreatedByNavigations)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Calendar_Account");
+
+                entity.HasOne(d => d.Interviewer)
+                    .WithMany(p => p.CalendarInterviewers)
+                    .HasForeignKey(d => d.InterviewerId)
+                    .HasConstraintName("FK_Calendar_Account1");
             });
 
             modelBuilder.Entity<CandidateCv>(entity =>
@@ -160,6 +203,11 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Thumbnail).HasMaxLength(255);
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.Cvtemplates)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_CVTemplate_Account");
             });
 
             modelBuilder.Entity<District>(entity =>
@@ -167,11 +215,6 @@ namespace RecruitXpress_BE.Models
                 entity.ToTable("District");
 
                 entity.Property(e => e.DistrictName).HasMaxLength(50);
-
-                entity.HasOne(d => d.City)
-                    .WithMany(p => p.Districts)
-                    .HasForeignKey(d => d.CityId)
-                    .HasConstraintName("FK_District_City");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>
@@ -544,19 +587,7 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.Avatar).IsUnicode(false);
 
-                entity.Property(e => e.DateOfBirth).HasColumnType("date");
-
-                entity.Property(e => e.Email)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Gender)
-                    .HasMaxLength(10)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.Imperfection).HasColumnType("text");
-
-                entity.Property(e => e.Name).HasMaxLength(100);
 
                 entity.Property(e => e.PhoneNumber)
                     .HasMaxLength(20)

@@ -10,5 +10,12 @@ namespace RecruitXpress_BE.DTO
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+        [Required]
+        public string? FullName { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime? Dob { get; set; }
+        [Required]
+        public string? Gender { get; set; }
     }
 }

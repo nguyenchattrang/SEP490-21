@@ -7,6 +7,9 @@ namespace RecruitXpress_BE.Models
     {
         public Account()
         {
+            CalendarCandidatePs = new HashSet<Calendar>();
+            CalendarCreatedByNavigations = new HashSet<Calendar>();
+            CalendarInterviewers = new HashSet<Calendar>();
             CandidateCvs = new HashSet<CandidateCv>();
             Cvtemplates = new HashSet<Cvtemplate>();
             EmailTokens = new HashSet<EmailToken>();
@@ -27,8 +30,14 @@ namespace RecruitXpress_BE.Models
         public string? Token { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? Status { get; set; }
+        public string? FullName { get; set; }
+        public DateTime? Dob { get; set; }
+        public string? Gender { get; set; }
 
         public virtual Role? Role { get; set; }
+        public virtual ICollection<Calendar> CalendarCandidatePs { get; set; }
+        public virtual ICollection<Calendar> CalendarCreatedByNavigations { get; set; }
+        public virtual ICollection<Calendar> CalendarInterviewers { get; set; }
         public virtual ICollection<CandidateCv> CandidateCvs { get; set; }
         public virtual ICollection<Cvtemplate> Cvtemplates { get; set; }
         public virtual ICollection<EmailToken> EmailTokens { get; set; }
