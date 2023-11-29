@@ -72,8 +72,8 @@ namespace RecruitXpress_BE.Controllers
 
                 var query = _context.JobApplications
                 .Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
-                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-                .Include(q => q.Profile).ThenInclude(x => x.Schedules)
+                .Include(q => q.Profile.Evaluates)
+                .Include(q => q.Profile.Account.SpecializedExams)
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
@@ -273,9 +273,10 @@ namespace RecruitXpress_BE.Controllers
                     else return BadRequest("Khong tim thay du lieu profile cua user nay");
                 }
                 var query = _context.JobApplications
-                .Include(q => q.Profile).ThenInclude(x => x.Schedules).ThenInclude(x => x.ScheduleDetails)
-                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-                .Include(q => q.Profile).ThenInclude(x => x.Schedules)
+                 .Include(q => q.Profile).ThenInclude(x => x.Schedules).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile.Evaluates)
+                .Include(q => q.Profile.Account.SpecializedExams)
+                .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)

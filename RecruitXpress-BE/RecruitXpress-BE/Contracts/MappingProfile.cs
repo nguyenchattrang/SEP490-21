@@ -35,6 +35,7 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<CandidateCv, CvtemplateDTO>().ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
                 .ForMember(dest => dest.TemplateId, opt => opt.MapFrom(src => src.TemplateId));
             CreateMap<Models.Profile, LoggingDTO>();
+            CreateMap<Models.Profile, ActivityLoggingDTO>();
 
 
 
