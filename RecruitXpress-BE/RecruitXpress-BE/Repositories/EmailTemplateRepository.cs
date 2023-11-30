@@ -177,7 +177,7 @@ namespace RecruitXpress_BE.Repositories
                     throw new Exception("Không tìm thấy địa chỉ CV");
                 }
                 emailTemplate.Body = emailTemplate.Body.Replace("@cv", result.Url);
-                _sender.SendWithAttach(account.Account1, emailTemplate.Header, emailTemplate.Body, filePath, cvName);
+                _sender.SendWithAttach(interviewer.Account1, emailTemplate.Header, emailTemplate.Body, filePath, cvName);
             }
         }
         public async Task SendEmailExamSchedule(int jobApplicationID, string time, string location)
@@ -246,7 +246,7 @@ namespace RecruitXpress_BE.Repositories
                 emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
                 emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
 
-                _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
+                _sender.Send(interviewer.Account1, emailTemplate.Header, emailTemplate.Body);
             }
         }
 
