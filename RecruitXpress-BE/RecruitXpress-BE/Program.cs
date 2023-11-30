@@ -22,6 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>();
 builder.Services.AddScoped<ISpecializedExamRepository, SpecializedExamRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IScheduleDetailRepository, ScheduleDetailRepository>();
 builder.Services.AddScoped<IExamRepository, ExamRepository>();
 builder.Services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 builder.Services.AddScoped<IGoogleService, GoogleService>();
@@ -75,7 +76,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddDbContext<RecruitXpressContext>(opt
-    => opt.UseSqlServer(builder.Configuration.GetConnectionString("RecruitXpress")));
+    => opt.UseSqlServer("Server=tcp:recruitxpressdb1.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore

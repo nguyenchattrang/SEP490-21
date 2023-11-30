@@ -28,25 +28,31 @@ namespace RecruitXpress_BE.Controllers
         }
        
         [HttpGet("activityLogging")]
-        public async Task<IActionResult> listJobApplication(string? searchString)
+        public async Task<IActionResult> listAll(int? accountId)
         {
             try
             {
+                var query = await _context.Profiles
+                    .Include(x => x.Account).ThenInclude(x => x.SpecializedExams)
+                    .Include(x => x.Account).ThenInclude(x => x.CandidateCvs)
+                    .Include(x => x.Evaluates)
+                    .Include(x => x.ComputerProficiencies)
+                    .Include(x => x.training)
+                    .Include(x => x.LanguageProficiencies)
+                    .Include(x => x.EducationalBackgrounds)
+                    .Include(x => x.FamilyInformations)
+                    .Include(x => x.WorkExperiences)
+                    .Include(x => x.JobApplications)
+                    .Where(x => x.AccountId == accountId)
+                    .FirstOrDefaultAsync();
                
-                var query = _context.Profiles.AsQueryable();
-               
-               if(searchString!= null)
+
+                var activityLoggingDTO = _mapper.Map<ActivityLoggingDTO>(query);
+                if(activityLoggingDTO == null)
                 {
-                    query = query.Where(s => s.Email.Contains(searchString) ||
-                     s.PhoneNumber.Contains(searchString) ||
-                     s.Name.Contains(searchString));
+                    return BadRequest("không có kêt quả ");
                 }
-
-                var activityLogging = await query.ToListAsync();
-
-                //var activityLoggingDTO = _mapper.Map<List<ActivityLoggingDTO>>(activityLogging);
-
-                return Ok(activityLogging);
+                return Ok(activityLoggingDTO);
 
             }
             catch (Exception ex)

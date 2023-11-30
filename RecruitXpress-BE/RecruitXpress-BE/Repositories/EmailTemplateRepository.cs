@@ -3,6 +3,7 @@ using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
+using System.Net.NetworkInformation;
 
 namespace RecruitXpress_BE.Repositories
 {
@@ -113,8 +114,7 @@ namespace RecruitXpress_BE.Repositories
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
                 emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
                 emailTemplate.Body = emailTemplate.Body.Replace("@reason", reason);
                 _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
             }
@@ -129,8 +129,55 @@ namespace RecruitXpress_BE.Repositories
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
                 emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
                 _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+        public async Task SendEmailCVToInterviewer(int jobApplicationID)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.HRINTERVIEWCV).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == (int)user.JobId).FirstOrDefault();
+            Account interviewer = null;
+            var interviewerName = "nhà phỏng vấn";
+            var cvName = "CV_" + account.FullName;
+            if (user.AssignedFor != null)
+            {
+                interviewer = _context.Accounts.Where(a => a.AccountId == user.AssignedFor).FirstOrDefault();
+                if(interviewer!=null && interviewer.FullName!=null)
+                {
+                    interviewerName= interviewer.FullName;
+                }    
+            }
+            else
+            {
+                throw new Exception("Chưa có interviewer");
+            }
+            if (emailTemplate != null)
+            {
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", interviewerName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@candidatename", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@cv", cvName);
+
+                //take CV
+                var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == user.TemplateId);
+                if (result == null)
+                {
+                    throw new Exception("Không tìm thấy CV");
+                }
+                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+
+                var filePath = path + result.Url;
+
+                if (!System.IO.File.Exists(filePath))
+                {
+                    throw new Exception("Không tìm thấy địa chỉ CV");
+                }
+                emailTemplate.Body = emailTemplate.Body.Replace("@cv", result.Url);
+                _sender.SendWithAttach(account.Account1, emailTemplate.Header, emailTemplate.Body, filePath, cvName);
             }
         }
         public async Task SendEmailExamSchedule(int jobApplicationID, string time, string location)
@@ -143,7 +190,7 @@ namespace RecruitXpress_BE.Repositories
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
                 emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
                 emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
                 emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
 
@@ -160,7 +207,7 @@ namespace RecruitXpress_BE.Repositories
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
                 emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
                 emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
                 emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
                 emailTemplate.Body = emailTemplate.Body.Replace("@interviewer", interviewer);
@@ -168,7 +215,41 @@ namespace RecruitXpress_BE.Repositories
                 _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
             }
         }
-    
+        public async Task SendEmailScheduleForInterviewer(int jobApplicationID, string time, string location)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.HRINTERVIEWSCHEDULE).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+            Account interviewer = null;
+            var interviewerName = "nhà phỏng vấn";
+            var cvName = "CV_" + account.FullName;
+            if (user.AssignedFor != null)
+            {
+                interviewer = _context.Accounts.Where(a => a.AccountId == user.AssignedFor).FirstOrDefault();
+                if (interviewer != null && interviewer.FullName != null)
+                {
+                    interviewerName = interviewer.FullName;
+                }
+            }
+            else
+            {
+                throw new Exception("Chưa có interviewer");
+            }
+            if (emailTemplate != null)
+            {
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", interviewerName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@candidatename", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
+                emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
+
+                _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
+            }
+        }
+
         public async Task SendEmailUpdateProfile(int jobApplicationID)
         {
             var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.PASSINTERVIEW).FirstOrDefault();
@@ -179,7 +260,7 @@ namespace RecruitXpress_BE.Repositories
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
                 emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
                 _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
             }
         }
@@ -193,7 +274,7 @@ namespace RecruitXpress_BE.Repositories
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
                 emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
 
                 _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
             }
@@ -208,7 +289,7 @@ namespace RecruitXpress_BE.Repositories
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
                 emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
-                emailTemplate.Body = emailTemplate.Body.Replace("@name", user.Profile.Name);
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
 
                 _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
             }
@@ -238,6 +319,7 @@ namespace RecruitXpress_BE.Repositories
 
     }
 }
+
 
 
 

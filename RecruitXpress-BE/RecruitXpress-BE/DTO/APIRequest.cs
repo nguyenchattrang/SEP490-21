@@ -15,7 +15,18 @@ namespace RecruitXpress_BE.DTO
         }
         public string SearchAll { get; set; } // Search het
     }
+    public class ShortListingRequest : ApiRequest<ShortListingDTO>
+    {
+        public string? SearchString { get; set; }
+        public string? JobTitile { get; set; }
+        public string? NameCandidate { get; set; }
+        public string? PhoneCandidate { get; set; }
+        public string? EmailCandidate { get; set; }
+        public string? Company { get; set; }
 
+        public int? Status { get; set; }
+
+    }
     public class QuestionRequest : ApiRequest<QuestionDTO>
     {
         public string? Name { get; set; }
@@ -30,6 +41,9 @@ namespace RecruitXpress_BE.DTO
         public string? Location { get; set; }
         public string? EmploymentType { get; set; }
         public string? Industry { get; set; }
+        public int? LocationId { get; set; }
+        public int? EmploymentTypeId { get; set; }
+        public int? IndustryId { get; set; }
         public long? MinSalary { get; set; }
         public long? MaxSalary { get; set; }
         public string? NameCandidate { get; set; }
@@ -62,6 +76,8 @@ namespace RecruitXpress_BE.DTO
         public int? CreatedBy { get; set; }
         public int? Status { get; set; }
         public string? Code { get; set; }
+        public string? ExpertEmail { get; set; }
+        public int? JobId { get; set; }
 
     }
 

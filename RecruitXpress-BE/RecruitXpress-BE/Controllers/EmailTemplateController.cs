@@ -117,5 +117,22 @@ namespace RecruitXpress_BE.Controllers
             await _emailTemplateRepository.SendEmailCanceled(jobApplicationID);
             return Ok("Email sent successfully");
         }
+
+        [HttpPost("InterviewerNewCV")]
+        public async Task<IActionResult> SendEmailCVToInterviewer(int jobApplicationID)
+        {
+            await _emailTemplateRepository.SendEmailCVToInterviewer(jobApplicationID);
+            return Ok("Email sent successfully");
+        }
+        [HttpPost("ScheduleToInterviewer")]
+        public async Task<IActionResult> SendEmailScheduleToInterviewer(int jobApplicationID, string time, string location)
+        {
+            await _emailTemplateRepository.SendEmailScheduleForInterviewer(jobApplicationID, time, location);
+            return Ok("Email sent successfully");
+        }
     }
 }
+
+
+
+

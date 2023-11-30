@@ -19,8 +19,8 @@ public class WishListController : ControllerBase
 
     //GET: api/WishList
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<WishListDTO>>> GetListWishLists(int accountId, string? searchString, string? orderBy,
-        bool? isSortAscending, int page, int size) =>
+    public async Task<ActionResult<WishlistResponse>> GetListWishLists(int accountId, string? searchString, string? orderBy,
+        bool? isSortAscending, int? page, int? size) =>
         await _wishListRepository.GetListWishLists(accountId, searchString, orderBy, isSortAscending, page, size);
 
     // //GET: api/WishList/{accountId}

@@ -16,6 +16,9 @@ public class JobPostingDTO
     public string? Location { get; set; }
     public string? EmploymentType { get; set; }
     public string? Industry { get; set; }
+    public int? LocationId { get; set; }
+    public int? EmploymentTypeId { get; set; }
+    public int? IndustryId { get; set; }
     public string? Requirements { get; set; }
     public long? MinSalary { get; set; }
     public long? MaxSalary { get; set; }
@@ -25,7 +28,11 @@ public class JobPostingDTO
     public string? ApplicationInstructions { get; set; }
     public int? Status { get; set; }
     public bool IsPreferred { get; set; }
-    public int TotalCount  { get; set; }
 
     public virtual ICollection<JobApplication> JobApplications { get; set; }
+}
+
+public class JobPostingResponse : ApiResponse<JobPostingDTO>
+{
+    
 }

@@ -6,6 +6,7 @@ namespace RecruitXpress_BE.DTO
 {
     public class JobApplicationDTO
     {
+
         public int ApplicationId { get; set; }
         public int? JobId { get; set; }
         public int? ProfileId { get; set; }
@@ -19,12 +20,10 @@ namespace RecruitXpress_BE.DTO
 
         public virtual CvtemplateDTO? Template { get; set; }
 
-        public virtual SpecializedExamDTO? SpecializedExam { get; set; }
         public virtual ScheduleDTO? Schedule { get; set; }
-        public virtual ScheduleDetailDTO? ScheduleDetail { get; set; }
+        public virtual ICollection<ScheduleDetailDTO> ScheduleDetails { get; set; }
         public virtual EvaluateDTO? Evaluate { get; set; }
-
-        //public virtual ExamDTO? Exam { get; set; }
+        public virtual SpecializedExamDTO? SpecializedExam { get; set; }
         public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
 
 
@@ -43,20 +42,29 @@ namespace RecruitXpress_BE.DTO
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public int? Status { get; set; }
+        public string? Location { get; set; }
+        public virtual JobApplication? Candidate { get; set; }
 
     }
     public partial class LoggingDTO
     {
         public int? AccountId { get; set; }
-        public string? Name { get; set; }
+        public int? StatusId { get; set; }
         public string? Email { get; set; }
+        public string? Name { get; set; }
+        public DateTime? Dob { get; set; }
+        public string? Gender { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
         public string? Avatar { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-        public string? Gender { get; set; }
-
+        public string? Skills { get; set; }
+        public string? Accomplishment { get; set; }
+        public string? Strength { get; set; }
+        public string? Imperfection { get; set; }
+        public string? ResearchWork { get; set; }
+        public string? Article { get; set; }
     }
+
     public partial class CvtemplateDTO
     {
         public int TemplateId { get; set; }

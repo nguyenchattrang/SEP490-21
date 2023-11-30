@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
 using System.Collections.Generic;
 using System.Security.Principal;
+using Profile = RecruitXpress_BE.Models.Profile;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -14,12 +17,13 @@ namespace RecruitXpress_BE.Controllers
 
     public class ProfileController : ControllerBase
     {
-        
+
         private readonly RecruitXpressContext _context;
-       
-        public ProfileController(RecruitXpressContext context)
+        private readonly IMapper _mapper;
+        public ProfileController(RecruitXpressContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         //GET: api/ProfileManagement
         //[HttpGet]
@@ -45,13 +49,13 @@ namespace RecruitXpress_BE.Controllers
             try
             {
 
-            var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == id);
-            if (profile == null)
-            {
-                return NotFound("Không kết quả");
-            }
-
-            return Ok(profile);
+                var profile = await _context.Profiles.Include(p=>p.Account).FirstOrDefaultAsync(x => x.AccountId == id);
+                if (profile == null)
+                {
+                    return NotFound("Không kết quả");
+                }
+                var profileDTO= _mapper.Map<ProfileDTO>(profile);
+                return Ok(profileDTO);
             }
             catch
             {
@@ -61,16 +65,39 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/ProfileManagement
         [HttpPost]
-        public async Task<IActionResult> AddProfile(Profile Profile, int accountId)
+        public async Task<IActionResult> AddProfile(ProfileDTO Profile, int accountId)
         {
             try
             {
-               
-                if(Profile != null && accountId != null)
+
+                if (Profile != null && accountId != null)
                 {
-                    var profile = Profile;
-                    profile.AccountId = accountId;
-                    _context.Profiles.Add(Profile);
+                    var profile = new Profile
+                    {
+                        AccountId = accountId,
+                        StatusId = Profile.StatusId,
+                        PhoneNumber = Profile.PhoneNumber,
+                        Address = Profile.Address,
+                        Avatar = Profile.Avatar,
+                        Skills = Profile.Skills,
+                        Accomplishment = Profile.Accomplishment,
+                        Strength = Profile.Strength,
+                        Imperfection = Profile.Imperfection,
+                        ResearchWork = Profile.ResearchWork,
+                        Article = Profile.Article
+                    };
+                    _context.Profiles.Add(profile);
+
+                    var account = await _context.Accounts.FindAsync(accountId);
+
+                    if (account != null)
+                    {
+                        account.FullName = Profile.FullName;
+                        account.Dob = Profile.Dob;
+                        account.Gender = Profile.Gender;
+ 
+                    }
+
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }
@@ -78,7 +105,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Không có dữ liệu");
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -89,24 +116,42 @@ namespace RecruitXpress_BE.Controllers
 
         //PUT: api/ProfileManagement/{id}
         [HttpPut("id")]
-        public async Task<IActionResult> UpdateProfile(int accountId, Profile Profile)
+        public async Task<IActionResult> UpdateProfile(int accountId, ProfileDTO Profile)
         {
             try
             {
-                _context.Entry(Profile).State = EntityState.Modified;
                 var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.ProfileId == Profile.ProfileId && x.AccountId == accountId);
-                if(profile != null)
+
+                if (profile != null)
                 {
-                    var result = profile;
-                    _context.Update(result);
+                    profile.StatusId = Profile.StatusId;
+                    profile.PhoneNumber = Profile.PhoneNumber;
+                    profile.Address = Profile.Address;
+                    profile.Avatar = Profile.Avatar;
+                    profile.Skills = Profile.Skills;
+                    profile.Accomplishment = Profile.Accomplishment;
+                    profile.Strength = Profile.Strength;
+                    profile.Imperfection = Profile.Imperfection;
+                    profile.ResearchWork = Profile.ResearchWork;
+                    profile.Article = Profile.Article;
+
+                    var account = await _context.Accounts.FindAsync(accountId);
+
+                    if (account != null)
+                    {
+                        account.FullName = Profile.FullName;
+                        account.Dob = Profile.Dob;
+                        account.Gender = Profile.Gender;
+                    }
+
                     await _context.SaveChangesAsync();
                     return Ok("Thành công");
                 }
                 else
                 {
-                        return BadRequest("Không có dữ liệu");
+                    return BadRequest("Không có dữ liệu");
                 }
-              
+
             }
             catch (Exception e)
             {
@@ -115,7 +160,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         //DELETE: api/ProfileManagement
-   
-       
+
+
     }
 }

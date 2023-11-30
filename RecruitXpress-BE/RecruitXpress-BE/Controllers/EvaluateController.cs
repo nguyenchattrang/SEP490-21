@@ -28,18 +28,18 @@ namespace RecruitXpress_BE.Controllers
 
         //GET: api/ProfileManagement/{id}
         [HttpGet("getbyid")]
-        public async Task<IActionResult> GetDetailEvaluate(int evaluareId)
+        public async Task<IActionResult> GetDetailEvaluate(int evaluateId)
         {
             try
             {
 
-            var evaluate = await _context.Evaluates.FirstOrDefaultAsync(x => x.EvaluateId == evaluareId);
+            var evaluate = await _context.Evaluates.FirstOrDefaultAsync(x => x.EvaluateId == evaluateId);
             if (evaluate == null)
             {
                 return NotFound("Không kết quả");
             }
-
-            return Ok(evaluate);
+                var data = _mapper.Map<EvaluateDTO>(evaluate);
+                return Ok(data);
             }
             catch
             {
@@ -61,8 +61,8 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return NotFound("Không kết quả");
                 }
-
-                return Ok(evaluate);
+                var data = _mapper.Map<List<EvaluateDTO>    >(evaluate);
+                return Ok(data);
             }
             catch
             {
@@ -84,8 +84,8 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return NotFound("Không kết quả");
                 }
-
-                return Ok(evaluate);
+                var data = _mapper.Map<List<EvaluateDTO>>(evaluate);
+                return Ok(data);
             }
             catch
             {
