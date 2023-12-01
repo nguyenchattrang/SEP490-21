@@ -96,7 +96,7 @@ namespace RecruitXpress_BE.Controllers
             }
 
             string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
-            var filePath = Path.Combine(path, result.Url);
+            var filePath = path + result.Url;
 
             if (!System.IO.File.Exists(filePath))
             {
