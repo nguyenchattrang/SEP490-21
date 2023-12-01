@@ -125,6 +125,8 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Token).HasMaxLength(200);
+
                 entity.Property(e => e.Url)
                     .HasMaxLength(255)
                     .IsUnicode(false)

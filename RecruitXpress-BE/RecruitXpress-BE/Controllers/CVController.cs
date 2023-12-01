@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using RecruitXpress_BE.Helper;
 using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -18,9 +21,11 @@ namespace RecruitXpress_BE.Controllers
     public class CVController : ControllerBase
     {
         private readonly RecruitXpressContext _context;
-        public CVController(RecruitXpressContext context)
+        private readonly IConfiguration _configuration;
+        public CVController(RecruitXpressContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         [HttpPost("accountId")]
         public async Task<IActionResult> addCV(IFormFile fileData, int accountId)
@@ -78,6 +83,7 @@ namespace RecruitXpress_BE.Controllers
                     Status = 1,
                     Url = "\\" + fileName,
                     CreatedAt = DateTime.Now,
+                    Token = TokenHelper.GenerateRandomToken(64),
 
                 };
 
@@ -98,6 +104,38 @@ namespace RecruitXpress_BE.Controllers
         {
             var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accId);
 
+            if (result == null || result.Token==null)
+            {
+                return NotFound("Không tìm thấy file");
+            }
+
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+            var filePath = path + result.Url;
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Không tìm thấy file" + filePath);
+            }
+
+            var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
+            var contentType = "application/pdf"; // Set the content type to PDF
+
+            string baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
+
+           /* string baseUrl = _configuration["Website:HostUrl"];
+          */ 
+            // Construct the link to the documents endpoint
+            string documentsLink = Url.Action("GetAddress", "CV", new { result.Token });
+
+            // Return a JSON object containing the link
+            return Ok(baseUrl+documentsLink);
+        }
+
+        [HttpGet("documents/{token}")]
+        public async Task<IActionResult> GetAddress(string token)
+        {
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.Token == token);
+
             if (result == null)
             {
                 return NotFound("Không tìm thấy file");
@@ -117,33 +155,11 @@ namespace RecruitXpress_BE.Controllers
             return File(fileContent, contentType);
         }
 
-        [HttpGet("GetCVAddress")]
-        public async Task<IActionResult> GetAddress(int accId)
-        {
-            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accId);
-
-            if (result == null)
-            {
-                return NotFound("Không tìm thấy file!");
-            }
-
-            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
-
-            var filePath = path + result.Url;
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound("Không tìm thấy file!" + filePath);
-            }
-
-            return Ok(filePath);
-        }
-
 
         [HttpGet("cvtemplateId")]
-        public async Task<IActionResult> DownloadCV(int accId)
+        public async Task<IActionResult> DownloadCV(int cvId)
         {
-            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accId);
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
             if (result == null)
             {
                 return NotFound("File not found!");
