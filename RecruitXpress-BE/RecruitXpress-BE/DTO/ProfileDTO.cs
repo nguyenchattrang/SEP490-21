@@ -8,7 +8,7 @@ namespace RecruitXpress_BE.DTO
         public int? AccountId { get; set; }
         public int? StatusId { get; set; }
         public string? Email { get; set; }
-        public string? FullName { get; set; }
+        public string? Name { get; set; }
         public DateTime? Dob { get; set; }
         public string? Gender { get; set; }
         public string? PhoneNumber { get; set; }
