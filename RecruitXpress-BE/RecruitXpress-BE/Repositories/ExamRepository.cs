@@ -324,29 +324,35 @@ namespace RecruitXpress_BE.Repositories
             {
                 if (exam.AccountId == 0)
                 {
-                    throw new ArgumentException("Invalid AccountId");
+                    throw new ArgumentException("Không có tài khoản");
                 }
                 if (exam.SpecializedExamId == 0)
                 {
-                    throw new ArgumentException("Invalid ExamId");
+                    throw new ArgumentException("Examcode không tồn tại");
                 }
                 if (fileData == null || fileData.Length == 0)
                 {
-                    throw new ArgumentException("Please upload a file");
+                    throw new ArgumentException("Vui lòng tải lên file");
                 }
+
+                string fileExtension = Path.GetExtension(fileData.FileName).ToLower();
+                if (fileExtension != ".rar" && fileExtension != ".zip")
+                {
+                    throw new ArgumentException("Chỉ chấp nhận file rar hoặc zip");
+                }
+
 
                 if (fileData.Length > Constant.MaxFileSize)
                 {
-                    throw new ArgumentException("File size exceeds the maximum allowed (25MB)");
+                    throw new ArgumentException("File đã vượt qua dung lượng cho phép (25MB)");
                 }
 
                 var specExam = _context.SpecializedExams.Where(e => e.ExamId == exam.SpecializedExamId).FirstOrDefault();
                 if (string.IsNullOrEmpty(specExam.Code))
                 {
-                    throw new ArgumentException("Invalid ExamId");
+                    throw new ArgumentException("Không có exam code");
                 }
                 // Get the file extension
-                var fileExtension = Path.GetExtension(fileData.FileName);
                 int timestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 var fileName = $"{timestamp}_{exam.AccountId}{fileExtension}";
 

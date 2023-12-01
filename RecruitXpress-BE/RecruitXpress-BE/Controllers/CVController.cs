@@ -32,14 +32,20 @@ namespace RecruitXpress_BE.Controllers
                     return BadRequest("Vui lòng tải lên file");
                 }
 
+                if (Path.GetExtension(fileData.FileName).ToLower() != ".pdf")
+                {
+                    return BadRequest("Chỉ có thể tải lên file pdf");
+                }
+
                 if (accountId != null)
                 {
                     var check = await _context.CandidateCvs.SingleOrDefaultAsync(x => x.AccountId == accountId);
-                    if(check != null)
+                    if (check != null)
                     {
                         await DeleteCVEsxit(accountId);
                     }
-                }else
+                }
+                else
                 {
                     return BadRequest("Không có account");
                 }
@@ -53,9 +59,9 @@ namespace RecruitXpress_BE.Controllers
                 }
                 int Timestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 var fileName = "";
-                if(fileData.FileName.Contains(" "))
+                if (fileData.FileName.Contains(" "))
                 {
-                     fileName = Timestamp + "_"  + TokenHelper.GenerateRandomToken(10) + fileData.FileName.Replace(" ", "_");
+                    fileName = Timestamp + "_" + TokenHelper.GenerateRandomToken(10) + fileData.FileName.Replace(" ", "_");
                 }
                 else
                 {
@@ -65,7 +71,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     await fileData.CopyToAsync(fileStream);
                 }
-               
+
                 var fileMeterial = new CandidateCv()
                 {
                     AccountId = accountId,
@@ -74,11 +80,11 @@ namespace RecruitXpress_BE.Controllers
                     CreatedAt = DateTime.Now,
 
                 };
-               
-                    var result = _context.CandidateCvs.Add(fileMeterial);
-                    await _context.SaveChangesAsync();
-                    return Ok("Thêm CV thành công ");
-                
+
+                var result = _context.CandidateCvs.Add(fileMeterial);
+                await _context.SaveChangesAsync();
+                return Ok("Thêm CV thành công ");
+
 
             }
             catch (Exception ex)
@@ -143,9 +149,9 @@ namespace RecruitXpress_BE.Controllers
                 return NotFound("File not found!");
             }
             string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
-            
+
             var filePath = path + result.Url;
-           
+
             if (!System.IO.File.Exists(filePath))
             {
                 return NotFound("File not found!" + filePath);
@@ -161,7 +167,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
-                if(result == null)
+                if (result == null)
                 {
                     return NotFound("File not found!");
                 }
@@ -176,8 +182,8 @@ namespace RecruitXpress_BE.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
-        } 
+
+        }
         private async Task<IActionResult> DeleteCVEsxit(int accountId)
         {
             try
@@ -203,7 +209,7 @@ namespace RecruitXpress_BE.Controllers
         private async Task<IActionResult> getMyCV(int accountId)
         {
             if (accountId == null) return BadRequest("AccountId dau ?");
-            
+
             var cv = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accountId);
             if (cv == null)
             {
