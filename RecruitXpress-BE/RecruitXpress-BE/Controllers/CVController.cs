@@ -27,6 +27,11 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
+                if (fileData == null)
+                {
+                    return BadRequest("Vui lòng tải lên file");
+                }
+
                 if (accountId != null)
                 {
                     var check = await _context.CandidateCvs.SingleOrDefaultAsync(x => x.AccountId == accountId);
@@ -36,13 +41,10 @@ namespace RecruitXpress_BE.Controllers
                     }
                 }else
                 {
-                    return BadRequest("Invalid AccountId");
+                    return BadRequest("Không có account");
                 }
 
-                if(fileData == null)
-                {
-                    return BadRequest("Please upload file");
-                }
+
                 string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
 
                 if (!Directory.Exists(path))
@@ -85,14 +87,14 @@ namespace RecruitXpress_BE.Controllers
             }
         }
 
-        [HttpGet("ViewCV/{cvId}")]
-        public async Task<IActionResult> ViewCV(int cvId)
+        [HttpGet("ViewCV/{accId}")]
+        public async Task<IActionResult> ViewCV(int accId)
         {
-            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accId);
 
             if (result == null)
             {
-                return NotFound("File not found!");
+                return NotFound("Không tìm thấy file");
             }
 
             string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
@@ -100,7 +102,7 @@ namespace RecruitXpress_BE.Controllers
 
             if (!System.IO.File.Exists(filePath))
             {
-                return NotFound("File not found!" + filePath);
+                return NotFound("Không tìm thấy file" + filePath);
             }
 
             var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
@@ -110,9 +112,9 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet("GetCVAddress")]
-        public async Task<IActionResult> GetAddress(int cvId)
+        public async Task<IActionResult> GetAddress(int accId)
         {
-            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accId);
 
             if (result == null)
             {
@@ -133,9 +135,9 @@ namespace RecruitXpress_BE.Controllers
 
 
         [HttpGet("cvtemplateId")]
-        public async Task<IActionResult> DownloadCV(int cvId)
+        public async Task<IActionResult> DownloadCV(int accId)
         {
-            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accId);
             if (result == null)
             {
                 return NotFound("File not found!");
