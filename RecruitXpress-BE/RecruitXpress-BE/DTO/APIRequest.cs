@@ -105,4 +105,12 @@ namespace RecruitXpress_BE.DTO
         public int? Status { get; set; }
 
     }
+
+    public class GetListActivityRequest : ApiRequest<Account>
+    {
+        public string? Email { get; set; }
+        public string? FullName { get; set; }
+        public int? Type { get; set; }
+
+    }
 }

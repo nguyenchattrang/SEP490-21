@@ -265,7 +265,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var profileId = 0;
-                if (accountId != null)
+                if (accountId != null && accountId!=0)
                 {
                     var getAccountId = _context.Profiles.Where(x => x.AccountId == accountId).FirstOrDefault();
                     if (getAccountId != null)
