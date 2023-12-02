@@ -371,7 +371,16 @@ namespace RecruitXpress_BE.Repositories
                     await fileData.CopyToAsync(fileStream);
                 }
 
-                // Set the FileUrl property in the exam object
+                var profile = _context.Profiles.Where(p => p.AccountId == exam.AccountId).FirstOrDefault();
+                if(profile==null)
+                {
+                    throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
+                }
+                var jobApplication = _context.JobApplications.Where(j => j.JobId == exam.SpecializedExamId && j.ProfileId == profile.ProfileId).FirstOrDefault();
+                if (jobApplication == null)
+                {
+                    throw new ArgumentException("Bạn chưa đăng kí công việc này");
+                }
                 var newExam = new Exam
                 {
                     AccountId = exam.AccountId,
@@ -380,17 +389,15 @@ namespace RecruitXpress_BE.Repositories
                     TestTime = DateTime.Now,
                     FileUrl = Path.Combine(folder, fileName),
                     Status = specExam.EndDate > DateTime.Now ? 1 : 0,
+                    JobApplicationId = jobApplication.ApplicationId,
                 };
-
-
-                // Add the exam to the database
-                _context.Exams.Add(newExam);
-
-
 
                 var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
                 if (specializedExam.JobId == null)
-                    throw new Exception("Chưa có jobId trong bài thi này");
+                    throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
+                // Add the exam to the database
+                _context.Exams.Add(newExam);
+
                 await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId, 4);
                 await _context.SaveChangesAsync();
 

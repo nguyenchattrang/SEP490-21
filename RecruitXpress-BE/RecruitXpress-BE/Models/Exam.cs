@@ -16,8 +16,10 @@ namespace RecruitXpress_BE.Models
         public DateTime? MarkedDate { get; set; }
         public int? Status { get; set; }
         public int? SpecializedExamId { get; set; }
+        public int? JobApplicationId { get; set; }
 
         public virtual Account? Account { get; set; }
+        public virtual JobApplication? JobApplication { get; set; }
         public virtual SpecializedExam? SpecializedExam { get; set; }
     }
 }

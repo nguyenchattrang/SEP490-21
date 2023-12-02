@@ -71,7 +71,8 @@ namespace RecruitXpress_BE.Controllers
             {
 
                 var query = _context.JobApplications
-                .Include(q=> q.Profile).ThenInclude(x=> x.Account)
+                .Include(q => q.Exams)
+                .Include(q => q.Profile).ThenInclude(x => x.Account)
                 //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
                 .Include(q => q.Profile.Evaluates)
                 .Include(q => q.Profile.Account.SpecializedExams)
@@ -228,22 +229,23 @@ namespace RecruitXpress_BE.Controllers
                     .ToListAsync();
 
                 var jobApplicationDTOs = _mapper.Map<List<JobApplicationDTO>>(jobApplications);
-                foreach(var jobApplicationDTO in jobApplicationDTOs)
+                foreach (var jobApplicationDTO in jobApplicationDTOs)
                 {
-                   var acc = jobApplicationDTO.AssignedFor;
-                         if (acc != null) {
+                    var acc = jobApplicationDTO.AssignedFor;
+                    if (acc != null)
+                    {
 
-                             var profile = _context.Accounts.FirstOrDefault(x => x.AccountId == acc);
-                             if (profile != null)
-                             {
-                                 var profileDTO = new AssignedProfileDTO
-                                 {
-                                     accountId = (int)acc,
-                                     Name = profile.FullName,
-                                 };
-                                 jobApplicationDTO.AssignedForInfor = profileDTO;
-                             }
-                         }
+                        var profile = _context.Accounts.FirstOrDefault(x => x.AccountId == acc);
+                        if (profile != null)
+                        {
+                            var profileDTO = new AssignedProfileDTO
+                            {
+                                accountId = (int)acc,
+                                Name = profile.FullName,
+                            };
+                            jobApplicationDTO.AssignedForInfor = profileDTO;
+                        }
+                    }
 
                 }
                 var response = new ApiResponse<JobApplicationDTO>
@@ -265,16 +267,17 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var profileId = 0;
-                if (accountId != null && accountId!=0)
+                if (accountId != null && accountId != 0)
                 {
                     var getAccountId = _context.Profiles.Where(x => x.AccountId == accountId).FirstOrDefault();
                     if (getAccountId != null)
                     {
                         profileId = getAccountId.ProfileId;
                     }
-                    else return BadRequest("Khong tim thay du lieu profile cua user nay");
+                    else return BadRequest("Không tìm thấy hồ sơ ứng viên");
                 }
                 var query = _context.JobApplications
+                    .Include(q => q.Exams)
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
                 //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
                 .Include(q => q.Profile.Evaluates)
@@ -467,7 +470,7 @@ namespace RecruitXpress_BE.Controllers
                 var detailJob = await _context.JobApplications.Include(x => x.Job).Include(x => x.Template)
                     .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
 
-                var query =await _context.JobApplications
+                var query = await _context.JobApplications
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
                 //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
                 .Include(q => q.Profile.Evaluates)
@@ -480,7 +483,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(q => q.Template).FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (query == null)
                 {
-                    return NotFound("Khong co ket qua");
+                    return NotFound("Không có kết quả");
                 }
                 return Ok(query);
 
@@ -498,7 +501,7 @@ namespace RecruitXpress_BE.Controllers
                 var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (detailJob == null)
                 {
-                    return NotFound("Khong co ket qua");
+                    return NotFound("Không có kết quả");
                 }
                 if (Status != null)
                 {
@@ -547,27 +550,27 @@ namespace RecruitXpress_BE.Controllers
                 var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (detailJob == null)
                 {
-                    return NotFound("Khong tim thay ban ghi submit");
+                    return NotFound("Không tìm thấy bản ghi submit");
                 }
                 var account = _context.Profiles.FirstOrDefaultAsync(x => x.ProfileId == profileId);
                 if (account == null)
                 {
-                    return BadRequest("Account khong co profile ");
+                    return BadRequest("Tài khoản không có profile");
                 }
                 var check = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == account.Id);
                 if (check == null)
                 {
                     if (check.TemplateId == detailJob.TemplateId)
                     {
-                        return BadRequest("Ban da submit job nay roi, de submit lai voi CV moi hay update CV cua ban");
+                        return BadRequest("Bạn đã submit job này rồi, để submit lại với CV mới hãy update CV của bạn");
                     }
                     else
                     {
                         await submitJobApplication(jobApplyId, account.Id);
-                        return Ok("Cap nhat CV cho job thanh cong");
+                        return Ok("Cập nhật CV cho job thành công");
                     }
                 }
-                return Ok("Cap nhat CV cho job thanh cong");
+                return Ok("Cập nhật CV cho job thành công");
             }
             catch (Exception ex)
             {

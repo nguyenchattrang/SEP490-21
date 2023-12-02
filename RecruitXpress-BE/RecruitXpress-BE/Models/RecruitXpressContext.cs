@@ -292,6 +292,11 @@ namespace RecruitXpress_BE.Models
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK__Exam__AccountID__76969D2E");
 
+                entity.HasOne(d => d.JobApplication)
+                    .WithMany(p => p.Exams)
+                    .HasForeignKey(d => d.JobApplicationId)
+                    .HasConstraintName("FK_Exam_JobApplication");
+
                 entity.HasOne(d => d.SpecializedExam)
                     .WithMany(p => p.Exams)
                     .HasForeignKey(d => d.SpecializedExamId)
