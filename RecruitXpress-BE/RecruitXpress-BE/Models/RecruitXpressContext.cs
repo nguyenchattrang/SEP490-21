@@ -18,7 +18,6 @@ namespace RecruitXpress_BE.Models
 
         public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
-        public virtual DbSet<Calendar> Calendars { get; set; } = null!;
         public virtual DbSet<CandidateCv> CandidateCvs { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
@@ -113,40 +112,6 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__Account__RoleID__38996AB5");
             });
 
-            modelBuilder.Entity<Calendar>(entity =>
-            {
-                entity.ToTable("Calendar");
-
-                entity.Property(e => e.CandidatePid).HasColumnName("CandidatePID");
-
-                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
-
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
-
-                entity.Property(e => e.EventName).HasMaxLength(255);
-
-                entity.Property(e => e.InterviewerId).HasColumnName("InterviewerID");
-
-                entity.Property(e => e.Location).HasMaxLength(255);
-
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.CandidateP)
-                    .WithMany(p => p.CalendarCandidatePs)
-                    .HasForeignKey(d => d.CandidatePid)
-                    .HasConstraintName("FK_Calendar_Account2");
-
-                entity.HasOne(d => d.CreatedByNavigation)
-                    .WithMany(p => p.CalendarCreatedByNavigations)
-                    .HasForeignKey(d => d.CreatedBy)
-                    .HasConstraintName("FK_Calendar_Account");
-
-                entity.HasOne(d => d.Interviewer)
-                    .WithMany(p => p.CalendarInterviewers)
-                    .HasForeignKey(d => d.InterviewerId)
-                    .HasConstraintName("FK_Calendar_Account1");
-            });
-
             modelBuilder.Entity<CandidateCv>(entity =>
             {
                 entity.HasKey(e => e.TemplateId)
@@ -159,6 +124,8 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.AccountId).HasColumnName("AccountID");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Token).HasMaxLength(200);
 
                 entity.Property(e => e.Url)
                     .HasMaxLength(255)

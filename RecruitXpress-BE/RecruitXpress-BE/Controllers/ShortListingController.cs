@@ -235,8 +235,8 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var oldWishList = _context.ShortListings
-                .FirstOrDefault(w => w.ProfileId == shortlisting.ProfileId);
+                var oldWishList = await _context.ShortListings
+                .FirstOrDefaultAsync(w => w.ProfileId == shortlisting.ProfileId);
                 if (oldWishList == null)
                 {
                     _context.Entry(shortlisting).State = EntityState.Added;

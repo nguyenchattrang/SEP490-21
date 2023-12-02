@@ -72,9 +72,9 @@ namespace RecruitXpress_BE.Controllers
 
                 var query = _context.JobApplications
                 .Include(q=> q.Profile).ThenInclude(x=> x.Account)
-                .Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
-                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-                .Include(q => q.Profile).ThenInclude(x => x.Schedules)
+                //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile.Evaluates)
+                .Include(q => q.Profile.Account.SpecializedExams)
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
@@ -265,7 +265,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var profileId = 0;
-                if (accountId != null)
+                if (accountId != null && accountId!=0)
                 {
                     var getAccountId = _context.Profiles.Where(x => x.AccountId == accountId).FirstOrDefault();
                     if (getAccountId != null)
@@ -276,9 +276,10 @@ namespace RecruitXpress_BE.Controllers
                 }
                 var query = _context.JobApplications
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
-                .Include(q => q.Profile).ThenInclude(x => x.Schedules).ThenInclude(x => x.ScheduleDetails)
-                .Include(q => q.Profile).ThenInclude(x => x.Evaluates)
-                .Include(q => q.Profile).ThenInclude(x => x.Schedules)
+                //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile.Evaluates)
+                .Include(q => q.Profile.Account.SpecializedExams)
+                .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
@@ -465,11 +466,23 @@ namespace RecruitXpress_BE.Controllers
             {
                 var detailJob = await _context.JobApplications.Include(x => x.Job).Include(x => x.Template)
                     .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
-                if (detailJob == null)
+
+                var query =await _context.JobApplications
+                .Include(q => q.Profile).ThenInclude(x => x.Account)
+                //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
+                .Include(q => q.Profile.Evaluates)
+                .Include(q => q.Profile.Account.SpecializedExams)
+                .Include(ja => ja.ScheduleDetails)
+                .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
+                .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
+                .Include(q => q.Template).FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
+                if (query == null)
                 {
                     return NotFound("Khong co ket qua");
                 }
-                return Ok(detailJob);
+                return Ok(query);
 
             }
             catch (Exception ex)

@@ -21,6 +21,19 @@ public class ScheduleController : ControllerBase
      //GET: api/Schedule
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Schedule>>> GetListSchedules() => await _scheduleRepository.GetListSchedules();
+        
+        //GET: api/Schedule/{id}
+        [HttpGet("id")]
+        public async Task<ActionResult<ScheduleDTO>> GetSchedule(int id)
+        {
+            var schedule = await _scheduleRepository.GetSchedule(id);
+            if (schedule == null)
+            {
+                return NotFound("Schedule not found!");
+            }
+
+            return schedule;
+        }
 
         //GET: api/Schedule/{accountId}
         [HttpGet("accountId")]

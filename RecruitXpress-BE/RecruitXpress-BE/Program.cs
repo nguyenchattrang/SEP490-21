@@ -76,7 +76,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddDbContext<RecruitXpressContext>(opt
-    => opt.UseSqlServer(builder.Configuration.GetConnectionString("RecruitXpress")));
+    => opt.UseSqlServer("Server=tcp:recruitxpressdb1.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore

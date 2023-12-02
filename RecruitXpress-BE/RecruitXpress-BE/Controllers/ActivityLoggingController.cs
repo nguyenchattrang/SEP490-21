@@ -28,32 +28,85 @@ namespace RecruitXpress_BE.Controllers
         }
        
         [HttpGet("activityLogging")]
-        public async Task<IActionResult> listJobApplication(string? searchString)
+        public async Task<IActionResult> listAll([FromQuery]GetListActivityRequest request)
         {
             try
             {
-               
-                var query = _context.Profiles.Include(a=> a.Account).AsQueryable();
-               
-               if(searchString!= null)
+                var query = _context.Profiles
+                    .Include(x => x.Account).ThenInclude(x => x.SpecializedExams)
+                    .Include(x => x.Account).ThenInclude(x => x.CandidateCvs)
+                    .Include(x => x.Evaluates)
+                    .Include(x => x.ComputerProficiencies)
+                    .Include(x => x.training)
+                    .Include(x => x.LanguageProficiencies)
+                    .Include(x => x.EducationalBackgrounds)
+                    .Include(x => x.FamilyInformations)
+                    .Include(x => x.WorkExperiences)
+                    .Include(x => x.JobApplications)
+                    .AsQueryable(); // Convert to queryable for dynamic filtering
+
+                if (request.Email != null)
                 {
-                    query = query.Where(s => s.Account.Account1.Contains(searchString) ||
-                     s.PhoneNumber.Contains(searchString) ||
-                     s.Account.FullName.Contains(searchString));
+                    query = query.Where(p => p.Account.Account1 == request.Email);
                 }
 
-                var activityLogging = await query.ToListAsync();
+                if (request.FullName != null)
+                {
+                    query = query.Where(p => p.Account.FullName == request.FullName);
+                }
 
-                //var activityLoggingDTO = _mapper.Map<List<ActivityLoggingDTO>>(activityLogging);
+                if (request.Type != null)
+                {
+                 
+                    if (request.Type == 1)
+                    {
+                        query = query.Where(p => p.JobApplications.Any());
+                    }
+                }
 
-                return Ok(activityLogging);
+                if (request.SortBy != null)
+                {
+                    switch (request.SortBy)
+                    {
+                        case "fullName":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(p => p.Account.FullName)
+                                : query.OrderByDescending(p => p.Account.FullName);
+                            break;
 
+                        // Add more cases for other sortable properties
+
+                        default:
+                            query = request.OrderByAscending
+                                    ? query.OrderBy(p => p.ProfileId)
+                                    : query.OrderByDescending(p => p.ProfileId);
+                            break;
+                    }
+                }
+
+                var totalCount = await query.CountAsync();
+
+                var pageNumber = request.Page > 0 ? request.Page : 1;
+                var pageSize = request.Size > 0 ? request.Size : 20;
+                var profiles = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                var activityLoggingDTOs = _mapper.Map<List<ActivityLoggingDTO>>(profiles);
+
+                var response = new ApiResponse<ActivityLoggingDTO>
+                {
+                    Items = activityLoggingDTOs,
+                    TotalCount = totalCount,
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-       
+
     }
 }
