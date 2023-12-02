@@ -122,9 +122,25 @@ namespace RecruitXpress_BE.Repositories
         public async Task SendEmailSubmitJob(int jobApplicationID)
         {
             var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.SUBMIT).FirstOrDefault();
+            if (emailTemplate == null)
+            {
+                throw new ArgumentException("Email hiện tại chưa sẵn sàng");
+            }
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            if(user==null)
+            {
+                throw new ArgumentException("Không tìm thấy hồ sơ công việc tương ứng");
+            }    
             var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            if (account == null)
+            {
+                throw new ArgumentException("Không tìm thấy tài khoản");
+            }
             var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+            if (job == null)
+            {
+                throw new ArgumentException("Không tìm thấy công việc tương ứng");
+            }
             if (emailTemplate != null)
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
