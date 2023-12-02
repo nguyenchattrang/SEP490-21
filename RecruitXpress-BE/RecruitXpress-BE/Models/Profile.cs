@@ -12,11 +12,11 @@ namespace RecruitXpress_BE.Models
             Evaluates = new HashSet<Evaluate>();
             FamilyInformations = new HashSet<FamilyInformation>();
             GeneralTests = new HashSet<GeneralTest>();
-            Interviewers = new HashSet<Interviewer>();
+            Interviewers = new HashSet<Interview>();
             JobApplications = new HashSet<JobApplication>();
             LanguageProficiencies = new HashSet<LanguageProficiency>();
             ReferenceCheckings = new HashSet<ReferenceChecking>();
-            Schedules = new HashSet<Schedule>();
+            Schedules = new HashSet<Schedules>();
             ShortListings = new HashSet<ShortListing>();
             WorkExperiences = new HashSet<WorkExperience>();
             training = new HashSet<training>();
@@ -42,11 +42,11 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<Evaluate> Evaluates { get; set; }
         public virtual ICollection<FamilyInformation> FamilyInformations { get; set; }
         public virtual ICollection<GeneralTest> GeneralTests { get; set; }
-        public virtual ICollection<Interviewer> Interviewers { get; set; }
+        public virtual ICollection<Interview> Interviewers { get; set; }
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<LanguageProficiency> LanguageProficiencies { get; set; }
         public virtual ICollection<ReferenceChecking> ReferenceCheckings { get; set; }
-        public virtual ICollection<Schedule> Schedules { get; set; }
+        public virtual ICollection<Schedules> Schedules { get; set; }
         public virtual ICollection<ShortListing> ShortListings { get; set; }
         public virtual ICollection<WorkExperience> WorkExperiences { get; set; }
         public virtual ICollection<training> training { get; set; }

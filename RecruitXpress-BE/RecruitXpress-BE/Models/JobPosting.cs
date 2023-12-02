@@ -20,6 +20,7 @@ namespace RecruitXpress_BE.Models
         public int? Location { get; set; }
         public int? EmploymentType { get; set; }
         public int? Industry { get; set; }
+        public string? DetailLocation { get; set; }
         public string? Requirements { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
         public DateTime? DatePosted { get; set; }

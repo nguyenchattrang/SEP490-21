@@ -19,6 +19,6 @@ namespace RecruitXpress_BE.Models
         public int? Status { get; set; }
 
         public virtual JobApplication? Candidate { get; set; }
-        public virtual Schedule? Schedule { get; set; }
+        public virtual Schedules? Schedule { get; set; }
     }
 }

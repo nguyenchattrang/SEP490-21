@@ -74,10 +74,15 @@ public class JobPostingRepository : IJobPostingRepository
     {
         return new JobPostingPrepareSearch()
         {
-            Locations = await _context.Districts.Include(d => d.City).ToListAsync(),
+            Cities = await _context.Cities.ToListAsync(),
             EmploymentTypes = await _context.EmploymentTypes.ToListAsync(),
             Industries = await _context.Industries.ToListAsync()
         };
+    }
+    
+    public async Task<List<District>> GetDistrictsByCityId(int cityId)
+    {
+        return await _context.Districts.Where(d => d.CityId == cityId).ToListAsync();
     }
 
     public async Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto,

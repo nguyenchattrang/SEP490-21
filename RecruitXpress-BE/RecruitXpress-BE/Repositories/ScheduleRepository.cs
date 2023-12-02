@@ -21,7 +21,7 @@ public class ScheduleRepository : IScheduleRepository
     }
 
 
-    public Task<List<Schedule>>? GetListSchedules()
+    public Task<List<Schedules>>? GetListSchedules()
     {
         return null;
     }
@@ -74,7 +74,7 @@ public class ScheduleRepository : IScheduleRepository
                     AccountId = s.HumanResource != null ? s.HumanResource.AccountId : 0,
                     FullName = s.HumanResource != null ? s.HumanResource.FullName : null,
                 },
-                Interviewers = s.Interviewers.Select(i => new Interviewer
+                Interviewers = s.Interviewers.Select(i => new Interview
                 {
                     InterviewerNavigation = new Account()
                     {
@@ -197,7 +197,7 @@ public class ScheduleRepository : IScheduleRepository
                 AccountId = s.HumanResource != null ? s.HumanResource.AccountId : 0,
                 FullName = s.HumanResource != null ? s.HumanResource.FullName : null
             },
-            Interviewers = s.Interviewers.Select(i => new Interviewer
+            Interviewers = s.Interviewers.Select(i => new Interview
             {
                 InterviewerNavigation = new Account()
                 {
@@ -241,8 +241,8 @@ public class ScheduleRepository : IScheduleRepository
             {
                 throw new Exception("HR không tồn tại!");
             }
-            
-            var schedule = new Schedule()
+
+            var schedule = new Schedules()
             {
                 HumanResourceId = hrAccount.AccountId,
                 Status = scheduleDto.Status,
@@ -266,7 +266,7 @@ public class ScheduleRepository : IScheduleRepository
                 interviewerNames += interviewerAccount.FullName + ", ";
                 interviewer.ScheduleId = schedule.ScheduleId;
                 interviewer.InterviewerId = interviewerAccount.AccountId;
-                if (!_context.Interviewers.Any(i =>
+                if (!_context.Interviews.Any(i =>
                         i.ScheduleId == interviewer.ScheduleId && i.InterviewerId == interviewerAccount.AccountId))
                 {
                     _context.Entry(interviewer).State = EntityState.Added;
@@ -276,8 +276,7 @@ public class ScheduleRepository : IScheduleRepository
             foreach (var scheduleDetail in scheduleDto.ScheduleDetails)
             {
                 var candidateApplication = await _context.JobApplications
-                    .Include(ja => ja.Profile)
-                    .Where(ja => ja.Profile != null && ja.Profile.AccountId == scheduleDetail.CandidateId)
+                    .Where(ja => ja.ApplicationId == scheduleDetail.ApplicationId)
                     .FirstOrDefaultAsync();
                 if (candidateApplication == null)
                 {
@@ -295,14 +294,15 @@ public class ScheduleRepository : IScheduleRepository
                 }
 
                 var scheduleDetailEntity = await _context.ScheduleDetails.FirstOrDefaultAsync(sd =>
-                    sd.CandidateId == candidateApplication.ApplicationId
-                    && ((sd.StartDate <= scheduleDetail.StartDate && sd.EndDate >= scheduleDetail.StartDate)
-                        || (sd.StartDate <= scheduleDetail.EndDate && sd.EndDate >= scheduleDetail.EndDate)
-                        || (sd.StartDate >= scheduleDetail.StartDate && sd.EndDate <= scheduleDetail.EndDate)));
+                    sd.CandidateId == candidateApplication.ApplicationId &&
+                    sd.ScheduleType == scheduleDetail.ScheduleType);
 
                 if (scheduleDetailEntity != null)
                 {
-                    throw new Exception("Đã tồn tại lịch phỏng vấn của ứng viên trong thời gian được tạo!");
+                    throw new Exception(
+                        "Ứng viên đã được tạo " + (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW
+                            ? "lịch phỏng vấn!"
+                            : "lịch thi!"));
                 }
 
                 scheduleDetailEntity = new ScheduleDetail
@@ -322,6 +322,10 @@ public class ScheduleRepository : IScheduleRepository
                 _context.Entry(scheduleDetailEntity).State = EntityState.Added;
                 if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
                 {
+                    var interviewerId = scheduleDto.Interviewers.FirstOrDefault()?.InterviewerId ?? null;
+                    await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
+                        interviewerId, 6);
+                    
                     await _emailTemplateRepository.SendEmailInterviewSchedule(candidateApplication.ApplicationId,
                         scheduleDetail.StartDate.ToString() ??
                         throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
@@ -335,15 +339,15 @@ public class ScheduleRepository : IScheduleRepository
                 }
                 else if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM)
                 {
+                    await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
+                        null, 3);
+                    
                     await _emailTemplateRepository.SendEmailExamSchedule(candidateApplication.ApplicationId,
                         scheduleDetail.StartDate.ToString() ??
                         throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
                         scheduleDetail.Location ??
                         throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"));
                 }
-
-                await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
-                    null, scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW ? 6 : 3);
             }
 
             await _context.SaveChangesAsync();
@@ -370,14 +374,14 @@ public class ScheduleRepository : IScheduleRepository
                 throw new Exception("Không thể tìm thấy thời gian biểu!");
             }
 
-            var hrProfile = await _context.Profiles.Where(p => p.AccountId == scheduleDto.HumanResourceId)
+            var hrAccount = await _context.Accounts.Where(p => p.AccountId == scheduleDto.HumanResourceId)
                 .FirstOrDefaultAsync();
-            if (hrProfile == null)
+            if (hrAccount == null)
             {
                 throw new Exception("HR không tồn tại!");
             }
 
-            schedule.HumanResourceId = hrProfile.ProfileId;
+            schedule.HumanResourceId = hrAccount.AccountId;
             schedule.Status = scheduleDto.Status;
             schedule.UpdatedTime = DateTime.Now;
             schedule.UpdatedBy = scheduleDto.UpdatedBy;
@@ -386,17 +390,17 @@ public class ScheduleRepository : IScheduleRepository
 
             foreach (var interviewer in scheduleDto.Interviewers)
             {
-                var interviewerProfile = await _context.Profiles.Where(p => p.AccountId == interviewer.InterviewerId)
+                var interviewerAccount = await _context.Accounts.Where(p => p.AccountId == interviewer.InterviewerId)
                     .FirstOrDefaultAsync();
-                if (interviewerProfile == null)
+                if (interviewerAccount == null)
                 {
                     throw new Exception("Người phỏng vấn không tồn tại!");
                 }
 
                 interviewer.ScheduleId = schedule.ScheduleId;
-                interviewer.InterviewerId = interviewerProfile.ProfileId;
-                _context.Entry(interviewer).State = _context.Interviewers.Any(i =>
-                    i.ScheduleId == interviewer.ScheduleId && i.InterviewerId == interviewerProfile.ProfileId)
+                interviewer.InterviewerId = interviewerAccount.AccountId;
+                _context.Entry(interviewer).State = _context.Interviews.Any(i =>
+                    i.ScheduleId == interviewer.ScheduleId && i.InterviewerId == interviewerAccount.AccountId)
                     ? EntityState.Modified
                     : EntityState.Added;
             }
@@ -405,7 +409,8 @@ public class ScheduleRepository : IScheduleRepository
             {
                 var candidateApplication = await _context.JobApplications
                     .Include(ja => ja.Profile)
-                    .Where(ja => ja.Profile != null && ja.Profile.AccountId == scheduleDetail.CandidateId).FirstOrDefaultAsync();
+                    .Where(ja => ja.Profile != null && ja.Profile.AccountId == scheduleDetail.CandidateId)
+                    .FirstOrDefaultAsync();
                 if (candidateApplication == null)
                 {
                     throw new Exception("Ứng viên không tồn tại!");
@@ -432,8 +437,40 @@ public class ScheduleRepository : IScheduleRepository
                         UpdatedBy = scheduleDto.UpdatedBy
                     };
                     _context.Entry(scheduleDetailEntity).State = EntityState.Added;
-                    await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
-                        null, scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW ? 6 : 3);
+                    if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
+                    {
+                        var interviewer = await _context.Interviews
+                            .Include(i => i.InterviewerNavigation)
+                            .Where(i => i.ScheduleId == scheduleDetailEntity.ScheduleId)
+                            .FirstOrDefaultAsync();
+                        await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
+                            interviewer?.InterviewerNavigation?.AccountId, 6);
+
+                        await _emailTemplateRepository.SendEmailInterviewSchedule(candidateApplication.ApplicationId,
+                            scheduleDetail.StartDate.ToString() ??
+                            throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
+                            scheduleDetail.Location ??
+                            throw new InvalidOperationException("Địa điểm phỏng vấn không được để trống!"),
+                            interviewer?.InterviewerNavigation?.FullName?[..^2]);
+                        await _emailTemplateRepository.SendEmailScheduleForInterviewer(
+                            candidateApplication.ApplicationId,
+                            scheduleDetail.StartDate.ToString() ??
+                            throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
+                            scheduleDetail.Location);
+                    }
+                    else if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM)
+                    {
+                        await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
+                            null, 3);
+                        
+                        await _emailTemplateRepository.SendEmailExamSchedule(candidateApplication.ApplicationId,
+                            scheduleDetail.StartDate.ToString() ??
+                            throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
+                            scheduleDetail.Location ??
+                            throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"));
+                    }
+
+
                 }
                 else
                 {
@@ -470,7 +507,7 @@ public class ScheduleRepository : IScheduleRepository
         }
 
         var scheduleDetails = await _context.ScheduleDetails.Where(sd => sd.ScheduleId == scheduleId).ToListAsync();
-        var interviewers = await _context.Interviewers.Where(i => i.ScheduleId == scheduleId).ToListAsync();
+        var interviewers = await _context.Interviews.Where(i => i.ScheduleId == scheduleId).ToListAsync();
         foreach (var scheduleDetail in scheduleDetails)
         {
             _context.Entry(scheduleDetail).State = EntityState.Deleted;

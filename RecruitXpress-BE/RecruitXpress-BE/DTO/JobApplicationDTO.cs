@@ -34,6 +34,7 @@ namespace RecruitXpress_BE.DTO
         public int ScheduleDetailId { get; set; }
         public int? ScheduleId { get; set; }
         public int? CandidateId { get; set; }
+        public int? ApplicationId { get; set; }
         public int? ScheduleType { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

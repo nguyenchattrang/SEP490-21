@@ -22,6 +22,11 @@ namespace RecruitXpress_BE.Controllers
         [Route("prepareSearch")]
         public async Task<ActionResult<JobPostingPrepareSearch>> GetJobPostingPrepareSearch() =>
             await _jobPostingRepository.GetJobPostingPrepareSearch();
+        
+        //GET: api/JobPosting
+        [HttpGet("District/{cityId:int}")]
+        public async Task<ActionResult<IEnumerable<District>>> GetDistrictsByCityId(int cityId) =>
+            await _jobPostingRepository.GetDistrictsByCityId(cityId);
 
         //GET: api/JobPosting
         [HttpGet]

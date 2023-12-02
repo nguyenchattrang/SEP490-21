@@ -7,6 +7,7 @@ public interface IJobPostingRepository
 {
     Task<JobPostingResponse> GetListJobPostings(string? searchString, string? orderBy, bool? isSortAscending, int? accountId, int? page, int? size);
     Task<JobPostingPrepareSearch> GetJobPostingPrepareSearch();
+    Task<List<District>> GetDistrictsByCityId(int cityId);
     Task<JobPostingResponse> GetListJobPostingAdvancedSearch(JobPostingSearchDTO jobPostingSearchDto, int? accountId);
     Task<JobPostingDTO?> GetJobPosting(int id, int? accountId);
     Task<JobPosting> AddJobPosting(JobPosting jobPosting);

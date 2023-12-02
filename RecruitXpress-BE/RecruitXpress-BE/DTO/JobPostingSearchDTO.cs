@@ -33,7 +33,7 @@ public class JobPostingSearchDTO
 
 public class JobPostingPrepareSearch
 {
-    public List<District> Locations { get; set; }
-    public List<EmploymentType> EmploymentTypes { get; set; }
-    public List<Industry> Industries { get; set; }
+    public List<City> Cities { get; set; } = null!;
+    public List<EmploymentType> EmploymentTypes { get; set; } = null!;
+    public List<Industry> Industries { get; set; } = null!;
 }

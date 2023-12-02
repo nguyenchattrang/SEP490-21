@@ -33,7 +33,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<GeneralTest> GeneralTests { get; set; } = null!;
         public virtual DbSet<GeneralTestDetail> GeneralTestDetails { get; set; } = null!;
         public virtual DbSet<Industry> Industries { get; set; } = null!;
-        public virtual DbSet<Interviewer> Interviewers { get; set; } = null!;
+        public virtual DbSet<Interview> Interviews { get; set; } = null!;
         public virtual DbSet<JobApplication> JobApplications { get; set; } = null!;
         public virtual DbSet<JobPosting> JobPostings { get; set; } = null!;
         public virtual DbSet<LanguageProficiency> LanguageProficiencies { get; set; } = null!;
@@ -44,7 +44,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<Question> Questions { get; set; } = null!;
         public virtual DbSet<ReferenceChecking> ReferenceCheckings { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
-        public virtual DbSet<Schedule> Schedules { get; set; } = null!;
+        public virtual DbSet<Schedules> Schedules { get; set; } = null!;
         public virtual DbSet<ScheduleDetail> ScheduleDetails { get; set; } = null!;
         public virtual DbSet<ShortListing> ShortListings { get; set; } = null!;
         public virtual DbSet<SpecializedExam> SpecializedExams { get; set; } = null!;
@@ -182,6 +182,11 @@ namespace RecruitXpress_BE.Models
                 entity.ToTable("District");
 
                 entity.Property(e => e.DistrictName).HasMaxLength(50);
+
+                entity.HasOne(d => d.City)
+                    .WithMany(p => p.Districts)
+                    .HasForeignKey(d => d.CityId)
+                    .HasConstraintName("FK_District_City");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>
@@ -392,17 +397,17 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.IndustryName).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<Interviewer>(entity =>
+            modelBuilder.Entity<Interview>(entity =>
             {
                 entity.HasKey(e => new { e.InterviewerId, e.ScheduleId });
 
-                entity.ToTable("Interviewer");
+                entity.ToTable("Interview");
 
                 entity.HasOne(d => d.InterviewerNavigation)
                     .WithMany(p => p.Interviewers)
                     .HasForeignKey(d => d.InterviewerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Interviewer_Profile");
+                    .HasConstraintName("FK_Interviewer_Account");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Interviewers)
@@ -419,6 +424,8 @@ namespace RecruitXpress_BE.Models
                 entity.ToTable("JobApplication");
 
                 entity.Property(e => e.ApplicationId).HasColumnName("ApplicationID");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.JobId).HasColumnName("JobID");
 
@@ -458,6 +465,8 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.ContactPerson).HasMaxLength(255);
 
                 entity.Property(e => e.DatePosted).HasColumnType("date");
+
+                entity.Property(e => e.DetailLocation).HasMaxLength(300);
 
                 entity.HasOne(d => d.EmploymentTypeNavigation)
                     .WithMany(p => p.JobPostings)
@@ -627,9 +636,12 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.RoleName).HasMaxLength(100);
             });
 
-            modelBuilder.Entity<Schedule>(entity =>
+            modelBuilder.Entity<Schedules>(entity =>
             {
-                entity.ToTable("Schedule");
+                entity.HasKey(e => e.ScheduleId)
+                    .HasName("PK__Schedules__C93A4F79B26EEE6F");
+                
+                entity.ToTable("Schedules");
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(50);
 
