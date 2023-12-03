@@ -51,7 +51,9 @@ namespace RecruitXpress_BE.Contracts
             .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
             .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
 
-
+            CreateMap<ScheduleDetail, ScheduleDetailDTO>();
+            CreateMap<Schedule, ScheduleDetailDTO>();
+     
             // Mapping cua Trang
             CreateMap<Option, OptionDTO>();
 
@@ -75,6 +77,8 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<GeneralTestDetail, GeneralTestDetailDTO>();
             CreateMap<Exam, ExamDTO>();
             CreateMap<Exam, ExamInformation>();
+            CreateMap<Account, AccountInformation>();
+            CreateMap<Calendar, CalendarDTO>();
 
         }
     }

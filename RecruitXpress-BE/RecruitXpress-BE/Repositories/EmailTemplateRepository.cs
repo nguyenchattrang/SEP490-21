@@ -317,11 +317,11 @@ namespace RecruitXpress_BE.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateEmailTemplate(EmailTemplate emailTemplate)
+/*        public async Task UpdateEmailTemplate(EmailTemplate emailTemplate)
         {
             _context.Entry(emailTemplate).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-        }
+        }*/
 
         public async Task DeleteEmailTemplate(int templateId)
         {

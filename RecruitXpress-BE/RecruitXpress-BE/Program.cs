@@ -35,6 +35,8 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IJobPostingManagementRepository, JobPostingManagementRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
+builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
+
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
         .Get<EmailConfiguration>();

@@ -18,6 +18,7 @@ namespace RecruitXpress_BE.Models
 
         public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<Calendar> Calendars { get; set; } = null!;
         public virtual DbSet<CandidateCv> CandidateCvs { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
@@ -110,6 +111,48 @@ namespace RecruitXpress_BE.Models
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("FK__Account__RoleID__38996AB5");
+            });
+
+            modelBuilder.Entity<Calendar>(entity =>
+            {
+                entity.ToTable("Calendar");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EventName).HasMaxLength(255);
+
+                entity.Property(e => e.Location).HasMaxLength(255);
+
+                entity.Property(e => e.Note).HasMaxLength(255);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CandidateNavigation)
+                    .WithMany(p => p.CalendarCandidateNavigations)
+                    .HasForeignKey(d => d.Candidate)
+                    .HasConstraintName("FK_Calendar_InterviewerAcc");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.CalendarCreatedByNavigations)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Calendar_HR");
+
+                entity.HasOne(d => d.InterviewerNavigation)
+                    .WithMany(p => p.CalendarInterviewerNavigations)
+                    .HasForeignKey(d => d.Interviewer)
+                    .HasConstraintName("FK_Calendar_CandidateAcc");
+
+                entity.HasOne(d => d.JobApplication)
+                    .WithMany(p => p.Calendars)
+                    .HasForeignKey(d => d.JobApplicationId)
+                    .HasConstraintName("FK_Calendar_JobApplication");
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.Calendars)
+                    .HasForeignKey(d => d.JobId)
+                    .HasConstraintName("FK_Calendar_JobPosting");
             });
 
             modelBuilder.Entity<CandidateCv>(entity =>

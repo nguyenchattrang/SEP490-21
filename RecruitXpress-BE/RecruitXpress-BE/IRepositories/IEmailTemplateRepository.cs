@@ -11,7 +11,7 @@ namespace RecruitXpress_BE.IRepositories
         Task<EmailTemplate> GetEmailTemplateById(int templateId);
         Task CreateEmailTemplate(EmailTemplate emailTemplate);
 
-        Task UpdateEmailTemplate(EmailTemplate emailTemplate);
+/*        Task UpdateEmailTemplate(EmailTemplate emailTemplate);*/
 
         Task DeleteEmailTemplate(int templateId);
         Task SendEmailSubmitJob(int jobApplicationID);
@@ -23,6 +23,7 @@ namespace RecruitXpress_BE.IRepositories
         Task SendEmailCanceled(int jobApplicationID);
         Task SendEmailCVToInterviewer(int jobApplicationID);
         Task SendEmailScheduleForInterviewer(int jobApplicationID, string time, string location);
+
 
     }
 }
