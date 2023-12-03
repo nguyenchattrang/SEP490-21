@@ -18,9 +18,16 @@ public class ScheduleDetailRepository : IScheduleDetailRepository
         throw new NotImplementedException();
     }
 
-    public Task<ScheduleDetail> GetScheduleDetail(ScheduleDetail scheduleDetail)
+    public async Task<ScheduleDetail> GetScheduleDetail(int id)
     {
-        throw new NotImplementedException();
+        var detail = await _context.ScheduleDetails.SingleOrDefaultAsync(sd =>
+            sd.ScheduleDetailId == id);
+        if (detail == null)
+        {
+            throw new Exception("Không tìm thấy thông tin chi tiết!");
+        }
+
+        return detail;
     }
 
     public Task<ScheduleDetail> CreateScheduleDetail(ScheduleDetail scheduleDetail)
@@ -36,7 +43,7 @@ public class ScheduleDetailRepository : IScheduleDetailRepository
                 sd.ScheduleDetailId == id);
             if (detail == null)
             {
-                throw new Exception("Không tìm thấy thông tin chi tiết");
+                throw new Exception("Không tìm thấy thông tin chi tiết!");
             }
 
             if (scheduleDetail.ScheduleType != null)
@@ -48,7 +55,7 @@ public class ScheduleDetailRepository : IScheduleDetailRepository
             {
                 if (scheduleDetail.EndDate != null && scheduleDetail.StartDate >= scheduleDetail.EndDate)
                 {
-                    throw new Exception("Thời gian bắt đầu phải lớn hơn thời gian kết thúc");
+                    throw new Exception("Thời gian bắt đầu phải lớn hơn thời gian kết thúc!");
                 }
 
                 detail.StartDate = scheduleDetail.StartDate;
@@ -63,6 +70,21 @@ public class ScheduleDetailRepository : IScheduleDetailRepository
             if (!string.IsNullOrEmpty(scheduleDetail.Note))
             {
                 detail.Note = scheduleDetail.Note;
+            }
+            
+            if (!string.IsNullOrEmpty(scheduleDetail.Strength))
+            {
+                detail.Strength = scheduleDetail.Strength;
+            }
+            
+            if (!string.IsNullOrEmpty(scheduleDetail.Imperfection))
+            {
+                detail.Imperfection = scheduleDetail.Imperfection;
+            }
+            
+            if (scheduleDetail.Evaluate != null)
+            {
+                detail.Evaluate = scheduleDetail.Evaluate;
             }
 
             detail.UpdatedTime = DateTime.Now;

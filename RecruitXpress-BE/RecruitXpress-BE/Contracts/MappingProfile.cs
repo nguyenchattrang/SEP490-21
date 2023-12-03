@@ -54,6 +54,9 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<ScheduleDetail, ScheduleDetailDTO>();
             CreateMap<Schedule, ScheduleDetailDTO>();
      
+            CreateMap<ScheduleDetail, ScheduleDetailResponse>();
+            // CreateMap<Evaluate, EvaluateDTO>();
+
             // Mapping cua Trang
             CreateMap<Option, OptionDTO>();
 
