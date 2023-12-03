@@ -22,5 +22,6 @@ namespace RecruitXpress_BE.DTO
         public virtual AccountInformation? CandidateNavigation { get; set; }
         public virtual AccountInformation? CreatedByNavigation { get; set; }
         public virtual AccountInformation? InterviewerNavigation { get; set; }
+        public virtual ShortJobPosting? Job { get; set; }
     }
 }

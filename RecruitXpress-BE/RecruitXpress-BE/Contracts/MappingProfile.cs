@@ -82,6 +82,7 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<Exam, ExamInformation>();
             CreateMap<Account, AccountInformation>();
             CreateMap<Calendar, CalendarDTO>();
+            CreateMap<JobPosting, ShortJobPosting>();
 
         }
     }
