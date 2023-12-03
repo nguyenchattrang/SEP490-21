@@ -10,6 +10,7 @@ using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
 using System.Text;
 using System.Text.Json.Serialization;
+using RecruitXpress_BE.Hub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,9 +103,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddSignalR();
 
+
 builder.Services.AddAuthorization();
 var app = builder.Build();
-app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -113,9 +115,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<JobApplicationStatusHub>("/JobApplicationStatusHub"); // Đặt đường dẫn Hub của bạn
+    endpoints.MapControllers();
+});
 
 
 app.MapControllers();
