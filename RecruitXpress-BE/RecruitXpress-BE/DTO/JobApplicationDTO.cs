@@ -20,8 +20,8 @@ namespace RecruitXpress_BE.DTO
 
         public virtual CvtemplateDTO? Template { get; set; }
 
-/*        public virtual ScheduleDTO? Schedule { get; set; }
-        public virtual ICollection<ScheduleDetailDTO> ScheduleDetails { get; set; }*/
+        public virtual ScheduleDTO? Schedule { get; set; }
+        public virtual ICollection<ScheduleDetailResponse> ScheduleDetails { get; set; }
         public virtual EvaluateDTO? Evaluate { get; set; }
         public virtual SpecializedExamDTO? SpecializedExam { get; set; }
         public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
@@ -29,7 +29,7 @@ namespace RecruitXpress_BE.DTO
 
 
     }
-    public partial class ScheduleDetailDTO
+    public partial class ScheduleDetailResponse
     {
         public int ScheduleDetailId { get; set; }
         public int? ScheduleId { get; set; }
@@ -48,7 +48,7 @@ namespace RecruitXpress_BE.DTO
         public string? Strength { get; set; }
         public string? Imperfection { get; set; }
         public int? Evaluate { get; set; }
-        public virtual JobApplication? Candidate { get; set; }
+        // public virtual JobApplication? Candidate { get; set; }
 
     }
     public partial class LoggingDTO
