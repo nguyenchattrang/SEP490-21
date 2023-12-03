@@ -11,14 +11,17 @@ namespace RecruitXpress_BE.Models
         public int? ScheduleType { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public string? Note { get; set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? UpdatedTime { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public int? Status { get; set; }
+        public string? Note { get; set; }
+        public string? Strength { get; set; }
+        public string? Imperfection { get; set; }
+        public int? Evaluate { get; set; }
 
         public virtual JobApplication? Candidate { get; set; }
-        public virtual Schedules? Schedule { get; set; }
+        public virtual Schedule? Schedule { get; set; }
     }
 }

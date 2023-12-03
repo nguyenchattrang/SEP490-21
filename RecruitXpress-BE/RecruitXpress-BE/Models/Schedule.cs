@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace RecruitXpress_BE.Models
 {
-    public partial class Schedules
+    public partial class Schedule
     {
-        public Schedules()
+        public Schedule()
         {
             Interviewers = new HashSet<Interview>();
             ScheduleDetails = new HashSet<ScheduleDetail>();

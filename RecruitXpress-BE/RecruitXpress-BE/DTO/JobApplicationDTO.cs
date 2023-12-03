@@ -45,6 +45,9 @@ namespace RecruitXpress_BE.DTO
         public string? UpdatedBy { get; set; }
         public int? Status { get; set; }
         public string? Location { get; set; }
+        public string? Strength { get; set; }
+        public string? Imperfection { get; set; }
+        public int? Evaluate { get; set; }
         public virtual JobApplication? Candidate { get; set; }
 
     }

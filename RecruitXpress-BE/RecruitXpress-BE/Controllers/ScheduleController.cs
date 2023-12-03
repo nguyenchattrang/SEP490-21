@@ -20,7 +20,7 @@ public class ScheduleController : ControllerBase
     
      //GET: api/Schedule
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Schedules>>> GetListSchedules() => await _scheduleRepository.GetListSchedules();
+        public async Task<ActionResult<IEnumerable<Schedule>>> GetListSchedules() => await _scheduleRepository.GetListSchedules();
         
         //GET: api/Schedule/{id}
         [HttpGet("id")]

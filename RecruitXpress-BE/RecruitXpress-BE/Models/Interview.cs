@@ -10,6 +10,6 @@ namespace RecruitXpress_BE.Models
         public int? Status { get; set; }
 
         public virtual Account? InterviewerNavigation { get; set; } = null!;
-        public virtual Schedules? Schedule { get; set; } = null!;
+        public virtual Schedule? Schedule { get; set; } = null!;
     }
 }

@@ -21,7 +21,7 @@ public class ScheduleRepository : IScheduleRepository
     }
 
 
-    public Task<List<Schedules>>? GetListSchedules()
+    public Task<List<Schedule>>? GetListSchedules()
     {
         return null;
     }
@@ -242,7 +242,7 @@ public class ScheduleRepository : IScheduleRepository
                 throw new Exception("HR không tồn tại!");
             }
 
-            var schedule = new Schedules()
+            var schedule = new Schedule()
             {
                 HumanResourceId = hrAccount.AccountId,
                 Status = scheduleDto.Status,

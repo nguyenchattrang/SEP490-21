@@ -44,7 +44,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<Question> Questions { get; set; } = null!;
         public virtual DbSet<ReferenceChecking> ReferenceCheckings { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
-        public virtual DbSet<Schedules> Schedules { get; set; } = null!;
+        public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<ScheduleDetail> ScheduleDetails { get; set; } = null!;
         public virtual DbSet<ShortListing> ShortListings { get; set; } = null!;
         public virtual DbSet<SpecializedExam> SpecializedExams { get; set; } = null!;
@@ -636,7 +636,7 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.RoleName).HasMaxLength(100);
             });
 
-            modelBuilder.Entity<Schedules>(entity =>
+            modelBuilder.Entity<Schedule>(entity =>
             {
                 entity.HasKey(e => e.ScheduleId)
                     .HasName("PK__Schedules__C93A4F79B26EEE6F");

@@ -19,7 +19,7 @@ namespace RecruitXpress_BE.Models
             SpecializedExams = new HashSet<SpecializedExam>();
             WishLists = new HashSet<WishList>();
             Interviewers = new HashSet<Interview>();
-            Schedules = new HashSet<Schedules>();
+            Schedules = new HashSet<Schedule>();
         }
 
         public int AccountId { get; set; }
@@ -46,6 +46,6 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<SpecializedExam> SpecializedExams { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
         public virtual ICollection<Interview> Interviewers { get; set; }
-        public virtual ICollection<Schedules> Schedules { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }
