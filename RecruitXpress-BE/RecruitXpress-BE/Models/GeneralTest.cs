@@ -17,6 +17,7 @@ namespace RecruitXpress_BE.Models
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? Score { get; set; }
+        public int? TimeCount { get; set; }
 
         public virtual Account? CreatedByNavigation { get; set; }
         public virtual Profile? Profile { get; set; }

@@ -81,7 +81,7 @@ namespace RecruitXpress_BE.DTO
 
     }
 
-    public class ExamRequest : ApiRequest<SpecializedExam>
+    public class ExamRequest : ApiRequest<Exam>
     {
         public int? AccountId { get; set; }
         public string? FileUrl { get; set; }
