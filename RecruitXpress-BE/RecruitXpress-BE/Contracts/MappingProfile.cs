@@ -8,48 +8,63 @@ namespace RecruitXpress_BE.Contracts
 {
     public class MappingProfile : Profile
     {
-
-
         public MappingProfile()
         {
             CreateMap<JobApplication, JobApplicationDTO>();
-               // .ForMember(dest => dest.GeneralTest, opt => opt.MapFrom(src => src.Profile.GeneralTests))
-               // .ForMember(dest => dest.Schedule, opt => opt.MapFrom(src => src.Profile.Schedules))
-               //.ForMember(dest => dest.ScheduleDetail, opt => opt.MapFrom(src => src.ScheduleDetails))
-               // .ForMember(dest => dest.Evaluate, opt => opt.MapFrom(src => src.Profile.Evaluates))
-               // .ForMember(dest => dest.Exam, opt => opt.MapFrom(src => src.Profile.Account.Exams));
+            // .ForMember(dest => dest.GeneralTest, opt => opt.MapFrom(src => src.Profile.GeneralTests))
+            // .ForMember(dest => dest.Schedule, opt => opt.MapFrom(src => src.Profile.Schedules))
+            //.ForMember(dest => dest.ScheduleDetail, opt => opt.MapFrom(src => src.ScheduleDetails))
+            // .ForMember(dest => dest.Evaluate, opt => opt.MapFrom(src => src.Profile.Evaluates))
+            // .ForMember(dest => dest.Exam, opt => opt.MapFrom(src => src.Profile.Account.Exams));
             CreateMap<ComputerProficiency, ComputerProficiencyDTO>();
             CreateMap<MaritalStatus, MaritalStatusDTO>();
             CreateMap<LanguageProficiency, LanguageProficiencyDTO>();
             CreateMap<EducationalBackground, EducationalBackgroundDTO>();
             CreateMap<FamilyInformation, FamilyInformationDTO>();
             CreateMap<training, TrainigDTO>();
-            CreateMap<ShortListing, ShortListingDTO >();
+            CreateMap<ShortListing, ShortListingDTO>();
             CreateMap<WorkExperience, WorkExperienceDTO>();
             CreateMap<GeneralTest, GeneralTestDTO>()
-            .ForMember(dest => dest.GeneralTestDetails, opt => opt.MapFrom(src => src.GeneralTestDetails))
-            .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation));
-            CreateMap<JobPosting, JobDTO>();
+                .ForMember(dest => dest.GeneralTestDetails, opt => opt.MapFrom(src => src.GeneralTestDetails))
+                .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation));
+            CreateMap<JobPosting, JobDTO>()
+                .ForMember(dest => dest.Location,
+                    opt => opt.MapFrom(src =>
+                        src.DetailLocation + (src.LocationNavigation != null
+                            ? (src.DetailLocation != null
+                                ? (", " + src.LocationNavigation.DistrictName + (src.LocationNavigation.City != null
+                                    ? ", " + src.LocationNavigation.City.CityName
+                                    : null))
+                                : (src.LocationNavigation.DistrictName + (src.LocationNavigation.City != null
+                                    ? ", " + src.LocationNavigation.City.CityName
+                                    : null)))
+                            : null)))
+                .ForMember(dest => dest.EmploymentType,
+                    otp => otp.MapFrom(src =>
+                        src.EmploymentTypeNavigation != null ? src.EmploymentTypeNavigation.EmploymentTypeName : null))
+                .ForMember(dest => dest.Industry,
+                    otp => otp.MapFrom(src =>
+                        src.IndustryNavigation != null ? src.IndustryNavigation.IndustryName : null));
             CreateMap<Evaluate, EvaluateDTO>();
             CreateMap<EvaluateDTO, Evaluate>();
             CreateMap<CandidateCv, CvtemplateDTO>().ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
                 .ForMember(dest => dest.TemplateId, opt => opt.MapFrom(src => src.TemplateId));
             CreateMap<Models.Profile, LoggingDTO>()
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
-            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
-            .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
             CreateMap<Models.Profile, ActivityLoggingDTO>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
-            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
-            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
-            .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob)); 
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
 
             CreateMap<Models.Profile, ProfileDTO>()
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
-            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
-            .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
             CreateMap<ScheduleDetail, ScheduleDetailResponse>();
             // CreateMap<Evaluate, EvaluateDTO>();
 
@@ -62,7 +77,7 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Question1, opt => opt.MapFrom(src => src.Question1));
 
             CreateMap<Account, AccountDTO>()
-            .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Account1));
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Account1));
 
             CreateMap<Option, ExamOptionDTO>();
 
@@ -71,12 +86,11 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Question1, opt => opt.MapFrom(src => src.Question1));
 
             CreateMap<SpecializedExam, SpecializedExamDTO>()
-           .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation))
-           .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.Job.Title));
+                .ForMember(dest => dest.CreatedByAccount, opt => opt.MapFrom(src => src.CreatedByNavigation))
+                .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.Job.Title));
             CreateMap<GeneralTestDetail, GeneralTestDetailDTO>();
             CreateMap<Exam, ExamDTO>();
             CreateMap<Exam, ExamInformation>();
-
         }
     }
 }
