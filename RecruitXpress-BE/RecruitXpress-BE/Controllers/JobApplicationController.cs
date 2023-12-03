@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Org.BouncyCastle.Asn1.Ocsp;
 using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.Hub;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -21,13 +23,14 @@ namespace RecruitXpress_BE.Controllers
         private readonly RecruitXpressContext _context;
         private readonly IEmailTemplateRepository _emailTemplateRepository;
         private readonly IMapper _mapper;
+        private readonly IHubContext<JobApplicationStatusHub> _hubContext;
 
-
-        public JobApplicationController(RecruitXpressContext context, IMapper mapper, IEmailTemplateRepository emailTemplateRepository)
+        public JobApplicationController(RecruitXpressContext context, IMapper mapper, IEmailTemplateRepository emailTemplateRepository, IHubContext<JobApplicationStatusHub> hubContext)
         {
             _context = context;
             _mapper = mapper;
             _emailTemplateRepository = emailTemplateRepository;
+            _hubContext = hubContext;
         }
         [HttpPost("PostJobApplication")]
         public async Task<IActionResult> submitJobApplication(int jobId, int accountId)
@@ -531,6 +534,7 @@ namespace RecruitXpress_BE.Controllers
 
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
+                    await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
                     return Ok("Cập nhật trạng thái thành công");
                 }
 
