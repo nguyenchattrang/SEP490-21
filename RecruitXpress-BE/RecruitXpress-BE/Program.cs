@@ -36,9 +36,7 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IJobPostingManagementRepository, JobPostingManagementRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
-builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
         .Get<EmailConfiguration>();
@@ -105,6 +103,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddSignalR();
+
 
 builder.Services.AddAuthorization();
 var app = builder.Build();
