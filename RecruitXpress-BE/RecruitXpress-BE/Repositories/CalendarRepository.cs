@@ -41,7 +41,7 @@ namespace RecruitXpress_BE.Repositories
                 throw new ArgumentException("Không tìm thấy tài khoản");
             }
 
-            var query = _context.Calendars.AsQueryable();
+            var query = _context.Calendars.Include(q=> q.Job).AsQueryable();
             if (account.RoleId == Constant.ROLE.INTERVIEWER)
                 query = query.Where(a => a.Interviewer == account.AccountId);
             if (account.RoleId == Constant.ROLE.CANDIDATE)

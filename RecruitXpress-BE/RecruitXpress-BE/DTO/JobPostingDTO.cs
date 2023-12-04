@@ -32,7 +32,20 @@ public class JobPostingDTO
     public virtual ICollection<JobApplication> JobApplications { get; set; }
 }
 
+
+
+
+
 public class JobPostingResponse : ApiResponse<JobPostingDTO>
 {
     
+}
+
+
+public class ShortJobPosting
+{
+    public int JobId { get; set; }
+    public string? Title { get; set; }
+    public string? Company { get; set; }
+    public string? Location { get; set; }
 }

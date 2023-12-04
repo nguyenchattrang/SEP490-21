@@ -17,6 +17,7 @@ using System.Reflection.Metadata;
 using Constant = RecruitXpress_BE.Helper.Constant;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -33,7 +34,7 @@ namespace RecruitXpress_BE.Controllers
 
         // GET api/calendars/list
         [HttpGet("ListCalendar")]
-        public async Task<IActionResult> GetListByAccountIdDate(int accountId, int? year, int? month, int? day)
+        public async Task<IActionResult> GetListByAccountIdDate([Required]int accountId, int? year, int? month, int? day)
         {
             try
             {
