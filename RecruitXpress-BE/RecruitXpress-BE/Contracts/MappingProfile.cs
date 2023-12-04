@@ -91,9 +91,6 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<GeneralTestDetail, GeneralTestDetailDTO>();
             CreateMap<Exam, ExamDTO>();
             CreateMap<Exam, ExamInformation>();
-
-            CreateMap<Notification, NotificationDTO>();
-            CreateMap<NotificationDTO, Notification>();
         }
     }
 }
