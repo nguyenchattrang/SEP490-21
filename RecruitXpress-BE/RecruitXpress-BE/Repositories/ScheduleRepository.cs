@@ -68,7 +68,7 @@ public class ScheduleRepository : IScheduleRepository
             var scheduleDtoResult = await query.Select(s => new ScheduleDTO()
             {
                 ScheduleId = s.ScheduleId,
-                HumanResourceId = s.HumanResource != null ? s.HumanResource.AccountId : null,
+                HumanResourceId = s.HumanResourceId,
                 HumanResourceName = s.HumanResource != null ? s.HumanResource.FullName : null,
                 Status = s.Status,
                 CreatedTime = s.CreatedTime,
@@ -87,7 +87,8 @@ public class ScheduleRepository : IScheduleRepository
                     {
                         ScheduleDetailId = sd.ScheduleDetailId,
                         ScheduleId = s.ScheduleId,
-                        CandidateId = sd.CandidateId,
+                        CandidateId = sd.Candidate != null ? sd.Candidate.Profile != null ? sd.Candidate.Profile.AccountId : null : null,
+                        ApplicationId = sd.CandidateId,
                         CandidateName = sd.Candidate != null
                             ? sd.Candidate.Profile != null
                                 ? sd.Candidate.Profile.Account != null
@@ -109,69 +110,6 @@ public class ScheduleRepository : IScheduleRepository
                         Status = sd.Status
                     }).ToList()
             }).ToListAsync();
-            // return scheduleDtoResult;
-            // var scheduleAdditionDataResult = new List<ScheduleAdditionDataYear>();
-            //
-            // foreach (var scheduleDto in scheduleDtoResult)
-            // {
-            //     var scheduleAdditionDataDto = new ScheduleAdditionDataDTO()
-            //     {
-            //         HumanResourceName = scheduleDto.HumanResourceName,
-            //         InterviewerName = scheduleDto.Interviewers.Select(i => i.InterviewerName).ToList()
-            //     };
-            //     foreach (var scheduleDetail in scheduleDto.ScheduleDetails)
-            //     {
-            //         scheduleAdditionDataDto.CandidateName = scheduleDetail.CandidateName;
-            //         scheduleAdditionDataDto.type = scheduleDetail.ScheduleType ??
-            //                                        (scheduleAdditionDataDto.InterviewerName.Count > 0 ? 1 : 2);
-            //         if (scheduleDetail.StartDate != null)
-            //         {
-            //             var scheduleDate = scheduleDetail.StartDate.Value;
-            //             if (!scheduleAdditionDataResult.Exists(result => result.Year == scheduleDate.Year))
-            //             {
-            //                 scheduleAdditionDataResult.Add(new ScheduleAdditionDataYear()
-            //                 {
-            //                     Year = scheduleDate.Year,
-            //                     ScheduleAdditionDataMonths = new List<ScheduleAdditionDataMonth>()
-            //                 });
-            //             }
-            //
-            //             var scheduleAdditionDataYear =
-            //                 scheduleAdditionDataResult.Find(result => result.Year == scheduleDate.Year);
-            //
-            //             if (scheduleAdditionDataYear != null &&
-            //                 !scheduleAdditionDataYear.ScheduleAdditionDataMonths.Exists(result =>
-            //                     result.Month == scheduleDate.Month))
-            //             {
-            //                 scheduleAdditionDataYear.ScheduleAdditionDataMonths.Add(new ScheduleAdditionDataMonth()
-            //                 {
-            //                     Month = scheduleDate.Month,
-            //                     ScheduleAdditionDataDays = new List<ScheduleAdditionDataDay>()
-            //                 });
-            //             }
-            //
-            //             var scheduleAdditionDataMonth =
-            //                 scheduleAdditionDataYear?.ScheduleAdditionDataMonths.Find(result =>
-            //                     result.Month == scheduleDate.Month);
-            //
-            //             if (scheduleAdditionDataMonth != null &&
-            //                 !scheduleAdditionDataMonth.ScheduleAdditionDataDays.Exists(result =>
-            //                     result.Day == scheduleDate.Day))
-            //             {
-            //                 scheduleAdditionDataMonth.ScheduleAdditionDataDays.Add(new ScheduleAdditionDataDay()
-            //                 {
-            //                     Day = scheduleDate.Day,
-            //                     ScheduleAdditionDataDTOs = new List<ScheduleAdditionDataDTO>()
-            //                 });
-            //             }
-            //
-            //             var scheduleAdditionDataDay =
-            //                 scheduleAdditionDataMonth?.ScheduleAdditionDataDays.Find(result =>
-            //                     result.Day == scheduleDate.Day);
-            //             scheduleAdditionDataDay?.ScheduleAdditionDataDTOs.Add(scheduleAdditionDataDto);
-            //         }
-            //     }
-            // }
 
             var scheduleAdditionDataResult =
                 new Dictionary<int, Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>>();
@@ -179,7 +117,7 @@ public class ScheduleRepository : IScheduleRepository
             {
                 foreach (var scheduleDtoScheduleDetail in scheduleDto.ScheduleDetails)
                 {
-                    if (scheduleDtoScheduleDetail.StartDate == null) continue;
+                    if (scheduleDtoScheduleDetail.StartDate == null || scheduleDtoScheduleDetail.EndDate == null) continue;
                     var startDateValue = scheduleDtoScheduleDetail.StartDate.Value;
                     if (!scheduleAdditionDataResult.ContainsKey(startDateValue.Year))
                     {
@@ -193,16 +131,46 @@ public class ScheduleRepository : IScheduleRepository
                     {
                         scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month].Add(startDateValue.Day, new List<ScheduleAdditionDataDTO>());
                     }
-                    scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month][startDateValue.Day].Add(new ScheduleAdditionDataDTO()
+
+                    var scheduleFilterByTime =
+                        scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month][startDateValue.Day]
+                            .FirstOrDefault(i =>
+                                i.StartTime == scheduleDtoScheduleDetail.StartDate &&
+                                i.EndTime == scheduleDtoScheduleDetail.EndDate &&
+                                i.type == scheduleDtoScheduleDetail.ScheduleType);
+                    if (scheduleFilterByTime != null)
                     {
-                        CandidateName = scheduleDtoScheduleDetail.CandidateName,
-                        HumanResourceName = scheduleDto.HumanResourceName,
-                        InterviewerName = scheduleDto.Interviewers.Select(i => i.InterviewerName).ToList(),
-                        type = scheduleDtoScheduleDetail.ScheduleType,
-                        StartTime = scheduleDtoScheduleDetail.StartDate,
-                        EndTime = scheduleDtoScheduleDetail.EndDate,
-                        note = scheduleDtoScheduleDetail.Note
-                    });
+                        scheduleFilterByTime.Candidates.Add(new CandidateSchedule()
+                        {
+                            CandidateId = scheduleDtoScheduleDetail.CandidateId,
+                            ApplicationId = scheduleDtoScheduleDetail.ApplicationId,
+                            CandidateName = scheduleDtoScheduleDetail.CandidateName
+                        });
+                    }
+                    else
+                    {
+                        scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month][startDateValue.Day].Add(new ScheduleAdditionDataDTO()
+                        {
+                            Candidates = new List<CandidateSchedule?>(){
+                                new() {
+                                    CandidateId = scheduleDtoScheduleDetail.CandidateId,
+                                    ApplicationId = scheduleDtoScheduleDetail.ApplicationId,
+                                    CandidateName = scheduleDtoScheduleDetail.CandidateName
+                                }},
+                            HumanResourceId = scheduleDto.HumanResourceId,
+                            HumanResourceName = scheduleDto.HumanResourceName,
+                            Interviewers = scheduleDto.Interviewers.Select(i => new InterviewerSchedule()
+                            {
+                                InterviewerId = i.InterviewerId,
+                                InterviewerName = i.InterviewerName
+                            }).ToList(),
+                            type = scheduleDtoScheduleDetail.ScheduleType,
+                            StartTime = scheduleDtoScheduleDetail.StartDate,
+                            EndTime = scheduleDtoScheduleDetail.EndDate,
+                            note = scheduleDtoScheduleDetail.Note
+                        });
+                    }
+                    
                 }
             }
 

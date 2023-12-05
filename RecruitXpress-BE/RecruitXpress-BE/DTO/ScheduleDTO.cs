@@ -19,42 +19,31 @@ public class ScheduleDTO
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
 
-    // public virtual Account? HumanResource { get; set; }
     public virtual ICollection<InterviewDTO> Interviewers { get; set; }
     public virtual ICollection<ScheduleDetailDTO> ScheduleDetails { get; set; }
 }
 
-public class ScheduleResponse
-{
-    public Dictionary<int, Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>>? ScheduleAdditionData { get; set; }
-    // public List<ScheduleAdditionDataYear> ScheduleAdditionData { get; set; }
-}
-
 public class ScheduleAdditionDataDTO
 {
+    public int? HumanResourceId { get; set; }
     public string? HumanResourceName { get; set; }
-    public string? CandidateName { get; set; }
-    public List<string?> InterviewerName { get; set; }
+    public List<CandidateSchedule?> Candidates { get; set; }
+    public List<InterviewerSchedule> Interviewers { get; set; }
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
     public int? type { get; set; }
     public string? note { get; set; }
 }
 
-public class ScheduleAdditionDataYear
+public class CandidateSchedule
 {
-    public int Year { get; set; }
-    public List<ScheduleAdditionDataMonth> ScheduleAdditionDataMonths { get; set; }
+    public int? CandidateId { get; set; }
+    public int? ApplicationId { get; set; }
+    public string? CandidateName { get; set; }
 }
 
-public class ScheduleAdditionDataMonth
+public class InterviewerSchedule
 {
-    public int Month { get; set; }
-    public List<ScheduleAdditionDataDay> ScheduleAdditionDataDays { get; set; }
-}
-
-public class ScheduleAdditionDataDay
-{
-    public int Day { get; set; }
-    public List<ScheduleAdditionDataDTO> ScheduleAdditionDataDTOs { get; set; }
+    public int? InterviewerId { get; set; }
+    public string? InterviewerName { get; set; }
 }
