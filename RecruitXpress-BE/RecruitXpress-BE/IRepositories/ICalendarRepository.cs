@@ -13,6 +13,7 @@ namespace RecruitXpress_BE.IRepositories
         Task<CalendarDTO> GetById(int id);
 
         Task<CalendarDTO> Create(Calendar calendar);
+        Task<List<CalendarDTO>> CreateMultipleCandidates(List<int> candidateIds, CalendarTemp calendar);
 
         Task<CalendarDTO> Update(Calendar calendar);
 

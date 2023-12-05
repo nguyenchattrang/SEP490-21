@@ -5,6 +5,11 @@ namespace RecruitXpress_BE.Models
 {
     public partial class Calendar
     {
+        public Calendar()
+        {
+            Evaluates = new HashSet<Evaluate>();
+        }
+
         public int Id { get; set; }
         public string? EventName { get; set; }
         public int? Type { get; set; }
@@ -25,5 +30,6 @@ namespace RecruitXpress_BE.Models
         public virtual Account? InterviewerNavigation { get; set; }
         public virtual JobPosting? Job { get; set; }
         public virtual JobApplication? JobApplication { get; set; }
+        public virtual ICollection<Evaluate> Evaluates { get; set; }
     }
 }

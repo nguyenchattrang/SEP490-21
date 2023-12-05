@@ -74,6 +74,7 @@ namespace RecruitXpress_BE.Controllers
             {
 
                 var query = _context.JobApplications
+                .Include(q=> q.Evaluates)
                 .Include(q => q.Exams)
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
                 //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
@@ -280,7 +281,8 @@ namespace RecruitXpress_BE.Controllers
                     else return BadRequest("Không tìm thấy hồ sơ ứng viên");
                 }
                 var query = _context.JobApplications
-                    .Include(q => q.Exams)
+                .Include(q => q.Evaluates)
+                .Include(q => q.Exams)
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
                 //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
                 .Include(q => q.Profile.Evaluates)

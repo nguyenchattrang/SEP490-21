@@ -298,9 +298,16 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.EvaluaterEmailContact).HasMaxLength(255);
+                entity.HasOne(d => d.Calendar)
+                  .WithMany(p => p.Evaluates)
+                  .HasForeignKey(d => d.CalendarId)
+                  .HasConstraintName("FK_Evaluate_Calendar");
 
-                entity.Property(e => e.EvaluaterPhoneContact).HasMaxLength(50);
+                entity.HasOne(d => d.JobApplication)
+                    .WithMany(p => p.Evaluates)
+                    .HasForeignKey(d => d.JobApplicationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Evaluate_JobApplication");
 
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.Evaluates)

@@ -96,11 +96,15 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<Exam, ExamDTO>();
             CreateMap<Exam, ExamInformation>();
             CreateMap<Account, AccountInformation>();
-            CreateMap<Calendar, CalendarDTO>();
+            CreateMap<Calendar, CalendarDTO>()
+            .ForMember(dest => dest.CandidateInformation, opt => opt.MapFrom(src => src.CandidateNavigation))
+                .ForMember(dest => dest.InterviewerInformation, opt => opt.MapFrom(src => src.InterviewerNavigation))
+                .ForMember(dest => dest.CreatedByInformation, opt => opt.MapFrom(src => src.CreatedByNavigation));
             CreateMap<JobPosting, ShortJobPosting>();
             
             CreateMap<Notification, NotificationDTO>();
             CreateMap<NotificationDTO, Notification>();
+            CreateMap<Calendar, CalendarTemp>().ReverseMap();
         }
     }
 }

@@ -83,6 +83,19 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpPost("CreateMultipleCandidates")]
+        public async Task<IActionResult> CreateMultipleCandidatesCalendar(CalendarMultipleCandidatesRequest request)
+        {
+            try
+            {
+                var newCalendar = await _calendarRepository.CreateMultipleCandidates(request.CandidateIds,request.Calendar);
+                return Ok(newCalendar);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         // PUT api/calendars/{id}
         [HttpPut("Update/{id}")]
