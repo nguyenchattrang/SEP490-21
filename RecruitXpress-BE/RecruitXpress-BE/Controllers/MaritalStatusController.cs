@@ -20,26 +20,35 @@ namespace RecruitXpress_BE.Controllers
             _context = context;
             _mapper = mapper;
         }
+
         //GET: api/MaritalStatusManagement
         [HttpGet("get")]
         public async Task<IActionResult> GetMaritalStatus(int accountId)
         {
-            if(accountId == null)
+            try
             {
-                return BadRequest("AccountId dau ?");
-            }
-            var profile = await _context.Profiles.FirstOrDefaultAsync(x=> x.AccountId ==accountId);
-            if(profile == null)
-            {
-                return BadRequest("Chua co profile");
-            }
+                if (accountId == null)
+                {
+                    return BadRequest("AccountId is null ?");
+                }
+                var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
+                if (profile == null)
+                {
+                    return BadRequest("Chua co profile");
+                }
 
-            var result = await _context.MaritalStatuses.FirstOrDefaultAsync(x=>x.StatusId == profile.StatusId);
-            if(result == null)
-            {
-                return StatusCode(404, "Khong co du lieu");
+                var result = await _context.MaritalStatuses.FirstOrDefaultAsync(x => x.StatusId == profile.StatusId);
+                if (result == null)
+                {
+                    return NotFound( "Không có dữ liệu ");
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
         }
 
         //POST: api/MaritalStatusManagement
@@ -52,13 +61,15 @@ namespace RecruitXpress_BE.Controllers
                 if (profile == null) return NotFound("Account chua co profile");
 
                 var create = _context.MaritalStatuses.Add(maritalStatus).Entity;
+                _context.SaveChanges();
+
                 profile.StatusId = create.StatusId;
                 _context.SaveChanges();
                 return Ok("Thêm thành công");
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
 
         }
