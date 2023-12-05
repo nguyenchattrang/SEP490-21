@@ -105,6 +105,13 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<Notification, NotificationDTO>();
             CreateMap<NotificationDTO, Notification>();
             CreateMap<Calendar, CalendarTemp>().ReverseMap();
+            CreateMap<Models.Profile, ShortProfile>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
+
+            CreateMap<JobApplication,ShortJobApp>();
         }
     }
 }

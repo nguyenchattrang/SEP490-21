@@ -100,4 +100,14 @@ namespace RecruitXpress_BE.DTO
     public int? Status { get; set; }
     public bool IsPreferred { get; set; }
     }
+
+
+    public class ShortJobApp
+    {
+        public int ApplicationId { get; set; }
+        public int? AssignedFor { get; set; }
+        public virtual ShortProfile? Profile { get; set; }
+        public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
+
+    }
 }

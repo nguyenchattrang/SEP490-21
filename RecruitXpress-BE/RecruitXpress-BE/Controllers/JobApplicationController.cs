@@ -583,5 +583,46 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("ListByJobPosting")]
+        public async Task<IActionResult> ListByJobPosting(int jobId)
+        {
+            try
+            {
+
+                var query = await _context.JobApplications
+                .Include(q => q.Profile).ThenInclude(x => x.Account)
+                .Where(j=> j.JobId==jobId)
+                .ToListAsync();
+                if (query == null)
+                    return NotFound("Không kết quả");
+                var jobApplicationDTOs = _mapper.Map<List<ShortJobApp>>(query);
+                foreach (var jobApplicationDTO in jobApplicationDTOs)
+                {
+                    var acc = jobApplicationDTO.AssignedFor;
+                    if (acc != null)
+                    {
+
+                        var profile = _context.Accounts.FirstOrDefault(x => x.AccountId == acc);
+                        if (profile != null)
+                        {
+                            var profileDTO = new AssignedProfileDTO
+                            {
+                                accountId = (int)acc,
+                                Name = profile.FullName,
+                            };
+                            jobApplicationDTO.AssignedForInfor = profileDTO;
+                        }
+                    }
+
+                }
+                return Ok(jobApplicationDTOs);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
