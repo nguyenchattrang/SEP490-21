@@ -18,6 +18,7 @@ namespace RecruitXpress_BE.Models
 
         public virtual DbSet<AccessCode> AccessCodes { get; set; } = null!;
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<Calendar> Calendars { get; set; } = null!;
         public virtual DbSet<CandidateCv> CandidateCvs { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<ComputerProficiency> ComputerProficiencies { get; set; } = null!;
@@ -33,7 +34,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<GeneralTest> GeneralTests { get; set; } = null!;
         public virtual DbSet<GeneralTestDetail> GeneralTestDetails { get; set; } = null!;
         public virtual DbSet<Industry> Industries { get; set; } = null!;
-        public virtual DbSet<Interviewer> Interviewers { get; set; } = null!;
+        public virtual DbSet<Interview> Interviews { get; set; } = null!;
         public virtual DbSet<JobApplication> JobApplications { get; set; } = null!;
         public virtual DbSet<JobPosting> JobPostings { get; set; } = null!;
         public virtual DbSet<LanguageProficiency> LanguageProficiencies { get; set; } = null!;
@@ -112,6 +113,48 @@ namespace RecruitXpress_BE.Models
                     .HasConstraintName("FK__Account__RoleID__38996AB5");
             });
 
+            modelBuilder.Entity<Calendar>(entity =>
+            {
+                entity.ToTable("Calendar");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EventName).HasMaxLength(255);
+
+                entity.Property(e => e.Location).HasMaxLength(255);
+
+                entity.Property(e => e.Note).HasMaxLength(255);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CandidateNavigation)
+                    .WithMany(p => p.CalendarCandidateNavigations)
+                    .HasForeignKey(d => d.Candidate)
+                    .HasConstraintName("FK_Calendar_InterviewerAcc");
+
+                entity.HasOne(d => d.CreatedByNavigation)
+                    .WithMany(p => p.CalendarCreatedByNavigations)
+                    .HasForeignKey(d => d.CreatedBy)
+                    .HasConstraintName("FK_Calendar_HR");
+
+                entity.HasOne(d => d.InterviewerNavigation)
+                    .WithMany(p => p.CalendarInterviewerNavigations)
+                    .HasForeignKey(d => d.Interviewer)
+                    .HasConstraintName("FK_Calendar_CandidateAcc");
+
+                entity.HasOne(d => d.JobApplication)
+                    .WithMany(p => p.Calendars)
+                    .HasForeignKey(d => d.JobApplicationId)
+                    .HasConstraintName("FK_Calendar_JobApplication");
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.Calendars)
+                    .HasForeignKey(d => d.JobId)
+                    .HasConstraintName("FK_Calendar_JobPosting");
+            });
+
             modelBuilder.Entity<CandidateCv>(entity =>
             {
                 entity.HasKey(e => e.TemplateId)
@@ -124,6 +167,8 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.AccountId).HasColumnName("AccountID");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Token).HasMaxLength(200);
 
                 entity.Property(e => e.Url)
                     .HasMaxLength(255)
@@ -180,6 +225,11 @@ namespace RecruitXpress_BE.Models
                 entity.ToTable("District");
 
                 entity.Property(e => e.DistrictName).HasMaxLength(50);
+
+                entity.HasOne(d => d.City)
+                    .WithMany(p => p.Districts)
+                    .HasForeignKey(d => d.CityId)
+                    .HasConstraintName("FK_District_City");
             });
 
             modelBuilder.Entity<EducationalBackground>(entity =>
@@ -248,9 +298,16 @@ namespace RecruitXpress_BE.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.EvaluaterEmailContact).HasMaxLength(255);
+                entity.HasOne(d => d.Calendar)
+                  .WithMany(p => p.Evaluates)
+                  .HasForeignKey(d => d.CalendarId)
+                  .HasConstraintName("FK_Evaluate_Calendar");
 
-                entity.Property(e => e.EvaluaterPhoneContact).HasMaxLength(50);
+                entity.HasOne(d => d.JobApplication)
+                    .WithMany(p => p.Evaluates)
+                    .HasForeignKey(d => d.JobApplicationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Evaluate_JobApplication");
 
                 entity.HasOne(d => d.Profile)
                     .WithMany(p => p.Evaluates)
@@ -289,6 +346,11 @@ namespace RecruitXpress_BE.Models
                     .WithMany(p => p.Exams)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK__Exam__AccountID__76969D2E");
+
+                entity.HasOne(d => d.JobApplication)
+                    .WithMany(p => p.Exams)
+                    .HasForeignKey(d => d.JobApplicationId)
+                    .HasConstraintName("FK_Exam_JobApplication");
 
                 entity.HasOne(d => d.SpecializedExam)
                     .WithMany(p => p.Exams)
@@ -385,17 +447,17 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.IndustryName).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<Interviewer>(entity =>
+            modelBuilder.Entity<Interview>(entity =>
             {
                 entity.HasKey(e => new { e.InterviewerId, e.ScheduleId });
 
-                entity.ToTable("Interviewer");
+                entity.ToTable("Interview");
 
                 entity.HasOne(d => d.InterviewerNavigation)
                     .WithMany(p => p.Interviewers)
                     .HasForeignKey(d => d.InterviewerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Interviewer_Profile");
+                    .HasConstraintName("FK_Interviewer_Account");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Interviewers)
@@ -412,6 +474,8 @@ namespace RecruitXpress_BE.Models
                 entity.ToTable("JobApplication");
 
                 entity.Property(e => e.ApplicationId).HasColumnName("ApplicationID");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.JobId).HasColumnName("JobID");
 
@@ -451,6 +515,8 @@ namespace RecruitXpress_BE.Models
                 entity.Property(e => e.ContactPerson).HasMaxLength(255);
 
                 entity.Property(e => e.DatePosted).HasColumnType("date");
+
+                entity.Property(e => e.DetailLocation).HasMaxLength(300);
 
                 entity.HasOne(d => d.EmploymentTypeNavigation)
                     .WithMany(p => p.JobPostings)
@@ -622,7 +688,10 @@ namespace RecruitXpress_BE.Models
 
             modelBuilder.Entity<Schedule>(entity =>
             {
-                entity.ToTable("Schedule");
+                entity.HasKey(e => e.ScheduleId)
+                    .HasName("PK__Schedules__C93A4F79B26EEE6F");
+                
+                entity.ToTable("Schedules");
 
                 entity.Property(e => e.CreatedBy).HasMaxLength(50);
 

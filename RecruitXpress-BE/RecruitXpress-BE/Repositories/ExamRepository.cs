@@ -324,29 +324,35 @@ namespace RecruitXpress_BE.Repositories
             {
                 if (exam.AccountId == 0)
                 {
-                    throw new ArgumentException("Invalid AccountId");
+                    throw new ArgumentException("Không có tài khoản");
                 }
                 if (exam.SpecializedExamId == 0)
                 {
-                    throw new ArgumentException("Invalid ExamId");
+                    throw new ArgumentException("Examcode không tồn tại");
                 }
                 if (fileData == null || fileData.Length == 0)
                 {
-                    throw new ArgumentException("Please upload a file");
+                    throw new ArgumentException("Vui lòng tải lên file");
                 }
+
+                string fileExtension = Path.GetExtension(fileData.FileName).ToLower();
+                if (fileExtension != ".rar" && fileExtension != ".zip")
+                {
+                    throw new ArgumentException("Chỉ chấp nhận file rar hoặc zip");
+                }
+
 
                 if (fileData.Length > Constant.MaxFileSize)
                 {
-                    throw new ArgumentException("File size exceeds the maximum allowed (25MB)");
+                    throw new ArgumentException("File đã vượt qua dung lượng cho phép (25MB)");
                 }
 
                 var specExam = _context.SpecializedExams.Where(e => e.ExamId == exam.SpecializedExamId).FirstOrDefault();
                 if (string.IsNullOrEmpty(specExam.Code))
                 {
-                    throw new ArgumentException("Invalid ExamId");
+                    throw new ArgumentException("Không có exam code");
                 }
                 // Get the file extension
-                var fileExtension = Path.GetExtension(fileData.FileName);
                 int timestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 var fileName = $"{timestamp}_{exam.AccountId}{fileExtension}";
 
@@ -365,7 +371,16 @@ namespace RecruitXpress_BE.Repositories
                     await fileData.CopyToAsync(fileStream);
                 }
 
-                // Set the FileUrl property in the exam object
+                var profile = _context.Profiles.Where(p => p.AccountId == exam.AccountId).FirstOrDefault();
+                if(profile==null)
+                {
+                    throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
+                }
+                var jobApplication = _context.JobApplications.Where(j => j.JobId == exam.SpecializedExamId && j.ProfileId == profile.ProfileId).FirstOrDefault();
+                if (jobApplication == null)
+                {
+                    throw new ArgumentException("Bạn chưa đăng kí công việc này");
+                }
                 var newExam = new Exam
                 {
                     AccountId = exam.AccountId,
@@ -374,17 +389,15 @@ namespace RecruitXpress_BE.Repositories
                     TestTime = DateTime.Now,
                     FileUrl = Path.Combine(folder, fileName),
                     Status = specExam.EndDate > DateTime.Now ? 1 : 0,
+                    JobApplicationId = jobApplication.ApplicationId,
                 };
-
-
-                // Add the exam to the database
-                _context.Exams.Add(newExam);
-
-
 
                 var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
                 if (specializedExam.JobId == null)
-                    throw new Exception("Chưa có jobId trong bài thi này");
+                    throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
+                // Add the exam to the database
+                _context.Exams.Add(newExam);
+
                 await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId, 4);
                 await _context.SaveChangesAsync();
 

@@ -92,7 +92,7 @@ namespace RecruitXpress_BE.Controllers
 
                     if (account != null)
                     {
-                        account.FullName = Profile.FullName;
+                        account.FullName = Profile.Name;
                         account.Dob = Profile.Dob;
                         account.Gender = Profile.Gender;
  
@@ -139,7 +139,7 @@ namespace RecruitXpress_BE.Controllers
 
                     if (account != null)
                     {
-                        account.FullName = Profile.FullName;
+                        account.FullName = Profile.Name;
                         account.Dob = Profile.Dob;
                         account.Gender = Profile.Gender;
                     }

@@ -7,7 +7,11 @@ using RecruitXpress_BE.Repositories;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-
+using RecruitXpress_BE.Helper;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -17,31 +21,41 @@ namespace RecruitXpress_BE.Controllers
     public class CVController : ControllerBase
     {
         private readonly RecruitXpressContext _context;
-        public CVController(RecruitXpressContext context)
+        private readonly IConfiguration _configuration;
+        public CVController(RecruitXpressContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         [HttpPost("accountId")]
         public async Task<IActionResult> addCV(IFormFile fileData, int accountId)
         {
             try
             {
+                if (fileData == null)
+                {
+                    return BadRequest("Vui lòng tải lên file");
+                }
+
+                if (Path.GetExtension(fileData.FileName).ToLower() != ".pdf")
+                {
+                    return BadRequest("Chỉ có thể tải lên file pdf");
+                }
+
                 if (accountId != null)
                 {
                     var check = await _context.CandidateCvs.SingleOrDefaultAsync(x => x.AccountId == accountId);
-                    if(check != null)
+                    if (check != null)
                     {
                         await DeleteCVEsxit(accountId);
                     }
-                }else
+                }
+                else
                 {
-                    return BadRequest("Invalid AccountId");
+                    return BadRequest("Không có account");
                 }
 
-                if(fileData == null)
-                {
-                    return BadRequest("Please upload file");
-                }
+
                 string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
 
                 if (!Directory.Exists(path))
@@ -50,32 +64,33 @@ namespace RecruitXpress_BE.Controllers
                 }
                 int Timestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 var fileName = "";
-                if(fileData.FileName.Contains(" "))
+                if (fileData.FileName.Contains(" "))
                 {
-                     fileName = Timestamp + "_"  + accountId + fileData.FileName.Replace(" ", "_");
+                    fileName = Timestamp + "_" + TokenHelper.GenerateRandomToken(10) + fileData.FileName.Replace(" ", "_");
                 }
                 else
                 {
-                    fileName = Timestamp + "_"+ accountId + fileData.FileName ;
+                    fileName = Timestamp + "_" + TokenHelper.GenerateRandomToken(10) + fileData.FileName.Replace(" ", "_");
                 }
                 using (var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
                 {
                     await fileData.CopyToAsync(fileStream);
                 }
-               
+
                 var fileMeterial = new CandidateCv()
                 {
                     AccountId = accountId,
                     Status = 1,
                     Url = "\\" + fileName,
                     CreatedAt = DateTime.Now,
+                    Token = TokenHelper.GenerateRandomToken(64),
 
                 };
-               
-                    var result = _context.CandidateCvs.Add(fileMeterial);
-                    await _context.SaveChangesAsync();
-                    return Ok("Thêm CV thành công ");
-                
+
+                var result = _context.CandidateCvs.Add(fileMeterial);
+                await _context.SaveChangesAsync();
+                return Ok("Thêm CV thành công ");
+
 
             }
             catch (Exception ex)
@@ -83,6 +98,64 @@ namespace RecruitXpress_BE.Controllers
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpGet("ViewCV/{accId}")]
+        public async Task<IActionResult> ViewCV(int accId)
+        {
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accId);
+
+            if (result == null || result.Token==null)
+            {
+                return NotFound("Không tìm thấy file");
+            }
+
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+            var filePath = path + result.Url;
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Không tìm thấy file" + filePath);
+            }
+
+            var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
+            var contentType = "application/pdf"; // Set the content type to PDF
+
+            string baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
+
+           /* string baseUrl = _configuration["Website:HostUrl"];
+          */ 
+            // Construct the link to the documents endpoint
+            string documentsLink = Url.Action("GetAddress", "CV", new { result.Token });
+
+            // Return a JSON object containing the link
+            return Ok(baseUrl+documentsLink);
+        }
+
+        [HttpGet("documents/{token}")]
+        public async Task<IActionResult> GetAddress(string token)
+        {
+            var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.Token == token);
+
+            if (result == null)
+            {
+                return NotFound("Không tìm thấy file");
+            }
+
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+            var filePath = path + result.Url;
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Không tìm thấy file" + filePath);
+            }
+
+            var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
+            var contentType = "application/pdf"; // Set the content type to PDF
+            Response.Headers.Add("Content-Disposition", "inline");
+            return File(fileContent, contentType);
+        }
+
+
         [HttpGet("cvtemplateId")]
         public async Task<IActionResult> DownloadCV(int cvId)
         {
@@ -92,9 +165,9 @@ namespace RecruitXpress_BE.Controllers
                 return NotFound("File not found!");
             }
             string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
-            
+
             var filePath = path + result.Url;
-           
+
             if (!System.IO.File.Exists(filePath))
             {
                 return NotFound("File not found!" + filePath);
@@ -110,7 +183,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == cvId);
-                if(result == null)
+                if (result == null)
                 {
                     return NotFound("File not found!");
                 }
@@ -125,8 +198,8 @@ namespace RecruitXpress_BE.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
-        } 
+
+        }
         private async Task<IActionResult> DeleteCVEsxit(int accountId)
         {
             try
@@ -152,7 +225,7 @@ namespace RecruitXpress_BE.Controllers
         private async Task<IActionResult> getMyCV(int accountId)
         {
             if (accountId == null) return BadRequest("AccountId dau ?");
-            
+
             var cv = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.AccountId == accountId);
             if (cv == null)
             {

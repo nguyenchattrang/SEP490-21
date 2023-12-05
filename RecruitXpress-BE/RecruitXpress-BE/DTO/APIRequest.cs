@@ -81,7 +81,7 @@ namespace RecruitXpress_BE.DTO
 
     }
 
-    public class ExamRequest : ApiRequest<SpecializedExam>
+    public class ExamRequest : ApiRequest<Exam>
     {
         public int? AccountId { get; set; }
         public string? FileUrl { get; set; }
@@ -104,5 +104,33 @@ namespace RecruitXpress_BE.DTO
         public int? MailType { get; set; }
         public int? Status { get; set; }
 
+    }
+
+    public class GetListActivityRequest : ApiRequest<Account>
+    {
+        public string? Email { get; set; }
+        public string? FullName { get; set; }
+        public int? Type { get; set; }
+
+    }
+
+    public class GetListEvaluateRequest : ApiRequest<Evaluate>
+    {
+        public int JobApplicationId { get; set; }
+        public int? CalendarId { get; set; }
+        public int? ProfileId { get; set; }
+        public string? Comments { get; set; }
+        public string? Strengths { get; set; }
+        public string? Weaknesses { get; set; }
+        public double? Score { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public int? Status { get; set; }
+
+    }
+
+    public class CalendarMultipleCandidatesRequest
+    {
+        public List<int> CandidateIds { get; set; }
+        public CalendarTemp Calendar { get; set; }
     }
 }

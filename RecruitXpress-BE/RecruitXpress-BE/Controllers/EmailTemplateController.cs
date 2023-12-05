@@ -45,7 +45,7 @@ namespace RecruitXpress_BE.Controllers
             return CreatedAtAction("GetEmailTemplateById", new { templateId = emailTemplate.TemplateId }, emailTemplate);
         }
 
-        [HttpPut("Update")]
+      /*  [HttpPut("Update")]
         public async Task<IActionResult> UpdateEmailTemplate(int templateId, [FromBody] EmailTemplate emailTemplate)
         {
             if (templateId != emailTemplate.TemplateId)
@@ -55,7 +55,7 @@ namespace RecruitXpress_BE.Controllers
 
             await _emailTemplateRepository.UpdateEmailTemplate(emailTemplate);
             return NoContent();
-        }
+        }*/
 
         [HttpDelete("Delete")]
         public async Task<IActionResult> DeleteEmailTemplate(int templateId)

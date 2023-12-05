@@ -324,12 +324,12 @@ namespace RecruitXpress_BE.Controllers
                 var allEvaluate = await _context.Evaluates.Where(x => x.ProfileId == profileId && x.Status == 1).ToListAsync();
 
                 //evaluate co diem >=5
-                var allEvaluateGood = _context.Evaluates.Where(x => x.ProfileId == profileId && x.Status == 1 && x.Mark >= 5).Count();
+                var allEvaluateGood = _context.Evaluates.Where(x => x.ProfileId == profileId && x.Status == 1 && x.Score >= 5).Count();
 
                 //evaluate co diem <5
-                var totalEvaluateNotGood = _context.Evaluates.Where(x => x.ProfileId == profileId && x.Status == 1 && x.Mark < 5).Count();
+                var totalEvaluateNotGood = _context.Evaluates.Where(x => x.ProfileId == profileId && x.Status == 1 && x.Score < 5).Count();
 
-                var allPoint = await _context.Evaluates.Where(x => x.ProfileId == profileId && x.Status == 1).Select(x => x.Mark).ToArrayAsync();
+                var allPoint = await _context.Evaluates.Where(x => x.ProfileId == profileId && x.Status == 1).Select(x => x.Score).ToArrayAsync();
                 var avgPoint = allPoint.Average();
                 var responseData = new
                 {

@@ -14,8 +14,22 @@ public class ScheduleDetailController : ControllerBase
     {
         _scheduleDetailRepository = scheduleDetailRepository;
     }
-
-    //PUT: api/Schedule/{id}
+    
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetScheduleEvaluate(int id)
+    {
+        try
+        {
+            var result = await _scheduleDetailRepository.GetScheduleDetail(id);
+            return CreatedAtAction(nameof(GetScheduleEvaluate), new { id = result.ScheduleId }, result);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(e.Message);
+        }
+    }
+    
     [HttpPut("id")]
     public async Task<IActionResult> UpdateScheduleEvaluate(int id, ScheduleDetail scheduleDetail)
     {
@@ -30,7 +44,7 @@ public class ScheduleDetailController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    //PUT: api/Schedule/{id}
+    
     [HttpDelete("id")]
     public async Task<IActionResult> DeleteScheduleEvaluate(int id)
     {

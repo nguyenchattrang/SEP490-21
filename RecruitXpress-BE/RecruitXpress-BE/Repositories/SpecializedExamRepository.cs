@@ -145,6 +145,10 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task AddSpecializedExam(SpecializedExam exam)
         {
+            if(exam.JobId==null || exam.JobId==0)
+            {
+                throw new ArgumentException("Không tìm thấy công việc tương ứng");
+            }    
             exam.CreatedAt = DateTime.Now;
 
             var generatedCode = GenerateUniqueCode();

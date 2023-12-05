@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
@@ -16,7 +17,7 @@ namespace RecruitXpress_BE.Controllers
 
     public class EvaluateController : ControllerBase
     {
-        
+
         private readonly RecruitXpressContext _context;
         public IMapper _mapper;
 
@@ -26,18 +27,127 @@ namespace RecruitXpress_BE.Controllers
             _mapper = mapper;
         }
 
-        //GET: api/ProfileManagement/{id}
+        [HttpGet("ListEvaluate")]
+        public async Task<IActionResult> ListEvaluate(GetListEvaluateRequest request)
+        {
+            try
+            {
+
+                var query = _context.Evaluates.AsQueryable(); // Update with your actual DbSet
+
+                if (request.JobApplicationId != 0)
+                {
+                    query = query.Where(e => e.JobApplicationId == request.JobApplicationId);
+                }
+
+                if (request.CalendarId != null)
+                {
+                    query = query.Where(e => e.CalendarId == request.CalendarId);
+                }
+
+                if (request.ProfileId != null)
+                {
+                    query = query.Where(e => e.ProfileId == request.ProfileId);
+                }
+
+                if (!string.IsNullOrEmpty(request.Comments))
+                {
+                    query = query.Where(e => e.Comments.Contains(request.Comments));
+                }
+
+                if (!string.IsNullOrEmpty(request.Strengths))
+                {
+                    query = query.Where(e => e.Strengths.Contains(request.Strengths));
+                }
+
+                if (!string.IsNullOrEmpty(request.Weaknesses))
+                {
+                    query = query.Where(e => e.Weaknesses.Contains(request.Weaknesses));
+                }
+
+                if (request.Score != null)
+                {
+                    query = query.Where(e => e.Score == request.Score);
+                }
+
+                if (request.CreatedAt != null)
+                {
+                    query = query.Where(e => e.CreatedAt == request.CreatedAt);
+                }
+
+                if (request.Status != null)
+                {
+                    query = query.Where(e => e.Status == request.Status);
+                }
+
+                if (!string.IsNullOrEmpty(request.SortBy))
+                {
+                    switch (request.SortBy.ToLower())
+                    {
+                        case "jobapplicationid":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(e => e.JobApplicationId)
+                                : query.OrderByDescending(e => e.JobApplicationId);
+                            break;
+
+                        case "calendarid":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(e => e.CalendarId)
+                                : query.OrderByDescending(e => e.CalendarId);
+                            break;
+
+                        case "profileid":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(e => e.ProfileId)
+                                : query.OrderByDescending(e => e.ProfileId);
+                            break;
+
+                        default:
+                            // Default sorting by JobApplicationId if no valid field is specified
+                            query = request.OrderByAscending
+                                ? query.OrderBy(e => e.JobApplicationId)
+                                : query.OrderByDescending(e => e.JobApplicationId);
+                            break;
+                    }
+                }
+
+                var totalCount = await query.CountAsync();
+
+                var pageNumber = request.Page > 0 ? request.Page : 1;
+                var pageSize = request.Size > 0 ? request.Size : 20;
+                var evaluates = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                var evaluateDTOs = _mapper.Map<List<EvaluateDTO>>(evaluates);
+
+                var response = new ApiResponse<EvaluateDTO>
+                {
+                    Items = evaluateDTOs,
+                    TotalCount = totalCount,
+                };
+
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+
         [HttpGet("getbyid")]
         public async Task<IActionResult> GetDetailEvaluate(int evaluateId)
         {
             try
             {
 
-            var evaluate = await _context.Evaluates.FirstOrDefaultAsync(x => x.EvaluateId == evaluateId);
-            if (evaluate == null)
-            {
-                return NotFound("Không kết quả");
-            }
+                var evaluate = await _context.Evaluates.FirstOrDefaultAsync(x => x.EvaluateId == evaluateId);
+                if (evaluate == null)
+                {
+                    return NotFound("Không kết quả");
+                }
                 var data = _mapper.Map<EvaluateDTO>(evaluate);
                 return Ok(data);
             }
@@ -52,34 +162,12 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var profile = await _context.Profiles.FirstOrDefaultAsync(x=> x.AccountId== accountId);
-                if (profile == null){
+                var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
+                if (profile == null)
+                {
                     return BadRequest("Account chua co du profile");
                 }
                 var evaluate = await _context.Evaluates.Where(x => x.ProfileId == profile.ProfileId).ToListAsync();
-                if (evaluate == null)
-                {
-                    return NotFound("Không kết quả");
-                }
-                var data = _mapper.Map<List<EvaluateDTO>    >(evaluate);
-                return Ok(data);
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-        }
-        [HttpGet("myEvaluated")]
-        public async Task<IActionResult> GetAllmyEvaluated(int evaluaterAccountId)
-        {
-            try
-            {
-               
-                if (evaluaterAccountId == null)
-                {
-                    return BadRequest("evaluaterAccountId khong co");
-                }
-                var evaluate = await _context.Evaluates.Include(x=>x.Profile).Where(x => x.EvaluaterAccountId == evaluaterAccountId).ToListAsync();
                 if (evaluate == null)
                 {
                     return NotFound("Không kết quả");
@@ -92,25 +180,24 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500);
             }
         }
-        //POST: api/ProfileManagement
+
         [HttpPost]
-        public async Task<IActionResult> AddEvaluate(EvaluateDTO evaluate, int EvaluaterAccountId, string? emailContact, string? phonelContact)
+        public async Task<IActionResult> AddEvaluate(EvaluateDTO evaluate)
         {
             try
             {
-               
-                if(evaluate != null && EvaluaterAccountId != null)
+
+                if (evaluate != null)
                 {
+                    if (evaluate.CalendarId == null)
+                        return BadRequest("Không có dữ liệu lịch tương ứng");
+                    var calendar = await _context.Calendars.Where(j => j.Id == evaluate.CalendarId).FirstOrDefaultAsync();
+                    var jobApp = await _context.JobApplications.Where(j => j.ApplicationId == calendar.JobApplicationId).FirstOrDefaultAsync();
+
                     var data = evaluate;
-                    data.EvaluaterAccountId = EvaluaterAccountId;
-                    if(emailContact != null)
-                    {
-                        data.EvaluaterEmailContact = emailContact;
-                    }
-                    if (phonelContact != null)
-                    {
-                        data.EvaluaterPhoneContact = phonelContact;
-                    }
+                    data.JobApplicationId = jobApp.ApplicationId;
+                    data.ProfileId = jobApp.ProfileId;
+                    data.CreatedAt = DateTime.Now;
                     data.Status = 1;
                     var create = _mapper.Map<Evaluate>(data);
                     _context.Evaluates.Add(create);
@@ -121,7 +208,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return BadRequest("Không có dữ liệu");
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -132,13 +219,52 @@ namespace RecruitXpress_BE.Controllers
 
         //PUT: api/ProfileManagement/{id}
         [HttpPut("updateEvaluate")]
-        public async Task<IActionResult> Updateevaluate(Evaluate evaluate)
+        public async Task<IActionResult> UpdateEvaluate(EvaluateDTO evaluateDTO)
         {
             try
             {
-                    _context.Entry(evaluate).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                    return Ok("Thành công");
+                var existingEvaluate = await _context.Evaluates.FindAsync(evaluateDTO.EvaluateId);
+
+                if (existingEvaluate == null)
+                {
+                    return NotFound("Không tìm thấy đánh giá");
+                }
+
+                // Check if CalendarId is provided and exists
+                if (evaluateDTO.CalendarId != null)
+                {
+                    var calendar = await _context.Calendars
+                        .Where(c => c.Id == evaluateDTO.CalendarId)
+                        .FirstOrDefaultAsync();
+
+                    if (calendar == null)
+                    {
+                        return BadRequest("Không tìm thấy lịch tương ứng");
+                    }
+
+                    // Update fields based on the existing JobApplication
+                    var jobApp = await _context.JobApplications
+                        .Where(j => j.ApplicationId == calendar.JobApplicationId)
+                        .FirstOrDefaultAsync();
+
+                    existingEvaluate.JobApplicationId = jobApp.ApplicationId;
+                    existingEvaluate.ProfileId = jobApp.ProfileId;
+                    if (evaluateDTO.Status != null)
+                        existingEvaluate.Status = evaluateDTO.Status;
+                    if (!string.IsNullOrEmpty(evaluateDTO.Comments))
+                        existingEvaluate.Comments = evaluateDTO.Comments;
+                    if (!string.IsNullOrEmpty(evaluateDTO.Strengths))
+                        existingEvaluate.Strengths = evaluateDTO.Strengths;
+                    if (!string.IsNullOrEmpty(evaluateDTO.Weaknesses))
+                        existingEvaluate.Weaknesses = evaluateDTO.Weaknesses;
+                }
+
+                _mapper.Map(evaluateDTO, existingEvaluate);
+
+                _context.Entry(existingEvaluate).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok("Thành công");
             }
             catch (Exception e)
             {
@@ -146,8 +272,8 @@ namespace RecruitXpress_BE.Controllers
                 return BadRequest(e.Message);
             }
         }
-        //DELETE: api/ProfileManagement
-   
-       
+
+
+
     }
 }

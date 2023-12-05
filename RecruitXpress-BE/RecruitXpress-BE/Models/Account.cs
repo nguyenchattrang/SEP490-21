@@ -7,6 +7,9 @@ namespace RecruitXpress_BE.Models
     {
         public Account()
         {
+            CalendarCandidateNavigations = new HashSet<Calendar>();
+            CalendarCreatedByNavigations = new HashSet<Calendar>();
+            CalendarInterviewerNavigations = new HashSet<Calendar>();
             CandidateCvs = new HashSet<CandidateCv>();
             Cvtemplates = new HashSet<Cvtemplate>();
             EmailTokens = new HashSet<EmailToken>();
@@ -18,7 +21,7 @@ namespace RecruitXpress_BE.Models
             Questions = new HashSet<Question>();
             SpecializedExams = new HashSet<SpecializedExam>();
             WishLists = new HashSet<WishList>();
-            Interviewers = new HashSet<Interviewer>();
+            Interviewers = new HashSet<Interview>();
             Schedules = new HashSet<Schedule>();
         }
 
@@ -34,6 +37,10 @@ namespace RecruitXpress_BE.Models
         public string? Gender { get; set; }
 
         public virtual Role? Role { get; set; }
+
+        public virtual ICollection<Calendar> CalendarCandidateNavigations { get; set; }
+        public virtual ICollection<Calendar> CalendarCreatedByNavigations { get; set; }
+        public virtual ICollection<Calendar> CalendarInterviewerNavigations { get; set; }
         public virtual ICollection<CandidateCv> CandidateCvs { get; set; }
         public virtual ICollection<Cvtemplate> Cvtemplates { get; set; }
         public virtual ICollection<EmailToken> EmailTokens { get; set; }
@@ -45,7 +52,7 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<SpecializedExam> SpecializedExams { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
-        public virtual ICollection<Interviewer> Interviewers { get; set; }
+        public virtual ICollection<Interview> Interviewers { get; set; }
         public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }

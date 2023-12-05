@@ -7,7 +7,7 @@ namespace RecruitXpress_BE.Models
     {
         public Schedule()
         {
-            Interviewers = new HashSet<Interviewer>();
+            Interviewers = new HashSet<Interview>();
             ScheduleDetails = new HashSet<ScheduleDetail>();
         }
 
@@ -19,8 +19,8 @@ namespace RecruitXpress_BE.Models
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
 
-        public virtual Account? HumanResource { get; set; }
-        public virtual ICollection<Interviewer> Interviewers { get; set; }
-        public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
+        public Account? HumanResource { get; set; }
+        public ICollection<Interview> Interviewers { get; set; }
+        public ICollection<ScheduleDetail> ScheduleDetails { get; set; }
     }
 }

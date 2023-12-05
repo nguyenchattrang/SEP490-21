@@ -20,6 +20,7 @@ namespace RecruitXpress_BE.Models
         public int? Location { get; set; }
         public int? EmploymentType { get; set; }
         public int? Industry { get; set; }
+        public string? DetailLocation { get; set; }
         public string? Requirements { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
         public DateTime? DatePosted { get; set; }
@@ -35,5 +36,6 @@ namespace RecruitXpress_BE.Models
         public virtual ICollection<ShortListing> ShortListings { get; set; }
         public virtual ICollection<SpecializedExam> SpecializedExams { get; set; }
         public virtual ICollection<WishList> WishLists { get; set; }
+        public virtual ICollection<Calendar> Calendars { get; set; }
     }
 }

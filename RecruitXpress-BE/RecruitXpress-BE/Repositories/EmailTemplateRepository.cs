@@ -122,9 +122,25 @@ namespace RecruitXpress_BE.Repositories
         public async Task SendEmailSubmitJob(int jobApplicationID)
         {
             var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.SUBMIT).FirstOrDefault();
+            if (emailTemplate == null)
+            {
+                throw new ArgumentException("Email hiện tại chưa sẵn sàng");
+            }
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            if(user==null)
+            {
+                throw new ArgumentException("Không tìm thấy hồ sơ công việc tương ứng");
+            }    
             var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            if (account == null)
+            {
+                throw new ArgumentException("Không tìm thấy tài khoản");
+            }
             var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+            if (job == null)
+            {
+                throw new ArgumentException("Không tìm thấy công việc tương ứng");
+            }
             if (emailTemplate != null)
             {
                 emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
@@ -177,7 +193,7 @@ namespace RecruitXpress_BE.Repositories
                     throw new Exception("Không tìm thấy địa chỉ CV");
                 }
                 emailTemplate.Body = emailTemplate.Body.Replace("@cv", result.Url);
-                _sender.SendWithAttach(account.Account1, emailTemplate.Header, emailTemplate.Body, filePath, cvName);
+                _sender.SendWithAttach(interviewer.Account1, emailTemplate.Header, emailTemplate.Body, filePath, cvName);
             }
         }
         public async Task SendEmailExamSchedule(int jobApplicationID, string time, string location)
@@ -246,7 +262,7 @@ namespace RecruitXpress_BE.Repositories
                 emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
                 emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
 
-                _sender.Send(account.Account1, emailTemplate.Header, emailTemplate.Body);
+                _sender.Send(interviewer.Account1, emailTemplate.Header, emailTemplate.Body);
             }
         }
 
@@ -301,11 +317,11 @@ namespace RecruitXpress_BE.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateEmailTemplate(EmailTemplate emailTemplate)
+/*        public async Task UpdateEmailTemplate(EmailTemplate emailTemplate)
         {
             _context.Entry(emailTemplate).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-        }
+        }*/
 
         public async Task DeleteEmailTemplate(int templateId)
         {

@@ -10,6 +10,7 @@ using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
 using System.Text;
 using System.Text.Json.Serialization;
+using RecruitXpress_BE.Hub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,9 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IJobPostingManagementRepository, JobPostingManagementRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
+builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
         .Get<EmailConfiguration>();
@@ -115,7 +119,8 @@ var app = builder.Build();
 //        }
 //    }
 //}
-app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+//app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
@@ -131,9 +136,14 @@ if (!app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<JobApplicationStatusHub>("/api/JobApplicationStatusHub"); // Đặt đường dẫn Hub của bạn
+    endpoints.MapControllers();
+});
 
 
 app.MapControllers();

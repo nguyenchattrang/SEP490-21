@@ -15,6 +15,7 @@ namespace RecruitXpress_BE.Models
         public string? Url { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? Status { get; set; }
+        public string? Token { get; set; }
 
         public virtual Account? Account { get; set; }
         public virtual ICollection<JobApplication> JobApplications { get; set; }
