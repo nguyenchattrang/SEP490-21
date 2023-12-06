@@ -49,7 +49,7 @@ namespace RecruitXpress_BE.Controllers
             {
                 var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                 if (profile == null) return NotFound("Account chua co profile");
-
+               
                 profile.StatusId = maritalStatus;
                 _context.SaveChanges();
                 return Ok("Thêm thành công");
