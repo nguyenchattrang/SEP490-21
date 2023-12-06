@@ -376,7 +376,7 @@ namespace RecruitXpress_BE.Repositories
                 {
                     throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
                 }
-                var jobApplication = _context.JobApplications.Where(j => j.JobId == exam.SpecializedExamId && j.ProfileId == profile.ProfileId).FirstOrDefault();
+                var jobApplication = _context.JobApplications.Where(j => j.JobId == specExam.JobId && j.ProfileId == profile.ProfileId).FirstOrDefault();
                 if (jobApplication == null)
                 {
                     throw new ArgumentException("Bạn chưa đăng kí công việc này");

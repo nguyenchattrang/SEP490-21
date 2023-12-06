@@ -20,6 +20,7 @@ namespace RecruitXpress_BE.Models
         public string? Strength { get; set; }
         public string? Imperfection { get; set; }
         public int? Evaluate { get; set; }
+        public string? Location { get; set; }
 
         public virtual JobApplication? Candidate { get; set; }
         public virtual Schedule? Schedule { get; set; }

@@ -7,6 +7,7 @@ public partial class ScheduleDetailDTO
     public int ScheduleDetailId { get; set; }
     public int? ScheduleId { get; set; }
     public int? CandidateId { get; set; }
+    public string? CandidateName { get; set; }
     public int? ApplicationId { get; set; }
     public int? ScheduleType { get; set; }
     public DateTime? StartDate { get; set; }
@@ -21,6 +22,5 @@ public partial class ScheduleDetailDTO
     public string? Strength { get; set; }
     public string? Imperfection { get; set; }
     public int? Evaluate { get; set; }
-    public virtual JobApplication? Candidate { get; set; }
 
 }
