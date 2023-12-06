@@ -38,7 +38,14 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 if (accountId == null) return BadRequest("Account is not null");
-                var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == accountId);
+                var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
+
+                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId);
+                if(check != null)
+                {
+                    return BadRequest("Job này đã được bạn ứng tuyển");
+                }
+
                 var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
                 if (profile == null)
                 {
