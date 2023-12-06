@@ -203,7 +203,7 @@ namespace RecruitXpress_BE.Repositories
                 var result = await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == user.TemplateId);
                 if (result == null)
                 {
-                    throw new Exception("Không tìm thấy CV");
+                    throw new ArgumentException("Không tìm thấy CV");
                 }
                 string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
 
@@ -211,7 +211,7 @@ namespace RecruitXpress_BE.Repositories
 
                 if (!System.IO.File.Exists(filePath))
                 {
-                    throw new Exception("Không tìm thấy địa chỉ CV");
+                    throw new ArgumentException("Không tìm thấy địa chỉ CV");
                 }
                 emailTemplate.Body = emailTemplate.Body.Replace("@cv", result.Url);
                 _sender.SendWithAttach(interviewer.Account1, emailCopy.Header, emailCopy.Body, filePath, cvName);

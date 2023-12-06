@@ -521,23 +521,23 @@ namespace RecruitXpress_BE.Controllers
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
-                        _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
+                      await  _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
                     switch (Status)
                     {
 
                         case 1:
-                            _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
+                            await _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
                             break;
                         case 7:
-                            _emailTemplateRepository.SendEmailUpdateProfile(jobApplyId);
+                            await _emailTemplateRepository.SendEmailUpdateProfile(jobApplyId);
                             break;
                         case 8:
-                            _emailTemplateRepository.SendEmailAccepted(jobApplyId);
+                            await _emailTemplateRepository.SendEmailAccepted(jobApplyId);
                             break;
                         case 9:
-                            _emailTemplateRepository.SendEmailCanceled(jobApplyId);
+                            await _emailTemplateRepository.SendEmailCanceled(jobApplyId);
                             break;
                     }
 

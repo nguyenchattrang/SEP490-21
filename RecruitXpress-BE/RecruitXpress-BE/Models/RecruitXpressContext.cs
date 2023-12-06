@@ -149,10 +149,10 @@ namespace RecruitXpress_BE.Models
                     .HasForeignKey(d => d.JobApplicationId)
                     .HasConstraintName("FK_Calendar_JobApplication");
 
-                entity.HasOne(d => d.Job)
+/*                entity.HasOne(d => d.Job)
                     .WithMany(p => p.Calendars)
                     .HasForeignKey(d => d.JobId)
-                    .HasConstraintName("FK_Calendar_JobPosting");
+                    .HasConstraintName("FK_Calendar_JobPosting");*/
             });
 
             modelBuilder.Entity<CandidateCv>(entity =>
