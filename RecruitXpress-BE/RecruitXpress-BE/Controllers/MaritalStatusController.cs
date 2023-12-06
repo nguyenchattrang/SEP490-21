@@ -23,21 +23,11 @@ namespace RecruitXpress_BE.Controllers
 
         //GET: api/MaritalStatusManagement
         [HttpGet("get")]
-        public async Task<IActionResult> GetMaritalStatus(int accountId)
+        public async Task<IActionResult> GetMaritalStatus()
         {
             try
             {
-                if (accountId == null)
-                {
-                    return BadRequest("AccountId is null ?");
-                }
-                var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
-                if (profile == null)
-                {
-                    return BadRequest("Chua co profile");
-                }
-
-                var result = await _context.MaritalStatuses.FirstOrDefaultAsync(x => x.StatusId == profile.StatusId);
+                var result = await _context.MaritalStatuses.ToArrayAsync();
                 if (result == null)
                 {
                     return NotFound( "Không có dữ liệu ");
@@ -53,17 +43,14 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/MaritalStatusManagement
         [HttpPost]
-        public async Task<IActionResult> AddMaritalStatus(MaritalStatus maritalStatus,int accountId)
+        public async Task<IActionResult> AddMaritalStatus(int maritalStatus,int accountId)
         {
             try
             {
                 var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
                 if (profile == null) return NotFound("Account chua co profile");
-
-                var create = _context.MaritalStatuses.Add(maritalStatus).Entity;
-                _context.SaveChanges();
-
-                profile.StatusId = create.StatusId;
+               
+                profile.StatusId = maritalStatus;
                 _context.SaveChanges();
                 return Ok("Thêm thành công");
             }
