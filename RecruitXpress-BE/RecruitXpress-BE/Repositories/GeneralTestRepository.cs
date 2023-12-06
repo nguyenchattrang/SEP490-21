@@ -58,6 +58,15 @@ namespace RecruitXpress_BE.Repositories
                 query = query.Where(gt => gt.CreatedAt.Value.Date == requestDate);
             }
 
+
+            if (!string.IsNullOrEmpty(request.SearchAll))
+            {
+                query = query.Where(gt =>
+                    gt.TestName.Contains(request.SearchAll) ||
+                    gt.Description.Contains(request.SearchAll)
+                );
+            }
+
             if (!string.IsNullOrEmpty(request.SortBy))
             {
                 switch (request.SortBy)
@@ -165,6 +174,10 @@ namespace RecruitXpress_BE.Repositories
         }
         private int CalculateUserScore(GeneralTest generalTest)
         {
+            if(generalTest.GeneralTestDetails.Count==0)
+            {
+                return 0;
+            }    
             int userScore = 0;
 
             var calculatedQuestionIds = new HashSet<int>(); // Store question IDs for which the score has been calculated.
