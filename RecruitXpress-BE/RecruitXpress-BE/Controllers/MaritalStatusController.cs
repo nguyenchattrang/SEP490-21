@@ -46,7 +46,7 @@ namespace RecruitXpress_BE.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Không có dữ liệu");
             }
            
         }
