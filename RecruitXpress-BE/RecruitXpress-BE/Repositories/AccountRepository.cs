@@ -64,6 +64,10 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Account> UpdateAccount(int id, Account account)
     {
+        if(account.Password != null)
+        {
+            account.Password = HashHelper.Encrypt(account.Password, _configuration);
+        }
         _context.Entry(account).State = EntityState.Modified;
         try
         {

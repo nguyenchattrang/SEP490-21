@@ -38,7 +38,14 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 if (accountId == null) return BadRequest("Account is not null");
-                var profile = _context.Profiles.FirstOrDefault(x => x.AccountId == accountId);
+                var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
+
+                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId);
+                if(check != null)
+                {
+                    return BadRequest("Job này đã được bạn ứng tuyển");
+                }
+
                 var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
                 if (profile == null)
                 {
@@ -514,23 +521,23 @@ namespace RecruitXpress_BE.Controllers
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
-                        _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
+                      await  _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
                     switch (Status)
                     {
 
                         case 1:
-                            _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
+                            await _emailTemplateRepository.SendEmailSubmitJob(jobApplyId);
                             break;
                         case 7:
-                            _emailTemplateRepository.SendEmailUpdateProfile(jobApplyId);
+                            await _emailTemplateRepository.SendEmailUpdateProfile(jobApplyId);
                             break;
                         case 8:
-                            _emailTemplateRepository.SendEmailAccepted(jobApplyId);
+                            await _emailTemplateRepository.SendEmailAccepted(jobApplyId);
                             break;
                         case 9:
-                            _emailTemplateRepository.SendEmailCanceled(jobApplyId);
+                            await _emailTemplateRepository.SendEmailCanceled(jobApplyId);
                             break;
                     }
 
@@ -577,6 +584,47 @@ namespace RecruitXpress_BE.Controllers
                     }
                 }
                 return Ok("Cập nhật CV cho job thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("ListByJobPosting")]
+        public async Task<IActionResult> ListByJobPosting(int jobId)
+        {
+            try
+            {
+
+                var query = await _context.JobApplications
+                .Include(q => q.Profile).ThenInclude(x => x.Account)
+                .Where(j=> j.JobId==jobId)
+                .ToListAsync();
+                if (query == null)
+                    return NotFound("Không kết quả");
+                var jobApplicationDTOs = _mapper.Map<List<ShortJobApp>>(query);
+                foreach (var jobApplicationDTO in jobApplicationDTOs)
+                {
+                    var acc = jobApplicationDTO.AssignedFor;
+                    if (acc != null)
+                    {
+
+                        var profile = _context.Accounts.FirstOrDefault(x => x.AccountId == acc);
+                        if (profile != null)
+                        {
+                            var profileDTO = new AssignedProfileDTO
+                            {
+                                accountId = (int)acc,
+                                Name = profile.FullName,
+                            };
+                            jobApplicationDTO.AssignedForInfor = profileDTO;
+                        }
+                    }
+
+                }
+                return Ok(jobApplicationDTOs);
+
             }
             catch (Exception ex)
             {

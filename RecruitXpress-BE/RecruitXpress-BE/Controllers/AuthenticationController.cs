@@ -368,13 +368,23 @@ namespace RecruitXpress_BE.Controllers
 
         private bool CheckPassword(Account? user, LoginModel? login)
         {
-            if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
+            try
             {
-                return true;
+                if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
+            catch (Exception e)
+            {
+                // Handle the specific exception type
+                throw new ArgumentException("Mật khẩu chưa được mã hóa", e);
+            }    
 
-
-            else return false;
         }
 
         [HttpPost("RevokeToken")]
@@ -403,21 +413,50 @@ namespace RecruitXpress_BE.Controllers
 
         [HttpGet]
         [Route("auth/google")]
-        public ActionResult<string> GoogleAuth(string redirectUrl)
+        public ActionResult<string> GoogleAuth()
         {
-            return _googleService.GetAuthUrl(redirectUrl);
+            return _googleService.GetAuthUrl();
         }
 
         [HttpGet]
         [Route("/auth/callback")]
         public async Task<IActionResult> Callback()
         {
-            string code = HttpContext.Request.Query["code"];
-            string scope = HttpContext.Request.Query["scope"];
+            try
+            {
+                string? code = HttpContext.Request.Query["code"];
+                string? scope = HttpContext.Request.Query["scope"];
+                string? authUser = HttpContext.Request.Query["authuser"];
 
-            //get token method
-            var token = await _googleService.GetTokens(code);
-            return Ok(token);
+                //get token method
+                var token = await _googleService.GetTokens(code);
+                if (token == null)
+                {
+                    return BadRequest("Không thể đăng nhập!");
+                }
+                var userInfo = await _googleService.GetUserInfo(token.access_token);
+                var user = await _context.Accounts.Include(a => a.Role)
+                    .Include(r => r.Profiles)
+                    .Include(c => c.CandidateCvs)
+                    .SingleOrDefaultAsync(u => userInfo != null && u.Account1 == userInfo.Email);
+                if (user == null)
+                {
+                    
+                }
+                return Ok(new
+                {
+                    Token = token,
+                    AccountId = user.AccountId,
+                    UserName = user.Account1,
+                    RoleId = user.RoleId,
+                    IsProfile = (user.Profiles != null && user.Profiles.Any()).ToString().ToLower(),
+                    IsCV = (user.CandidateCvs != null && user.CandidateCvs.Any()).ToString().ToLower()
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

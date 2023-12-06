@@ -90,7 +90,7 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return BadRequest("Add Job Posting failed!");
+                return BadRequest("Add Job Posting failed!" + e);
             }
         }
 

@@ -23,4 +23,15 @@ namespace RecruitXpress_BE.DTO
 
        
     }
+
+    public class ShortProfile
+    {
+        public int ProfileId { get; set; }
+        public int? AccountId { get; set; }
+        public string? Email { get; set; }
+        public string? Name { get; set; }
+        public DateTime? Dob { get; set; }
+        public string? Gender { get; set; }
+
+    }
 }
