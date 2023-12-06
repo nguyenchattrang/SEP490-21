@@ -368,13 +368,23 @@ namespace RecruitXpress_BE.Controllers
 
         private bool CheckPassword(Account? user, LoginModel? login)
         {
-            if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
+            try
             {
-                return true;
+                if (user != null && HashHelper.Decrypt(user.Password, _configuration) == login.Password)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
+            catch (Exception e)
+            {
+                // Handle the specific exception type
+                throw new ArgumentException("Mật khẩu chưa được mã hóa", e);
+            }    
 
-
-            else return false;
         }
 
         [HttpPost("RevokeToken")]
