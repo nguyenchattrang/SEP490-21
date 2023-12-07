@@ -24,16 +24,17 @@ namespace UnitTest
         private IMapper _mapper;
         private MaritalStatusController _controller;
 
+
         [TestInitialize]
         public void Setup()
         {
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             var options = new DbContextOptionsBuilder<RecruitXpressContext>()
-           .UseSqlServer(config.GetConnectionString("RecruitXpress"))
-           .Options;
+     .UseSqlServer(config.GetConnectionString("RecruitXpress")) // Use the appropriate provider (e.g., UseSqlServer for SQL Server)
+     .Options;
 
-            // Create a mock context instead of using the actual context
-            _mockContext = new Mock<RecruitXpressContext>(options);
+            // Create an instance of the context using the actual database
+            var dbContext = new RecruitXpressContext(options);
 
             // Configure AutoMapper with your mapping profile
             var mappingConfig = new MapperConfiguration(cfg =>
@@ -45,9 +46,10 @@ namespace UnitTest
             _mapper = mappingConfig.CreateMapper();
 
             // Create an instance of your controller with the mock context and mapper
-            _controller = new MaritalStatusController(_mockContext.Object, _mapper);
+            _controller = new MaritalStatusController(dbContext, _mapper);
 
         }
+
 
         [TestMethod]
         public async Task GetMaritalStatus_ReturnsBadRequest_WhenAccountIdIsNull()
@@ -56,24 +58,12 @@ namespace UnitTest
             var accountId = 0; // Change this value based on your test scenario
 
             // Act
-            var result = await _controller.GetMaritalStatus(accountId);
+            var result = await _controller.GetMaritalStatus();
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
 
-        [TestMethod]
-        public async Task GetMaritalStatus_ReturnsBadRequest_WhenProfileNotFound()
-        {
-            // Arrange
-            var accountId = 99; // Change this value based on your test scenario
-           
-            // Act
-            var result = await _controller.GetMaritalStatus(accountId);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-        }
 
         [TestMethod]
         public async Task GetMaritalStatus_ReturnsNotFound_WhenMaritalStatusNotFound()
@@ -81,7 +71,7 @@ namespace UnitTest
             // Arrange
             var accountId = 13; // Change this value based on your test scenario
             // Act
-            var result = await _controller.GetMaritalStatus(accountId);
+            var result = await _controller.GetMaritalStatus();
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
@@ -95,8 +85,8 @@ namespace UnitTest
         public async Task AddMaritalStatus_ReturnsOk_WhenSuccessful()
         {
             // Arrange
-            var accountId = 13; // Change this value based on your test scenario
-            var maritalStatus = new MaritalStatus { Description =  "zai"};
+            var accountId = 22; // Change this value based on your test scenario
+            var maritalStatus = 1;
             // Act
             var result = await _controller.AddMaritalStatus(maritalStatus, accountId);
 
