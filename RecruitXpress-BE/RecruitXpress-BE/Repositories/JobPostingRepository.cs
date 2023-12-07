@@ -39,12 +39,7 @@ public class JobPostingRepository : IJobPostingRepository
                 Title = jobPosting.Title,
                 Description = jobPosting.Description,
                 Company = jobPosting.Company,
-                Location = (jobPosting.LocationNavigation != null ? jobPosting.LocationNavigation.DistrictName : null) +
-                           " - " + (jobPosting.LocationNavigation != null
-                               ? jobPosting.LocationNavigation.City != null
-                                   ? jobPosting.LocationNavigation.City.CityName
-                                   : null
-                               : null),
+                Location = jobPosting.LocationNavigation != null ? jobPosting.LocationNavigation.CityName : null,
                 EmploymentType = jobPosting.EmploymentTypeNavigation != null
                     ? jobPosting.EmploymentTypeNavigation.EmploymentTypeName
                     : null,
@@ -106,14 +101,7 @@ public class JobPostingRepository : IJobPostingRepository
                     Title = jobPosting.Title,
                     Description = jobPosting.Description,
                     Company = jobPosting.Company,
-                    Location = (jobPosting.LocationNavigation != null
-                                   ? jobPosting.LocationNavigation.DistrictName
-                                   : null) + " - " +
-                               (jobPosting.LocationNavigation != null
-                                   ? jobPosting.LocationNavigation.City != null
-                                       ? jobPosting.LocationNavigation.City.CityName
-                                       : null
-                                   : null),
+                    Location = jobPosting.LocationNavigation != null ? jobPosting.LocationNavigation.CityName : null,
                     EmploymentType = jobPosting.EmploymentTypeNavigation != null
                         ? jobPosting.EmploymentTypeNavigation.EmploymentTypeName
                         : null,
@@ -161,8 +149,7 @@ public class JobPostingRepository : IJobPostingRepository
             Title = jobPosting.Title,
             Description = jobPosting.Description,
             Company = jobPosting.Company,
-            Location = jobPosting.LocationNavigation?.DistrictName + " - " +
-                       jobPosting.LocationNavigation?.City?.CityName,
+            Location = jobPosting.LocationNavigation?.CityName,
             EmploymentType = jobPosting.EmploymentTypeNavigation?.EmploymentTypeName,
             Industry = jobPosting.IndustryNavigation?.IndustryName,
             LocationId = jobPosting.Location,
@@ -251,7 +238,6 @@ public class JobPostingRepository : IJobPostingRepository
             .Include(j => j.EmploymentTypeNavigation)
             .Include(j => j.IndustryNavigation)
             .Include(j => j.LocationNavigation)
-            .ThenInclude(d => d.City)
             .AsQueryable();
 
         if (accountId != null)
@@ -310,9 +296,9 @@ public class JobPostingRepository : IJobPostingRepository
                     ? query.OrderBy(j => j.Title)
                     : query.OrderByDescending(j => j.Title),
                 "Location" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.LocationNavigation != null ? j.LocationNavigation.DistrictName : null)
+                    ? query.OrderBy(j => j.LocationNavigation != null ? j.LocationNavigation.CityName : null)
                     : query.OrderByDescending(j =>
-                        j.LocationNavigation != null ? j.LocationNavigation.DistrictName : null),
+                        j.LocationNavigation != null ? j.LocationNavigation.CityName : null),
                 "DatePosted" => searchDto.IsSortAscending
                     ? query.OrderBy(j => j.DatePosted)
                     : query.OrderByDescending(j => j.DatePosted),

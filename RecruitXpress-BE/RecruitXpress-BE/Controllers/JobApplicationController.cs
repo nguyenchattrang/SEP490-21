@@ -90,7 +90,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
-                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).AsQueryable();
 
@@ -225,8 +225,7 @@ namespace RecruitXpress_BE.Controllers
                      s.Profile.Account.FullName.Contains(request.SearchString) ||
                      // s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.IndustryNavigation.IndustryName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.DistrictName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.City.CityName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.CityName.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
 
@@ -297,7 +296,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
-                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).AsQueryable();
 
@@ -427,8 +426,7 @@ namespace RecruitXpress_BE.Controllers
                      s.Profile.Account.FullName.Contains(request.SearchString) ||
                      // s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.IndustryNavigation.IndustryName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.DistrictName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.City.CityName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.CityName.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
 
@@ -490,7 +488,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
-                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (query == null)
