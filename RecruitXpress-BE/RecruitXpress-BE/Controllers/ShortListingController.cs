@@ -231,19 +231,23 @@ namespace RecruitXpress_BE.Controllers
 
         //POST: api/ProfileManagement
         [HttpPost]
-        public async Task<IActionResult> AddToShortListing(ShortListing shortlisting)
+        public async Task<IActionResult> AddToShortListing(int jobapplyId)
         {
             try
             {
-                var oldWishList = await _context.ShortListings
-                .FirstOrDefaultAsync(w => w.ProfileId == shortlisting.ProfileId);
-                if (oldWishList == null)
+                var olddata = await _context.JobApplications
+                .FirstOrDefaultAsync(w => w.ApplicationId == jobapplyId);
+                if (olddata.Shorted == null)
                 {
-                    _context.Entry(shortlisting).State = EntityState.Added;
+                    olddata.Shorted = 1;
                 }
-                else
+                else if (olddata.Shorted == 1)
                 {
-                    _context.Entry(oldWishList).State = EntityState.Deleted;
+                    olddata.Shorted = 0;
+                }
+                else if (olddata.Shorted == 0)
+                {
+                    olddata.Shorted = 1;
                 }
 
                 await _context.SaveChangesAsync();
