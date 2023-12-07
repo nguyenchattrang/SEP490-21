@@ -50,26 +50,11 @@ namespace UnitTest
 
         }
 
-
-        [TestMethod]
-        public async Task GetMaritalStatus_ReturnsBadRequest_WhenAccountIdIsNull()
-        {
-            // Arrange
-            var accountId = 0; // Change this value based on your test scenario
-
-            // Act
-            var result = await _controller.GetMaritalStatus();
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-        }
-
-
         [TestMethod]
         public async Task GetMaritalStatus_ReturnsNotFound_WhenMaritalStatusNotFound()
         {
             // Arrange
-            var accountId = 13; // Change this value based on your test scenario
+            
             // Act
             var result = await _controller.GetMaritalStatus();
 
@@ -93,6 +78,102 @@ namespace UnitTest
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
+        [TestMethod]
+        public async Task AddMaritalStatusByAdmin_ReturnsOk_WhenSuccessful()
+        {
+            // Arrange
+           // Change this value based on your test scenario
+            var maritalStatus = new MaritalStatus{ Description = "Doc than" };
+            // Act
+            var result = await _controller.CreateNewMaritalStauts(maritalStatus);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
+        [TestMethod]
+        public async Task AddMaritalStatusByAdmin_ReturnsBadRequest_WhenFail()
+        {
+            // Arrange
+            // Change this value based on your test scenario
+            var maritalStatus = new MaritalStatus { Description= null };
+            // Act
+            var result = await _controller.CreateNewMaritalStauts(maritalStatus);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+        [TestMethod]
+        public async Task AddMaritalStatus_ReturnsBadRequest_WhenMaritalStatusIsNotFound()
+        {
+            // Arrange
+            var accountId = 22; // Change this value based on your test scenario
+            var maritalStatus = 99;
+            // Act
+            var result = await _controller.AddMaritalStatus(maritalStatus, accountId);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+        [TestMethod]
+        public async Task AddMaritalStatus_ReturnsBadRequest_WhenAccountIsNotFound()
+        {
+            // Arrange
+            var accountId = 99; // Change this value based on your test scenario
+            var maritalStatus = 1;
+            // Act
+            var result = await _controller.AddMaritalStatus(maritalStatus, accountId);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+        [TestMethod]
+        public async Task DeleteMaritalStatus_ShouldReturnNotFound()
+        {
+            // Arrange
+            
+            var maritalStatus = 99;
+            // Act
+            var result = await _controller.DeleteMaritalStatus(maritalStatus);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+        }
+        [TestMethod]
+        public async Task DeleteMaritalStatus_ShouldReturnOk()
+        {
+            // Arrange
+            var maritalStatus = 1;
+            // Act
+            var result = await _controller.DeleteMaritalStatus(maritalStatus);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
+       
+        [TestMethod]
+        public async Task UpdateMaritalStatus_ShouldReturnOk()
+        {
+            // Arrange
+            
+            var maritalStatus = new MaritalStatus { StatusId =1, Description = "ly hon"};
+            // Act
+            var result = await _controller.UpdateMaritalStatus(maritalStatus);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        }
+        [TestMethod]
+        public async Task UpdateMaritalStatus_ShouldReturnBadRequest()
+        {
+            // Arrange
+            var maritalStatus = new MaritalStatus { StatusId = 99, Description = "ly hon" };
+            // Act
+            var result = await _controller.UpdateMaritalStatus(maritalStatus);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        }
+       
         // Add similar test methods for other actions (AddMaritalStatus, UpdateMaritalStatus, DeleteMaritalStatus) based on your specific requirements.
     }
 }
