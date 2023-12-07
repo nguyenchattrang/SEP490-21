@@ -156,6 +156,11 @@ namespace RecruitXpress_BE.Controllers
                                 ? query.OrderBy(j => j.Job.Location)
                                 : query.OrderByDescending(j => j.Job.Location);
                             break;
+                        case "Shorted":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Shorted)
+                                : query.OrderByDescending(j => j.Shorted);
+                            break;
                         case "Status":
                             query = request.OrderByAscending
                                 ? query.OrderBy(j => j.Status)
@@ -357,6 +362,11 @@ namespace RecruitXpress_BE.Controllers
                             query = request.OrderByAscending
                                 ? query.OrderBy(j => j.Job.Location)
                                 : query.OrderByDescending(j => j.Job.Location);
+                            break;
+                        case "Shorted":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.Shorted)
+                                : query.OrderByDescending(j => j.Shorted);
                             break;
                         case "Status":
                             query = request.OrderByAscending
