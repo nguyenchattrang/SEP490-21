@@ -27,30 +27,49 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var result = await _context.MaritalStatuses.ToArrayAsync();
+                var result = await _context.MaritalStatuses.ToListAsync();
                 if (result == null)
                 {
-                    return NotFound( "Không có dữ liệu ");
+                    return NotFound( "Không có dữ liệu");
                 }
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest("Không có dữ liệu");
+                return BadRequest(ex.Message);
             }
            
         }
+        [HttpPost("addNew")]
+        public async Task<IActionResult> CreateNewMaritalStauts(MaritalStatus data)
+        {
+            try
+            {
+                if (data.Description == null) return BadRequest("Thông tin tình trạng hôn nhân không hợp lệ");
+                _context.MaritalStatuses.Add(data);
+                _context.SaveChanges();
+                return Ok("Thêm thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
+        }
         //POST: api/MaritalStatusManagement
         [HttpPost]
         public async Task<IActionResult> AddMaritalStatus(int maritalStatus,int accountId)
         {
             try
             {
-                var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
-                if (profile == null) return NotFound("Account chua co profile");
-               
-                profile.StatusId = maritalStatus;
+                var profile = await _context.Accounts.FirstOrDefaultAsync(p => p.AccountId == accountId);
+                if (profile == null) return BadRequest("Không tìm thấy account");
+
+                var check = await _context.MaritalStatuses.FirstOrDefaultAsync(x=> x.StatusId== maritalStatus);
+                if (check == null) return BadRequest("Không tìm thấy tình trạng hôn nhân này");
+                var profileFinded = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
+                
+                profileFinded.StatusId = maritalStatus;
                 _context.SaveChanges();
                 return Ok("Thêm thành công");
             }

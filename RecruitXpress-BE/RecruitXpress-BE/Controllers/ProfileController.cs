@@ -74,6 +74,7 @@ namespace RecruitXpress_BE.Controllers
                 {
                     var profile = new Profile
                     {
+
                         AccountId = accountId,
                         StatusId = Profile.StatusId,
                         PhoneNumber = Profile.PhoneNumber,

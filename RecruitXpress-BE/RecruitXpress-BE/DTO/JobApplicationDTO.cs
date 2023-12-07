@@ -12,6 +12,7 @@ namespace RecruitXpress_BE.DTO
         public int? ProfileId { get; set; }
         public int? TemplateId { get; set; }
         public int? Status { get; set; }
+        public int? Shorted { get; set; }
         public int? AssignedFor { get; set; }
 
         public virtual JobDTO? Job { get; set; }
