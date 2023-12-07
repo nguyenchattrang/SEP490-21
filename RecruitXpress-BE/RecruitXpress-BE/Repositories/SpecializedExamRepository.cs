@@ -130,8 +130,6 @@ namespace RecruitXpress_BE.Repositories
         }
         public async Task<SpecializedExamDTO> GetSpecializedExamByCode(string code, int accountId)
         {
-            try
-            {
 
                 if (accountId == 0 || accountId == null)
                 {
@@ -148,6 +146,7 @@ namespace RecruitXpress_BE.Repositories
                 {
                     throw new ArgumentException("Bắt buộc phải nhập code cho bài thi");
                 }
+
 
                 var specExam = await _context.SpecializedExams
                         .Include(s => s.CreatedByNavigation)
@@ -176,11 +175,6 @@ namespace RecruitXpress_BE.Repositories
                 }
                 var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specExam);
                 return specializedExamDTO;
-            }
-            catch (Exception e)
-            {
-                throw new ArgumentException("Đã có lỗi xảy ra. Không thể tìm thấy bài thi");
-            }
         }
 
         public async Task AddSpecializedExam(SpecializedExam exam)

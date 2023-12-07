@@ -78,7 +78,7 @@ namespace RecruitXpress_BE.Controllers
                     {
                         Token = token,
                         IssuedAt = DateTime.UtcNow,
-                        ExpiredAt = DateTime.UtcNow.AddDays(Constant.ExpireAccountDays),
+                        ExpiredAt = DateTime.UtcNow.AddDays(Constant.ExpireRegisterAccountDays),
                         IsRevoked = false,
                         IsUsed = false,
                         AccountId = user.AccountId,
