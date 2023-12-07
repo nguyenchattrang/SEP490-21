@@ -10,6 +10,7 @@ public class JobApplicationRepository : IJobApplicationRepository
 {
     private readonly RecruitXpressContext _context;
     private readonly IHubContext<JobApplicationStatusHub> _hubContext;
+    private readonly JobApplicationStatusHub _applicationHubContext;
 
     public JobApplicationRepository(RecruitXpressContext context, IHubContext<JobApplicationStatusHub> hubContext)
     {
@@ -31,6 +32,7 @@ public class JobApplicationRepository : IJobApplicationRepository
             _context.Update(detailJob);
             await _context.SaveChangesAsync();
             await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, status);
+            await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
             return detailJob;
         }
         catch (Exception ex)
