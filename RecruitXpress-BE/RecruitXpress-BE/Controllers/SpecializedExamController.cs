@@ -35,14 +35,27 @@ namespace RecruitXpress_BE.Controllers
             return Ok(exam);
         }
         [HttpGet("GetSpecializedExamByCode/{code}")]
-        public async Task<IActionResult> GetSpecializedExamByCode(string code)
+        public async Task<IActionResult> GetSpecializedExamByCode(string code, int accountId)
         {
-            var exam = await _repository.GetSpecializedExamByCode(code);
+            try
+            {
+
+   
+            var exam = await _repository.GetSpecializedExamByCode(code, accountId);
             if (exam == null)
             {
                 return NotFound("Không tìm thấy exam code");
             }
             return Ok(exam);
+            }
+            catch(ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Đã có xảy ra. Vui lòng thử lại");
+            }
         }
 
         [HttpPost("CreateSpecializedExam")]

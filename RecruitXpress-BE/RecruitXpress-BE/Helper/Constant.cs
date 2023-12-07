@@ -5,17 +5,22 @@ namespace RecruitXpress_BE.Helper
 {
     public static class Constant
     {
-     
+
         public static readonly Regex validateGuidRegex = new Regex("^(?=.*?[A-Z])(?=.*?[0-9]).{8,32}$");
-        public static readonly int MaxFileSize = 25 * 1024 * 1024; //(Bytes = 25mb)
-        public static readonly int ExpireExamDays = 5;
+        public static int MaxFileSize = 25 * 1024 * 1024; //(Bytes = 25mb)
+        public static int ExpireExamDays = 5;
+        public static int ExpireRegisterAccountDays = 1;
+        public static int ExpireForgotPasswordDays = 1;
         public static class GOOGLE_SERVICE
         {
             public const string SCOPE_URL = "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?";
-            public const string CLIENT_ID = "738514220360-t74atgpqn4p0ooho0c9trgnukd1b13n8.apps.googleusercontent.com";
-            public const string CLIENT_SERCRET = "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";
+            public const string CLIENT_ID = "10396174275-i2n51c5e8cs7embr3adli3tsqlkviibf.apps.googleusercontent.com";
+            public const string CLIENT_SERCRET = "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";
             public const string RESPONSE_TYPE = "code";
             public const string ACCESS_TYPE = "offline";
+            public const string CALL_BACK = "https://localhost:7113/auth/callback";
+            public const string TOKEN_ENDPOINT = "https://accounts.google.com/o/oauth2/token";
+            public const string USER_INFO_ENDPOINT = "https://www.googleapis.com/oauth2/v2/userinfo";
             public static class SCOPE
             {
                 // public const string EMAIL = "https://www.googleapis.com/auth/userinfo.email";

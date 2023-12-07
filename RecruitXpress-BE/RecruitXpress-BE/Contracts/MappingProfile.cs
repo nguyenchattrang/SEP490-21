@@ -65,6 +65,10 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
                 .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
+
+            CreateMap<ScheduleDetail, ScheduleDetailDTO>();
+            CreateMap<Schedule, ScheduleDetailDTO>();
+
             CreateMap<ScheduleDetail, ScheduleDetailResponse>();
             // CreateMap<Evaluate, EvaluateDTO>();
 
@@ -91,6 +95,23 @@ namespace RecruitXpress_BE.Contracts
             CreateMap<GeneralTestDetail, GeneralTestDetailDTO>();
             CreateMap<Exam, ExamDTO>();
             CreateMap<Exam, ExamInformation>();
+            CreateMap<Account, AccountInformation>();
+            CreateMap<Calendar, CalendarDTO>()
+            .ForMember(dest => dest.CandidateInformation, opt => opt.MapFrom(src => src.CandidateNavigation))
+                .ForMember(dest => dest.InterviewerInformation, opt => opt.MapFrom(src => src.InterviewerNavigation))
+                .ForMember(dest => dest.CreatedByInformation, opt => opt.MapFrom(src => src.CreatedByNavigation));
+            CreateMap<JobPosting, ShortJobPosting>();
+            
+            CreateMap<Notification, NotificationDTO>();
+            CreateMap<NotificationDTO, Notification>();
+            CreateMap<Calendar, CalendarTemp>().ReverseMap();
+            CreateMap<Models.Profile, ShortProfile>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Account.FullName))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
+
+            CreateMap<JobApplication,ShortJobApp>();
         }
     }
 }

@@ -322,11 +322,11 @@ namespace RecruitXpress_BE.Repositories
         {
             try
             {
-                if (exam.AccountId == 0)
+                if (exam.AccountId == 0 || exam.AccountId == null)
                 {
                     throw new ArgumentException("Không có tài khoản");
                 }
-                if (exam.SpecializedExamId == 0)
+                if (exam.SpecializedExamId == 0 || exam.SpecializedExamId == null)
                 {
                     throw new ArgumentException("Examcode không tồn tại");
                 }
@@ -336,22 +336,46 @@ namespace RecruitXpress_BE.Repositories
                 }
 
                 string fileExtension = Path.GetExtension(fileData.FileName).ToLower();
-                if (fileExtension != ".rar" && fileExtension != ".zip")
+                if (fileExtension != ".rar")
                 {
-                    throw new ArgumentException("Chỉ chấp nhận file rar hoặc zip");
+                    throw new ArgumentException("Chỉ chấp nhận tải lên file rar");
                 }
-
 
                 if (fileData.Length > Constant.MaxFileSize)
                 {
-                    throw new ArgumentException("File đã vượt qua dung lượng cho phép (25MB)");
+                    throw new ArgumentException($"File đã vượt qua dung lượng cho phép ({Constant.MaxFileSize}MB)");
+                }
+
+                var profile = _context.Profiles.Where(p => p.AccountId == exam.AccountId).FirstOrDefault();
+                if (profile == null)
+                {
+                    throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
                 }
 
                 var specExam = _context.SpecializedExams.Where(e => e.ExamId == exam.SpecializedExamId).FirstOrDefault();
+                if (specExam.JobId == null)
+                    throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
+                if (DateTime.Now < specExam.StartDate)
+                {
+                    throw new ArgumentException("Chưa tới thời gian làm bài thi");
+                }
+                if (DateTime.Now > specExam.EndDate)
+                {
+                    throw new ArgumentException("Đã vượt quá hạn nộp bài thi");
+                }
+
+                var jobApplication = _context.JobApplications.Where(j => j.JobId == specExam.JobId && j.ProfileId == profile.ProfileId).FirstOrDefault();
+                if (jobApplication == null)
+                {
+                    throw new ArgumentException("Bạn chưa đăng kí công việc này");
+                }
+
                 if (string.IsNullOrEmpty(specExam.Code))
                 {
                     throw new ArgumentException("Không có exam code");
                 }
+
+
                 // Get the file extension
                 int timestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                 var fileName = $"{timestamp}_{exam.AccountId}{fileExtension}";
@@ -371,16 +395,28 @@ namespace RecruitXpress_BE.Repositories
                     await fileData.CopyToAsync(fileStream);
                 }
 
-                var profile = _context.Profiles.Where(p => p.AccountId == exam.AccountId).FirstOrDefault();
-                if(profile==null)
+                var existExams = _context.Exams.Where(e => e.SpecializedExamId == exam.SpecializedExamId && e.AccountId == exam.AccountId).ToList();
+                if (existExams != null && existExams.Any())
                 {
-                    throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
+                    foreach (var existExam in existExams)
+                    {
+                        var existingFilePath = Path.Combine(path, existExam.FileUrl);
+                        try
+                        {
+                            if (File.Exists(existingFilePath))
+                            {
+                                File.Delete(existingFilePath);
+                            }
+                        }
+                        catch (IOException ex)
+                        {
+                            throw new Exception($"Không thể xóa file");
+                        }
+
+                        _context.Exams.Remove(existExam);
+                    }
                 }
-                var jobApplication = _context.JobApplications.Where(j => j.JobId == exam.SpecializedExamId && j.ProfileId == profile.ProfileId).FirstOrDefault();
-                if (jobApplication == null)
-                {
-                    throw new ArgumentException("Bạn chưa đăng kí công việc này");
-                }
+
                 var newExam = new Exam
                 {
                     AccountId = exam.AccountId,
@@ -392,13 +428,11 @@ namespace RecruitXpress_BE.Repositories
                     JobApplicationId = jobApplication.ApplicationId,
                 };
 
-                var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
-                if (specializedExam.JobId == null)
-                    throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
+
                 // Add the exam to the database
                 _context.Exams.Add(newExam);
 
-                await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId, 4);
+                await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specExam.JobId, (int)exam.AccountId, 4);
                 await _context.SaveChangesAsync();
 
                 return newExam;
@@ -450,16 +484,18 @@ namespace RecruitXpress_BE.Repositories
                 throw new Exception("Không tìm được bài thi");
             }
 
+            var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
+            if (specializedExam.JobId == null)
+                throw new Exception("Chưa có công việc gắn với bài thi này");
+
             exam.Comment = e.Comment;
             exam.Point = e.Point;
             exam.MarkedBy = e.MarkedBy;
             exam.MarkedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
-            var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
-            if (specializedExam.JobId == null)
-                throw new Exception("Chưa có jobId trong bài thi này");
-            await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId,5);
+           
+            await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId, 5);
 
         }
 

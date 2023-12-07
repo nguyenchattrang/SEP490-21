@@ -22,7 +22,7 @@ namespace RecruitXpress_BE.DTO
 
         public virtual ScheduleDTO? Schedule { get; set; }
         public virtual ICollection<ScheduleDetailResponse> ScheduleDetails { get; set; }
-        public virtual EvaluateDTO? Evaluate { get; set; }
+        public virtual ICollection<EvaluateDTO> Evaluates { get; set; }
         public virtual SpecializedExamDTO? SpecializedExam { get; set; }
         public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
         public virtual ICollection<ExamInformation> Exams { get; set; }
@@ -99,5 +99,15 @@ namespace RecruitXpress_BE.DTO
     public string? ApplicationInstructions { get; set; }
     public int? Status { get; set; }
     public bool IsPreferred { get; set; }
+    }
+
+
+    public class ShortJobApp
+    {
+        public int ApplicationId { get; set; }
+        public int? AssignedFor { get; set; }
+        public virtual ShortProfile? Profile { get; set; }
+        public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
+
     }
 }

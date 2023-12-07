@@ -72,7 +72,7 @@ namespace RecruitXpress_BE.Controllers
             var jobPosting = await _jobPostingRepository.GetJobPosting(id, accountId);
             if (jobPosting == null)
             {
-                return NotFound("Job posting not found!");
+                return NotFound("Không tìm thấy thông tin đăng tuyển!");
             }
 
             return jobPosting;
@@ -90,7 +90,7 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return BadRequest("Add Job Posting failed!");
+                return BadRequest(e.Message);
             }
         }
 
@@ -106,7 +106,7 @@ namespace RecruitXpress_BE.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return BadRequest("Update Job Posting failed!");
+                return BadRequest(e.Message);
             }
         }
 
@@ -121,15 +121,13 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return Ok();
                 }
-                else
-                {
-                    return NotFound("Job Posting not found!");
-                }
+
+                return NotFound("Không tìm thấy thông tin đăng tuyển!");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return StatusCode(500, "Delete Job Posting failed!");
+                return StatusCode(500, e.Message);
             }
         }
     }

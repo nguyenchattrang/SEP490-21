@@ -24,5 +24,7 @@ namespace RecruitXpress_BE.Models
         public virtual CandidateCv? Template { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }
         public virtual ICollection<ScheduleDetail> ScheduleDetails { get; set; }
+        public virtual ICollection<Calendar> Calendars { get; set; }
+        public virtual ICollection<Evaluate> Evaluates { get; set; }
     }
 }

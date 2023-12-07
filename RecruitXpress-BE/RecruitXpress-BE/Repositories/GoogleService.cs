@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using System.Text;
@@ -11,21 +12,16 @@ namespace RecruitXpress_BE.Repositories;
 
 public class GoogleService : IGoogleService
 {
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient = new();
 
-    public GoogleService()
-    {
-        _httpClient = new HttpClient();
-    }
-
-    public string GetAuthUrl(string redirectUri)
+    public string GetAuthUrl()
     {
         try
         {
             return
                 $"{Constant.GOOGLE_SERVICE.SCOPE_URL}" +
-                "prompt=consent&include_granted_scopes=true" +
-                $"&redirect_uri={GoogleHelper.urlEncodeForGoogle(redirectUri)}" +
+                // "prompt=consent" +
+                $"redirect_uri={GoogleHelper.urlEncodeForGoogle(Constant.GOOGLE_SERVICE.CALL_BACK)}" +
                 $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
                 $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
                 $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}" +
@@ -37,13 +33,11 @@ public class GoogleService : IGoogleService
         }
     }
 
-    public async Task<GoogleTokenResponse> GetTokens(string code)
+    public async Task<GoogleTokenResponse?> GetTokens(string? code)
     {
-        var redirectURL = "https://localhost:7113/auth/google-callback";
-        var tokenEndpoint = "https://accounts.google.com/o/oauth2/token";
         var content = new StringContent(
             $"code={code}" +
-            $"&redirect_uri={Uri.EscapeDataString(redirectURL)}" +
+            $"&redirect_uri={Uri.EscapeDataString(Constant.GOOGLE_SERVICE.CALL_BACK)}" +
             $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
             $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
             $"&client_secret={Constant.GOOGLE_SERVICE.CLIENT_SERCRET}" +
@@ -52,17 +46,33 @@ public class GoogleService : IGoogleService
             $"&grant_type=authorization_code",
             Encoding.UTF8, "application/x-www-form-urlencoded");
 
-        var response = await _httpClient.PostAsync(tokenEndpoint, content);
+        var response = await _httpClient.PostAsync(Constant.GOOGLE_SERVICE.TOKEN_ENDPOINT, content);
         var responseContent = await response.Content.ReadAsStringAsync();
         if (response.IsSuccessStatusCode)
         {
-            var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<GoogleTokenResponse>(responseContent);
-            return tokenResponse;
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<GoogleTokenResponse>(responseContent);
         }
         else
         {
             // Handle the error case when authentication fails
-            throw new Exception($"Failed to authenticate: {responseContent}");
+            throw new Exception($"Lỗi trong quá triình đăng nhập: {responseContent}");
+        }
+    }
+    
+    public async Task<GoogleUserInfo?> GetUserInfo(string accessToken)
+    {
+        var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, Constant.GOOGLE_SERVICE.USER_INFO_ENDPOINT);
+        userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var userInfoResponse = await _httpClient.SendAsync(userInfoRequest);
+        if (userInfoResponse.IsSuccessStatusCode)
+        {
+            var userInfoContent = await userInfoResponse.Content.ReadAsStringAsync();
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<GoogleUserInfo>(userInfoContent);
+        }
+        else
+        {
+            throw new Exception($"Lỗi trong quá trình lấy thông tin người dùng: {userInfoResponse.ReasonPhrase}");
         }
     }
 }

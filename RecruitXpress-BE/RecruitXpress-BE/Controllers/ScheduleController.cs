@@ -9,12 +9,10 @@ namespace RecruitXpress_BE.Controllers;
 [ApiController]
 public class ScheduleController : ControllerBase
 {
-    private readonly IGoogleService _googleService;
     private readonly IScheduleRepository _scheduleRepository;
 
     public ScheduleController(IGoogleService googleService, IScheduleRepository scheduleRepository)
     {
-        _googleService = googleService;
         _scheduleRepository = scheduleRepository;
     }
     
@@ -37,17 +35,43 @@ public class ScheduleController : ControllerBase
 
         //GET: api/Schedule/{accountId}
         [HttpGet("accountId")]
-        public async Task<ActionResult<ScheduleResponse>> GetSchedule(int accountId, DateTime? startDate, DateTime? endDate)
+        public async Task<IActionResult> GetSchedule(int accountId, DateTime? startDate, DateTime? endDate)
         {
             try
             {
-                var schedule = await _scheduleRepository.GetListSchedules(accountId, startDate, endDate);
-                if (schedule == null)
+                var scheduleData = await _scheduleRepository.GetListSchedules(accountId, startDate, endDate);
+                // return Ok(scheduleData);
+
+                var result = new List<object>();
+                
+                foreach (var keyValuePairYear in scheduleData)
                 {
-                    return NotFound("Schedule not found!");
+                    var listDataMonth = new List<object>();
+                    foreach (var keyValuePairMonth in keyValuePairYear.Value)
+                    {
+                        var listDataDay = new List<object>();
+                        foreach (var keyValuePairDay in keyValuePairMonth.Value)
+                        {
+                            listDataDay.Add(new
+                            {
+                                Day = keyValuePairDay.Key,
+                                ListData = keyValuePairDay.Value.ToList()
+                            });
+                        }
+                        listDataMonth.Add(new
+                        {
+                            Month = keyValuePairMonth.Key,
+                            ListData = listDataDay
+                        });
+                    }
+                    result.Add(new
+                    {
+                        Year = keyValuePairYear.Key,
+                        ListData = listDataMonth
+                    });
                 }
-        
-                return schedule;
+                
+                return Ok(result);
             }
             catch (Exception e)
             {
