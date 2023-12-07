@@ -128,27 +128,71 @@ namespace RecruitXpress_BE.Repositories
             var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specializedExam);
             return specializedExamDTO;
         }
-        public async Task<SpecializedExamDTO> GetSpecializedExamByCode(string code)
+        public async Task<SpecializedExamDTO> GetSpecializedExamByCode(string code, int accountId)
         {
-            var specializedExam = await _context.SpecializedExams
-                .Include(s => s.CreatedByNavigation)
-                .FirstOrDefaultAsync(s => s.Code.Contains(code));
-            if (specializedExam == null || !specializedExam.Code.Equals(code))
+            try
             {
-                return null;
+
+                if (accountId == 0 || accountId == null)
+                {
+                    throw new ArgumentException("Không có tài khoản");
+                }
+
+                var profile = _context.Profiles.Where(p => p.AccountId == accountId).FirstOrDefault();
+                if (profile == null)
+                {
+                    throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
+                }
+
+                if (string.IsNullOrEmpty(code))
+                {
+                    throw new ArgumentException("Bắt buộc phải nhập code cho bài thi");
+                }
+
+                var specExam = await _context.SpecializedExams
+                        .Include(s => s.CreatedByNavigation)
+                        .FirstOrDefaultAsync(s => s.Code.Contains(code));
+
+                if (specExam == null || !specExam.Code.Equals(code))
+                {
+                    throw new ArgumentException("Code không hợp lệ. Không tìm thấy bài thi");
+                }
+                if (specExam.JobId == null)
+                    throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
+
+                var jobApplication = _context.JobApplications.Where(j => j.JobId == specExam.JobId && j.ProfileId == profile.ProfileId).FirstOrDefault();
+                if (jobApplication == null)
+                {
+                    throw new ArgumentException("Bạn chưa đăng kí công việc này");
+                }
+
+                if (DateTime.Now < specExam.StartDate)
+                {
+                    throw new ArgumentException("Chưa tới thời gian làm bài thi");
+                }
+                if (DateTime.Now > specExam.EndDate)
+                {
+                    throw new ArgumentException("Đã vượt quá hạn nộp bài thi");
+                }
+                var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specExam);
+                return specializedExamDTO;
             }
-
-
-            var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specializedExam);
-            return specializedExamDTO;
+            catch (Exception e)
+            {
+                throw new ArgumentException("Đã có lỗi xảy ra. Không thể tìm thấy bài thi");
+            }
         }
 
         public async Task AddSpecializedExam(SpecializedExam exam)
         {
-            if(exam.JobId==null || exam.JobId==0)
+            if (exam.JobId == null || exam.JobId == 0)
             {
+                throw new ArgumentException("Công việc là bắt buộc nhập");
+            }
+            var job = await _context.JobPostings.Where(j => j.JobId == exam.JobId).FirstOrDefaultAsync();
+            if (job == null)
                 throw new ArgumentException("Không tìm thấy công việc tương ứng");
-            }    
+
             exam.CreatedAt = DateTime.Now;
 
             var generatedCode = GenerateUniqueCode();

@@ -5,10 +5,12 @@ namespace RecruitXpress_BE.Helper
 {
     public static class Constant
     {
-     
+
         public static readonly Regex validateGuidRegex = new Regex("^(?=.*?[A-Z])(?=.*?[0-9]).{8,32}$");
-        public static readonly int MaxFileSize = 25 * 1024 * 1024; //(Bytes = 25mb)
-        public static readonly int ExpireExamDays = 5;
+        public static int MaxFileSize = 25 * 1024 * 1024; //(Bytes = 25mb)
+        public static int ExpireExamDays = 5;
+        public static int ExpireRegisterAccountDays = 1;
+        public static int ExpireForgotPasswordDays = 1;
         public static class GOOGLE_SERVICE
         {
             public const string SCOPE_URL = "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?";
