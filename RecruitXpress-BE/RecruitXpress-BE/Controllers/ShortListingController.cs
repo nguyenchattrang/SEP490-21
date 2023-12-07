@@ -436,6 +436,7 @@ namespace RecruitXpress_BE.Controllers
             {
                 var olddata = await _context.JobApplications
                 .FirstOrDefaultAsync(w => w.ApplicationId == jobapplyId);
+                if (olddata == null) return BadRequest("Không tìm thấy dữ liệu ");
                 if (olddata.Shorted == null)
                 {
                     olddata.Shorted = 1;

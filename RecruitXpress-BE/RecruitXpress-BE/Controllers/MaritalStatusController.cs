@@ -40,7 +40,7 @@ namespace RecruitXpress_BE.Controllers
             }
            
         }
-        [HttpGet("get")]
+        [HttpPost("addNew")]
         public async Task<IActionResult> CreateNewMaritalStauts(MaritalStatus data)
         {
             try
