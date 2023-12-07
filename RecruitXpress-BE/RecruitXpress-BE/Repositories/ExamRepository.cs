@@ -336,9 +336,9 @@ namespace RecruitXpress_BE.Repositories
                 }
 
                 string fileExtension = Path.GetExtension(fileData.FileName).ToLower();
-                if (fileExtension != ".rar" && fileExtension != ".zip")
+                if (fileExtension != ".rar")
                 {
-                    throw new ArgumentException("Chỉ chấp nhận file rar hoặc zip");
+                    throw new ArgumentException("Chỉ chấp nhận tải lên file rar");
                 }
 
                 if (fileData.Length > Constant.MaxFileSize)
@@ -484,15 +484,17 @@ namespace RecruitXpress_BE.Repositories
                 throw new Exception("Không tìm được bài thi");
             }
 
+            var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
+            if (specializedExam.JobId == null)
+                throw new Exception("Chưa có công việc gắn với bài thi này");
+
             exam.Comment = e.Comment;
             exam.Point = e.Point;
             exam.MarkedBy = e.MarkedBy;
             exam.MarkedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
-            var specializedExam = _context.SpecializedExams.Where(s => s.ExamId == exam.SpecializedExamId).FirstOrDefault();
-            if (specializedExam.JobId == null)
-                throw new Exception("Chưa có jobId trong bài thi này");
+           
             await _jobApplicationRepository.FindJobApplicationAndUpdateStatus((int)specializedExam.JobId, (int)exam.AccountId, 5);
 
         }

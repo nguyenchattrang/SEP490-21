@@ -599,7 +599,7 @@ namespace RecruitXpress_BE.Controllers
 
                 var query = await _context.JobApplications
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
-                .Where(j=> j.JobId==jobId)
+                .Where(j=> j.JobId==jobId && j.Status==2)
                 .ToListAsync();
                 if (query == null)
                     return NotFound("Không kết quả");
