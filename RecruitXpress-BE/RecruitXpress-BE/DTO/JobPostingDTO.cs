@@ -22,7 +22,7 @@ public class JobPostingDTO
     public int? IndustryId { get; set; }
     public string? Requirements { get; set; }
     public string? Benefit { get; set; }
-    public string? NumOfCandidate { get; set; }
+    public int? NumOfCandidate { get; set; }
     public long? MinSalary { get; set; }
     public long? MaxSalary { get; set; }
     public DateTime? ApplicationDeadline { get; set; }
