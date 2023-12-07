@@ -419,7 +419,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet]
-        [Route("/auth/callback")]
+        [Route("auth/callback")]
         public async Task<IActionResult> Callback()
         {
             try

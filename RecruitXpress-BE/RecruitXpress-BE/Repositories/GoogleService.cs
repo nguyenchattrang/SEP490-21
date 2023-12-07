@@ -12,12 +12,7 @@ namespace RecruitXpress_BE.Repositories;
 
 public class GoogleService : IGoogleService
 {
-    private readonly HttpClient _httpClient;
-
-    public GoogleService()
-    {
-        _httpClient = new HttpClient();
-    }
+    private readonly HttpClient _httpClient = new();
 
     public string GetAuthUrl()
     {

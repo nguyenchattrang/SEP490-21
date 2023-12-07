@@ -22,6 +22,8 @@ namespace RecruitXpress_BE.Models
         public int? Industry { get; set; }
         public string? DetailLocation { get; set; }
         public string? Requirements { get; set; }
+        public string? Benefit { get; set; }
+        public string? NumOfCandidate { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
         public DateTime? DatePosted { get; set; }
         public string? ContactPerson { get; set; }
