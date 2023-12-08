@@ -109,8 +109,8 @@ namespace RecruitXpress_BE.Controllers
                 return NotFound("Không tìm thấy file");
             }
 
-            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
-            var filePath = path + result.Url;
+                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+                var filePath = path + result.Url;
 
             if (!System.IO.File.Exists(filePath))
             {
@@ -167,6 +167,27 @@ namespace RecruitXpress_BE.Controllers
             string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
 
             var filePath = path + result.Url;
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("File not found!" + filePath);
+            }
+            var fileContent = System.IO.File.ReadAllBytes(filePath);
+            string fileName = Path.GetFileName(filePath);
+            var contentType = "application/octet-stream";
+            return File(fileContent, contentType, fileName);
+        }
+        [HttpGet("downloadCVJobapply")]
+        public async Task<IActionResult> DownloadCVJobApply(int jobapplyId)
+        {
+            var result = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobapplyId);
+            if (result == null)
+            {
+                return NotFound("Ứng viên chưa ứng tuyển ở công việc này");
+            }
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\JobApplicationsCV"));
+
+            var filePath = path + result.UrlCandidateCV;
 
             if (!System.IO.File.Exists(filePath))
             {
