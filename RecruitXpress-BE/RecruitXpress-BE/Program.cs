@@ -38,6 +38,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
 builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<JobApplicationStatusHub>();
 
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
@@ -122,7 +123,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<JobApplicationStatusHub>("/api/JobApplicationStatusHub"); // Đặt đường dẫn Hub của bạn
+    endpoints.MapHub<HubContext>("/api/JobApplicationStatusHub"); // Đặt đường dẫn Hub của bạn
     endpoints.MapControllers();
 });
 

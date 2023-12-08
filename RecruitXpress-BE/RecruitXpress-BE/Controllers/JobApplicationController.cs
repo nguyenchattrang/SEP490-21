@@ -23,14 +23,16 @@ namespace RecruitXpress_BE.Controllers
         private readonly RecruitXpressContext _context;
         private readonly IEmailTemplateRepository _emailTemplateRepository;
         private readonly IMapper _mapper;
-        private readonly IHubContext<JobApplicationStatusHub> _hubContext;
+        // private readonly IHubContext<JobApplicationStatusHub> _hubContext;
+        private readonly JobApplicationStatusHub _applicationHubContext;
 
-        public JobApplicationController(RecruitXpressContext context, IMapper mapper, IEmailTemplateRepository emailTemplateRepository, IHubContext<JobApplicationStatusHub> hubContext)
+        public JobApplicationController(RecruitXpressContext context, IMapper mapper, IEmailTemplateRepository emailTemplateRepository, JobApplicationStatusHub applicationHubContext)
         {
             _context = context;
             _mapper = mapper;
             _emailTemplateRepository = emailTemplateRepository;
-            _hubContext = hubContext;
+            // _hubContext = hubContext;
+            _applicationHubContext = applicationHubContext;
         }
         [HttpPost("PostJobApplication")]
         public async Task<IActionResult> submitJobApplication(int jobId, int accountId)
@@ -514,7 +516,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpPut("UpdateStatus")]
-        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? Status)
+        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? status)
         {
             try
             {
@@ -523,16 +525,16 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return NotFound("Không có kết quả");
                 }
-                if (Status != null)
+                if (status != null)
                 {
-                    detailJob.Status = Status;
+                    detailJob.Status = status;
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
                       await  _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
-                    switch (Status)
+                    switch (status)
                     {
 
                         case 1:
@@ -551,7 +553,8 @@ namespace RecruitXpress_BE.Controllers
 
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
-                    await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
+                    // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
+                    await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
                     return Ok("Cập nhật trạng thái thành công");
                 }
 

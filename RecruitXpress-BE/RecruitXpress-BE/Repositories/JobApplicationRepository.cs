@@ -9,13 +9,14 @@ namespace RecruitXpress_BE.Repositories;
 public class JobApplicationRepository : IJobApplicationRepository
 {
     private readonly RecruitXpressContext _context;
-    private readonly IHubContext<JobApplicationStatusHub> _hubContext;
+    // private readonly IHubContext<JobApplicationStatusHub> _hubContext;
     private readonly JobApplicationStatusHub _applicationHubContext;
 
-    public JobApplicationRepository(RecruitXpressContext context, IHubContext<JobApplicationStatusHub> hubContext)
+    public JobApplicationRepository(RecruitXpressContext context, IHubContext<JobApplicationStatusHub> hubContext, JobApplicationStatusHub applicationHubContext)
     {
         _context = context;
-        _hubContext = hubContext;
+        // _hubContext = hubContext;
+        _applicationHubContext = applicationHubContext;
     }
 
     public async Task<JobApplication?> UpdateJobApplicationStatus(int jobApplyId, int? accountId, int? status)
@@ -31,7 +32,7 @@ public class JobApplicationRepository : IJobApplicationRepository
             }
             _context.Update(detailJob);
             await _context.SaveChangesAsync();
-            await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, status);
+            // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, status);
             await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
             return detailJob;
         }
@@ -46,8 +47,11 @@ public class JobApplicationRepository : IJobApplicationRepository
         try
         {
             var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
+            if (detailJob == null) throw new Exception("Không tìm thấy thông tin ứng tuyển!");
+            if ( detailJob.Status == null) throw new Exception("Không tìm thấy trạng thái ứng tuyển!");
             var newStatus = detailJob.Status + 1;
-            await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, newStatus);
+            // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, newStatus);
+            await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)newStatus);
             return detailJob;
         }
         catch (Exception ex)
