@@ -64,6 +64,8 @@ namespace RecruitXpress_BE.DTO
         public string? Description { get; set; }
         public int? CreatedBy { get; set; }
         public int? ProfileId { get; set; }
+        public int? Score { get; set; }
+        public int? TimeCount { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 

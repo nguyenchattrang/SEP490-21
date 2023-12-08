@@ -173,8 +173,15 @@ namespace RecruitXpress_BE.Repositories
                 {
                     throw new ArgumentException("Đã vượt quá hạn nộp bài thi");
                 }
+
+            var existExams = _context.Exams.Where(e => e.SpecializedExamId == specExam.ExamId && e.AccountId == accountId).ToList();
+            if (existExams != null && existExams.Any())
+            {
+                throw new ArgumentException("Bạn chỉ có thể làm bài thi một lần");
+            }
                 var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specExam);
                 return specializedExamDTO;
+
         }
 
         public async Task AddSpecializedExam(SpecializedExam exam)

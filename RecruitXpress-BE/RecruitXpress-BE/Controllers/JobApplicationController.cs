@@ -23,14 +23,16 @@ namespace RecruitXpress_BE.Controllers
         private readonly RecruitXpressContext _context;
         private readonly IEmailTemplateRepository _emailTemplateRepository;
         private readonly IMapper _mapper;
-        private readonly IHubContext<JobApplicationStatusHub> _hubContext;
+        // private readonly IHubContext<JobApplicationStatusHub> _hubContext;
+        private readonly JobApplicationStatusHub _applicationHubContext;
 
-        public JobApplicationController(RecruitXpressContext context, IMapper mapper, IEmailTemplateRepository emailTemplateRepository, IHubContext<JobApplicationStatusHub> hubContext)
+        public JobApplicationController(RecruitXpressContext context, IMapper mapper, IEmailTemplateRepository emailTemplateRepository, JobApplicationStatusHub applicationHubContext)
         {
             _context = context;
             _mapper = mapper;
             _emailTemplateRepository = emailTemplateRepository;
-            _hubContext = hubContext;
+            // _hubContext = hubContext;
+            _applicationHubContext = applicationHubContext;
         }
         [HttpPost("PostJobApplication")]
         public async Task<IActionResult> submitJobApplication(int jobId, int accountId)
@@ -40,7 +42,7 @@ namespace RecruitXpress_BE.Controllers
                 if (accountId == null) return BadRequest("Account is not null");
                 var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
-                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId);
+                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId==jobId);
                 if(check != null)
                 {
                     return BadRequest("Job này đã được bạn ứng tuyển");
@@ -53,7 +55,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (CV == null)
                 {
-                    return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ ");
+                    return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ");
                 }
 
                 var jobApp = new JobApplication
@@ -90,7 +92,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
-                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).AsQueryable();
 
@@ -230,8 +232,7 @@ namespace RecruitXpress_BE.Controllers
                      s.Profile.Account.FullName.Contains(request.SearchString) ||
                      // s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.IndustryNavigation.IndustryName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.DistrictName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.City.CityName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.CityName.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
 
@@ -302,7 +303,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
-                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).AsQueryable();
 
@@ -437,8 +438,7 @@ namespace RecruitXpress_BE.Controllers
                      s.Profile.Account.FullName.Contains(request.SearchString) ||
                      // s.Job.SalaryRange.Contains(request.SearchString) ||
                      s.Job.IndustryNavigation.IndustryName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.DistrictName.Contains(request.SearchString) ||
-                     s.Job.LocationNavigation.City.CityName.Contains(request.SearchString) ||
+                     s.Job.LocationNavigation.CityName.Contains(request.SearchString) ||
                      s.Job.Title.Contains(request.SearchString) ||
                      s.Job.Company.Contains(request.SearchString));
 
@@ -500,7 +500,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(ja => ja.ScheduleDetails)
                 .Include(q => q.Profile).ThenInclude(x => x.GeneralTests).ThenInclude(x => x.GeneralTestDetails)
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
-                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation).ThenInclude(d => d.City)
+                .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
                 .Include(q => q.Template).FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (query == null)
@@ -516,7 +516,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpPut("UpdateStatus")]
-        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? Status)
+        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? status)
         {
             try
             {
@@ -525,16 +525,16 @@ namespace RecruitXpress_BE.Controllers
                 {
                     return NotFound("Không có kết quả");
                 }
-                if (Status != null)
+                if (status != null)
                 {
-                    detailJob.Status = Status;
+                    detailJob.Status = status;
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
                       await  _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
-                    switch (Status)
+                    switch (status)
                     {
 
                         case 1:
@@ -553,7 +553,8 @@ namespace RecruitXpress_BE.Controllers
 
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
-                    await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
+                    // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
+                    await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
                     return Ok("Cập nhật trạng thái thành công");
                 }
 

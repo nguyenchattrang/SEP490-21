@@ -33,7 +33,7 @@ namespace RecruitXpress_BE.Models
         public long? MaxSalary { get; set; }
         public virtual EmploymentType? EmploymentTypeNavigation { get; set; }
         public virtual Industry? IndustryNavigation { get; set; }
-        public virtual District? LocationNavigation { get; set; }
+        public virtual City? LocationNavigation { get; set; }
         public virtual ICollection<JobApplication> JobApplications { get; set; }
         public virtual ICollection<ShortListing> ShortListings { get; set; }
         public virtual ICollection<SpecializedExam> SpecializedExams { get; set; }
