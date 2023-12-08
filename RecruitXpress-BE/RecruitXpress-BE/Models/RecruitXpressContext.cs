@@ -704,7 +704,11 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.HumanResource)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.HumanResourceId)
-                    .HasConstraintName("FK_Schedule_Profile");
+                    .HasConstraintName("FK_Schedule_Account");
+                entity.HasOne(d => d.SpecializedExam)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.ExamId)
+                    .HasConstraintName("FK_Schedule_SpecializedExam");
             });
 
             modelBuilder.Entity<ScheduleDetail>(entity =>

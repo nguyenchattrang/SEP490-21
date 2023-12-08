@@ -25,5 +25,6 @@ namespace RecruitXpress_BE.Models
         public virtual Account? CreatedByNavigation { get; set; }
         public virtual JobPosting? Job { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }
