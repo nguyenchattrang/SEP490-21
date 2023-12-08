@@ -111,4 +111,11 @@ namespace RecruitXpress_BE.DTO
         public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
 
     }
+
+    public class JobSearchReponse
+    {
+        public List<ShortJobApp> ListCandidates { get; set; }
+        public List<SpecializedExamDTO> ListSpecializedExams { get; set; }
+
+    }
 }

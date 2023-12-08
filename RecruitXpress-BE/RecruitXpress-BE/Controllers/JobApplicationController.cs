@@ -615,6 +615,13 @@ namespace RecruitXpress_BE.Controllers
                 if (query == null)
                     return NotFound("Không kết quả");
                 var jobApplicationDTOs = _mapper.Map<List<ShortJobApp>>(query);
+
+                var listExams = await _context.SpecializedExams
+                .Where(j => j.JobId == jobId && j.Status==1)
+                .OrderByDescending(j=> j.ExamId)
+                .ToListAsync();
+                var listMap = _mapper.Map<List<SpecializedExamDTO>>(listExams);
+
                 foreach (var jobApplicationDTO in jobApplicationDTOs)
                 {
                     var acc = jobApplicationDTO.AssignedFor;
@@ -634,7 +641,13 @@ namespace RecruitXpress_BE.Controllers
                     }
 
                 }
-                return Ok(jobApplicationDTOs);
+
+
+                return Ok(new JobSearchReponse
+                {
+                    ListCandidates = jobApplicationDTOs,
+                    ListSpecializedExams = listMap,
+                }) ;
 
             }
             catch (Exception ex)
