@@ -13,6 +13,7 @@ namespace RecruitXpress_BE.Models
 
         public int ScheduleId { get; set; }
         public int? HumanResourceId { get; set; }
+        public int? ExamId { get; set; }
         public int? Status { get; set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? UpdatedTime { get; set; }
@@ -20,6 +21,7 @@ namespace RecruitXpress_BE.Models
         public string? UpdatedBy { get; set; }
 
         public Account? HumanResource { get; set; }
+        public SpecializedExam? SpecializedExam { get; set; }
         public ICollection<Interview> Interviewers { get; set; }
         public ICollection<ScheduleDetail> ScheduleDetails { get; set; }
     }

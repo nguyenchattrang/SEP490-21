@@ -13,11 +13,13 @@ public class ScheduleDTO
     public int ScheduleId { get; set; }
     public int? HumanResourceId { get; set; }
     public string? HumanResourceName { get; set; }
+    public int? SpecializedExamId { get; set; }
     public int? Status { get; set; }
     public DateTime? CreatedTime { get; set; }
     public DateTime? UpdatedTime { get; set; }
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
+    public SpecializedExamDTO SpecializedExam { get; set; }
 
     public virtual ICollection<InterviewDTO> Interviewers { get; set; }
     public virtual ICollection<ScheduleDetailDTO> ScheduleDetails { get; set; }
@@ -27,8 +29,10 @@ public class ScheduleAdditionDataDTO
 {
     public int? HumanResourceId { get; set; }
     public string? HumanResourceName { get; set; }
-    public List<CandidateSchedule?> Candidates { get; set; }
-    public List<InterviewerSchedule> Interviewers { get; set; }
+    public int? SpecializedExamId { get; set; }
+    public SpecializedExamDTO? SpecializedExam { get; set; }
+    public List<CandidateSchedule?> Candidates { get; set; } = new();
+    public List<InterviewerSchedule> Interviewers { get; set; } = new();
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
     public int? type { get; set; }
