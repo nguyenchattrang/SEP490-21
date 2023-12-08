@@ -42,7 +42,7 @@ namespace RecruitXpress_BE.Controllers
                 if (accountId == null) return BadRequest("Account is not null");
                 var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
 
-                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId);
+                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId==jobId);
                 if(check != null)
                 {
                     return BadRequest("Job này đã được bạn ứng tuyển");
@@ -55,7 +55,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (CV == null)
                 {
-                    return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ ");
+                    return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ");
                 }
 
                 var jobApp = new JobApplication
