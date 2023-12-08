@@ -589,7 +589,22 @@ namespace RecruitXpress_BE.Controllers
                             await _emailTemplateRepository.SendEmailCanceled(jobApplyId);
                             break;
                     }
-
+                    if(status == 8)
+                    {
+                        var jobpost = await _context.JobPostings.FirstOrDefaultAsync(x=>x.JobId== detailJob.JobId);
+                        if(jobpost != null)
+                        {
+                            if(jobpost.NumOfCandidate >0)  jobpost.NumOfCandidate = jobpost.NumOfCandidate - 1;
+                            if(jobpost.NumOfCandidate == 0)
+                            {
+                                var listApply = await _context.JobApplications.Where(x=> x.JobId == detailJob.JobId).ToListAsync();
+                                foreach(var candidateApply in listApply)
+                                {
+                                    candidateApply.Status = 0;
+                                }
+                            } 
+                        }
+                    }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
