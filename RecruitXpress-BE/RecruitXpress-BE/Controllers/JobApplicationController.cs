@@ -631,10 +631,12 @@ namespace RecruitXpress_BE.Controllers
                         var profile = _context.Accounts.FirstOrDefault(x => x.AccountId == acc);
                         if (profile != null)
                         {
-                            var profileDTO = new AssignedProfileDTO
+                            var profileDTO = new InterviewerProfile
                             {
-                                accountId = (int)acc,
+                                AccountId = (int)acc,
                                 Name = profile.FullName,
+                                Email = profile.Account1
+
                             };
                             jobApplicationDTO.AssignedForInfor = profileDTO;
                         }
