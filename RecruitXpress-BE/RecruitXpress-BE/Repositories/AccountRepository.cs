@@ -46,6 +46,9 @@ public class AccountRepository : IAccountRepository
             {
                 Account1 = account.Account1,
                 Password = HashHelper.Encrypt(account.Password, _configuration),
+                FullName = account.FullName,
+                Gender= account.Gender,
+                Dob = account.Dob,
                 RoleId = account.RoleId,
                 CreatedAt = DateTime.Now,
                 Status = account.Status,
