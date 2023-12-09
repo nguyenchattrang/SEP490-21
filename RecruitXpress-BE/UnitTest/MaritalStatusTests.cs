@@ -20,7 +20,6 @@ namespace UnitTest
     [TestClass]
     public class MaritalStatusControllerTests
     {
-        private Mock<RecruitXpressContext> _mockContext;
         private IMapper _mapper;
         private MaritalStatusController _controller;
 

@@ -41,11 +41,17 @@ namespace RecruitXpress_BE.Controllers
             {
                 if (accountId == null) return BadRequest("Account is not null");
                 var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
+                var jobpost = await _context.JobPostings.FirstOrDefaultAsync(x => x.JobId == jobId);
+
+                if(jobpost != null)
+                {
+                    if (jobpost.NumOfCandidate == 0) return BadRequest("Nộp hồ sơ thất bại, công việc này đã tuyển đủ số lượng ứng viên");
+                }
 
                 var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId==jobId);
                 if(check != null)
                 {
-                    return BadRequest("Job này đã được bạn ứng tuyển");
+                    return BadRequest("Công việc này đã được bạn ứng tuyển");
                 }
 
                 var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
@@ -63,8 +69,47 @@ namespace RecruitXpress_BE.Controllers
                     JobId = jobId,
                     ProfileId = profile.ProfileId,
                     TemplateId = CV.TemplateId,
+                    UrlCandidateCV = CV.Url,
                     Status = 1
                 };
+                try
+                {
+                    string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+                    var filePath = CV.Url;
+                    string sourceFolderPath = path;
+                    string destinationFolderPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\JobApplicationsCV"));
+                    string fileName = CV.Url; // replace with the actual file name
+
+                    // Combine source folder path and file name
+                    string sourceFilePath = sourceFolderPath + fileName;
+
+                    // Combine destination folder path and file name
+                    string destinationFilePath = destinationFolderPath + fileName;
+
+                    // Check if the source file exists
+                    if (System.IO.File.Exists(sourceFilePath))
+                    {
+                        try
+                        {
+                            // Copy the file to the destination folder
+                            System.IO.File.Copy(sourceFilePath, destinationFilePath, true);
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            return BadRequest($"Lỗi khi copying file: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("Lỗi khi copying file");
+                    }
+                }
+                catch(Exception ex)
+                {
+
+                }
+
                 _context.Add(jobApp);
                 await _context.SaveChangesAsync();
                 return Ok("Nộp hồ sơ thành công");
@@ -550,7 +595,22 @@ namespace RecruitXpress_BE.Controllers
                             await _emailTemplateRepository.SendEmailCanceled(jobApplyId);
                             break;
                     }
-
+                    if(status == 8)
+                    {
+                        var jobpost = await _context.JobPostings.FirstOrDefaultAsync(x=>x.JobId== detailJob.JobId);
+                        if(jobpost != null)
+                        {
+                            if(jobpost.NumOfCandidate >0)  jobpost.NumOfCandidate = jobpost.NumOfCandidate - 1;
+                            if(jobpost.NumOfCandidate == 0)
+                            {
+                                var listApply = await _context.JobApplications.Where(x=> x.JobId == detailJob.JobId && x.Status !=8).ToListAsync();
+                                foreach(var candidateApply in listApply)
+                                {
+                                    candidateApply.Status = 0;
+                                }
+                            } 
+                        }
+                    }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
