@@ -180,6 +180,16 @@ public class JobPostingRepository : IJobPostingRepository
             }
 
             jobPosting.DatePosted = DateTime.Now;
+
+            if (string.IsNullOrEmpty(jobPosting.Title))
+            {
+                throw new Exception("Tiêu đề không đươc để trống!");
+            }
+            
+            if (_context.JobPostings.Any(j => j.Title == jobPosting.Title.Trim()))
+            {
+                throw new Exception("Tiêu đề công việc đã tồn tại, vui lòng đặt một tiêu đề khác!");
+            }
             _context.Entry(jobPosting).State = EntityState.Added;
             await _context.SaveChangesAsync();
             return jobPosting;

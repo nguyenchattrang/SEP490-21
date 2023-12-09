@@ -26,8 +26,9 @@ public class ScheduleRepository : IScheduleRepository
         return null;
     }
 
-    public async Task<Dictionary<int, Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>>> GetListSchedules(int accountId, DateTime? startDate,
-        DateTime? endDate)
+    public async Task<Dictionary<int, Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>>>
+        GetListSchedules(int accountId, DateTime? startDate,
+            DateTime? endDate)
     {
         try
         {
@@ -86,7 +87,9 @@ public class ScheduleRepository : IScheduleRepository
                     ExpertEmail = s.SpecializedExam != null ? s.SpecializedExam.ExpertEmail : null,
                     JobId = s.SpecializedExam != null ? s.SpecializedExam.JobId : null,
                     Status = s.SpecializedExam != null ? s.SpecializedExam.Status : null,
-                    JobTitle = s.SpecializedExam != null ? s.SpecializedExam.Job != null ? s.SpecializedExam.Job.Title : null : null
+                    JobTitle = s.SpecializedExam != null
+                        ? s.SpecializedExam.Job != null ? s.SpecializedExam.Job.Title : null
+                        : null
                 },
                 Status = s.Status,
                 CreatedTime = s.CreatedTime,
@@ -105,13 +108,20 @@ public class ScheduleRepository : IScheduleRepository
                     {
                         ScheduleDetailId = sd.ScheduleDetailId,
                         ScheduleId = s.ScheduleId,
-                        CandidateId = sd.Candidate != null ? sd.Candidate.Profile != null ? sd.Candidate.Profile.AccountId : null : null,
+                        CandidateId = sd.Candidate != null
+                            ? sd.Candidate.Profile != null ? sd.Candidate.Profile.AccountId : null
+                            : null,
                         ApplicationId = sd.CandidateId,
                         CandidateName = sd.Candidate != null
                             ? sd.Candidate.Profile != null
                                 ? sd.Candidate.Profile.Account != null
                                     ? sd.Candidate.Profile.Account.FullName
                                     : null
+                                : null
+                            : null,
+                        CandidateEmail = sd.Candidate != null
+                            ? sd.Candidate.Profile != null
+                                ? sd.Candidate.Profile.Account != null ? sd.Candidate.Profile.Account.Account1 : null
                                 : null
                             : null,
                         ScheduleType = sd.ScheduleType,
@@ -135,19 +145,26 @@ public class ScheduleRepository : IScheduleRepository
             {
                 foreach (var scheduleDtoScheduleDetail in scheduleDto.ScheduleDetails)
                 {
-                    if (scheduleDtoScheduleDetail.StartDate == null || scheduleDtoScheduleDetail.EndDate == null) continue;
+                    if (scheduleDtoScheduleDetail.StartDate == null ||
+                        scheduleDtoScheduleDetail.EndDate == null) continue;
                     var startDateValue = scheduleDtoScheduleDetail.StartDate.Value;
                     if (!scheduleAdditionDataResult.ContainsKey(startDateValue.Year))
                     {
-                        scheduleAdditionDataResult.Add(startDateValue.Year, new Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>());
+                        scheduleAdditionDataResult.Add(startDateValue.Year,
+                            new Dictionary<int, Dictionary<int, List<ScheduleAdditionDataDTO>>>());
                     }
+
                     if (!scheduleAdditionDataResult[startDateValue.Year].ContainsKey(startDateValue.Month))
                     {
-                        scheduleAdditionDataResult[startDateValue.Year].Add(startDateValue.Month, new Dictionary<int, List<ScheduleAdditionDataDTO>>());
+                        scheduleAdditionDataResult[startDateValue.Year].Add(startDateValue.Month,
+                            new Dictionary<int, List<ScheduleAdditionDataDTO>>());
                     }
-                    if (!scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month].ContainsKey(startDateValue.Day))
+
+                    if (!scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month]
+                            .ContainsKey(startDateValue.Day))
                     {
-                        scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month].Add(startDateValue.Day, new List<ScheduleAdditionDataDTO>());
+                        scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month]
+                            .Add(startDateValue.Day, new List<ScheduleAdditionDataDTO>());
                     }
 
                     var scheduleFilterByTime =
@@ -162,35 +179,40 @@ public class ScheduleRepository : IScheduleRepository
                         {
                             CandidateId = scheduleDtoScheduleDetail.CandidateId,
                             ApplicationId = scheduleDtoScheduleDetail.ApplicationId,
-                            CandidateName = scheduleDtoScheduleDetail.CandidateName
+                            CandidateName = scheduleDtoScheduleDetail.CandidateName,
+                            CandidateEmail = scheduleDtoScheduleDetail.CandidateEmail
                         });
                     }
                     else
                     {
-                        scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month][startDateValue.Day].Add(new ScheduleAdditionDataDTO()
-                        {
-                            Candidates = new List<CandidateSchedule?>(){
-                                new() {
-                                    CandidateId = scheduleDtoScheduleDetail.CandidateId,
-                                    ApplicationId = scheduleDtoScheduleDetail.ApplicationId,
-                                    CandidateName = scheduleDtoScheduleDetail.CandidateName
-                                }},
-                            HumanResourceId = scheduleDto.HumanResourceId,
-                            HumanResourceName = scheduleDto.HumanResourceName,
-                            SpecializedExamId = scheduleDto.SpecializedExamId,
-                            SpecializedExam = scheduleDto.SpecializedExam,
-                            Interviewers = scheduleDto.Interviewers.Select(i => new InterviewerSchedule()
+                        scheduleAdditionDataResult[startDateValue.Year][startDateValue.Month][startDateValue.Day].Add(
+                            new ScheduleAdditionDataDTO()
                             {
-                                InterviewerId = i.InterviewerId,
-                                InterviewerName = i.InterviewerName
-                            }).ToList(),
-                            type = scheduleDtoScheduleDetail.ScheduleType,
-                            StartTime = scheduleDtoScheduleDetail.StartDate,
-                            EndTime = scheduleDtoScheduleDetail.EndDate,
-                            note = scheduleDtoScheduleDetail.Note
-                        });
+                                Candidates = new List<CandidateSchedule?>()
+                                {
+                                    new()
+                                    {
+                                        CandidateId = scheduleDtoScheduleDetail.CandidateId,
+                                        ApplicationId = scheduleDtoScheduleDetail.ApplicationId,
+                                        CandidateName = scheduleDtoScheduleDetail.CandidateName,
+                                        CandidateEmail = scheduleDtoScheduleDetail.CandidateEmail
+                                    }
+                                },
+                                HumanResourceId = scheduleDto.HumanResourceId,
+                                HumanResourceName = scheduleDto.HumanResourceName,
+                                SpecializedExamId = scheduleDto.SpecializedExamId,
+                                SpecializedExam = scheduleDto.SpecializedExam,
+                                Interviewers = scheduleDto.Interviewers.Select(i => new InterviewerSchedule()
+                                {
+                                    InterviewerId = i.InterviewerId,
+                                    InterviewerName = i.InterviewerName
+                                }).ToList(),
+                                type = scheduleDtoScheduleDetail.ScheduleType,
+                                StartTime = scheduleDtoScheduleDetail.StartDate,
+                                EndTime = scheduleDtoScheduleDetail.EndDate,
+                                note = scheduleDtoScheduleDetail.Note
+                            });
                     }
-                    
                 }
             }
 
@@ -235,7 +257,9 @@ public class ScheduleRepository : IScheduleRepository
                 ExpertEmail = s.SpecializedExam != null ? s.SpecializedExam.ExpertEmail : null,
                 JobId = s.SpecializedExam != null ? s.SpecializedExam.JobId : null,
                 Status = s.SpecializedExam != null ? s.SpecializedExam.Status : null,
-                JobTitle = s.SpecializedExam != null ? s.SpecializedExam.Job != null ? s.SpecializedExam.Job.Title : null : null
+                JobTitle = s.SpecializedExam != null
+                    ? s.SpecializedExam.Job != null ? s.SpecializedExam.Job.Title : null
+                    : null
             },
             Interviewers = s.Interviewers.Select(i => new InterviewDTO
             {
@@ -369,6 +393,7 @@ public class ScheduleRepository : IScheduleRepository
                     {
                         throw new Exception("Hồ sơ ứng viên chưa đạt yêu cầu để phỏng vấn!");
                     }
+
                     var interviewerId = scheduleDto.Interviewers.FirstOrDefault()?.InterviewerId ?? null;
                     await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
                         interviewerId, 6);
@@ -390,6 +415,7 @@ public class ScheduleRepository : IScheduleRepository
                     {
                         throw new Exception("Hồ sơ ứng viên chưa đạt yêu cầu để tiến hành kiểm tra chuyên môn!");
                     }
+
                     await _jobApplicationRepository.UpdateJobApplicationStatus(candidateApplication.ApplicationId,
                         null, 3);
 

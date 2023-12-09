@@ -100,7 +100,7 @@ public class WishListRepository : IWishListRepository
     {
         var query = _context.WishLists
             .Include(w => w.Job)
-            .Where(w => w.AccountId == accountId && w.Job.Status == Constant.ENTITY_STATUS.ACTIVE)
+            .Where(w => w.AccountId == accountId)
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(searchDto.SearchString))

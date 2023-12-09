@@ -8,6 +8,7 @@ public partial class ScheduleDetailDTO
     public int? ScheduleId { get; set; }
     public int? CandidateId { get; set; }
     public string? CandidateName { get; set; }
+    public string? CandidateEmail { get; set; }
     public int? ApplicationId { get; set; }
     public int? ScheduleType { get; set; }
     public DateTime? StartDate { get; set; }

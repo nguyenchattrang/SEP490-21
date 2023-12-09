@@ -44,6 +44,7 @@ public class CandidateSchedule
     public int? CandidateId { get; set; }
     public int? ApplicationId { get; set; }
     public string? CandidateName { get; set; }
+    public string? CandidateEmail { get; set; }
 }
 
 public class InterviewerSchedule
