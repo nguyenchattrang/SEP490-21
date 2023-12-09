@@ -11,8 +11,7 @@ public class HubContext : Hub
     {
         try
         {
-            var notification = Constant.APPLICAION_STATUS_NOTIFICATION[1];
-            await Clients.All.SendAsync("StatusChanged", jobApplicationId, newStatus, notification[0], notification[1]);
+            await Clients.All.SendAsync("StatusChanged", jobApplicationId, newStatus);
         }
         catch (Exception e)
         {

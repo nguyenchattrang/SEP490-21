@@ -38,6 +38,9 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
 builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<IIndustryRepository, IndustryRepository>();
+builder.Services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
 builder.Services.AddScoped<JobApplicationStatusHub>();
 
 var emailConfig = builder.Configuration

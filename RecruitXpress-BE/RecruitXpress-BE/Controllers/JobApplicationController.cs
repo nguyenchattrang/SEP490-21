@@ -621,7 +621,6 @@ namespace RecruitXpress_BE.Controllers
                     }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
-                    // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
                     await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
                     return Ok("Cập nhật trạng thái thành công");
                 }

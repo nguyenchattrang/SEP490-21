@@ -24,7 +24,7 @@ public class GoogleService : IGoogleService
                 $"redirect_uri={GoogleHelper.urlEncodeForGoogle(Constant.GOOGLE_SERVICE.CALL_BACK)}" +
                 $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
                 $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
-                $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}" +
+                $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}+{Constant.GOOGLE_SERVICE.SCOPE.PROFILE}" +
                 $"&access_type={Constant.GOOGLE_SERVICE.ACCESS_TYPE}";
         }
         catch (Exception ex)
@@ -41,7 +41,7 @@ public class GoogleService : IGoogleService
             $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
             $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
             $"&client_secret={Constant.GOOGLE_SERVICE.CLIENT_SERCRET}" +
-            $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}" +
+            $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}+{Constant.GOOGLE_SERVICE.SCOPE.PROFILE}" +
             $"&access_type={Constant.GOOGLE_SERVICE.ACCESS_TYPE}" +
             $"&grant_type=authorization_code",
             Encoding.UTF8, "application/x-www-form-urlencoded");
@@ -55,7 +55,7 @@ public class GoogleService : IGoogleService
         else
         {
             // Handle the error case when authentication fails
-            throw new Exception($"Lỗi trong quá triình đăng nhập: {responseContent}");
+            throw new Exception($"Lỗi trong quá trình đăng nhập: {responseContent}");
         }
     }
     
