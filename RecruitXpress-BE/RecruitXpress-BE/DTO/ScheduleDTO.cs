@@ -19,7 +19,7 @@ public class ScheduleDTO
     public DateTime? UpdatedTime { get; set; }
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
-    public SpecializedExamDTO SpecializedExam { get; set; }
+    public SpecializedExamDTO? SpecializedExam { get; set; }
 
     public virtual ICollection<InterviewDTO> Interviewers { get; set; }
     public virtual ICollection<ScheduleDetailDTO> ScheduleDetails { get; set; }

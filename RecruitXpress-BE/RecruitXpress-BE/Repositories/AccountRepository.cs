@@ -37,7 +37,7 @@ public class AccountRepository : IAccountRepository
         {
             var check = await _context.Accounts.FirstOrDefaultAsync(x => x.Account1 == account.Account1);
 
-            if (check == null)
+            if (check != null)
             {
                 throw new Exception("Tài khoản đã tồn tại");
             }
@@ -45,7 +45,7 @@ public class AccountRepository : IAccountRepository
             var user = new Account
             {
                 Account1 = account.Account1,
-                Password = HashHelper.Encrypt(account.Password, _configuration),
+                Password = account.Password != null ? HashHelper.Encrypt(account.Password, _configuration) : null,
                 RoleId = account.RoleId,
                 CreatedAt = DateTime.Now,
                 Status = account.Status,
