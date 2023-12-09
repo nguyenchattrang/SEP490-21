@@ -74,18 +74,26 @@ namespace RecruitXpress_BE.Controllers
                 };
                 try
                 {
-                    string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+                    string sourceFolderPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
                     var filePath = CV.Url;
-                    string sourceFolderPath = path;
                     string destinationFolderPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\JobApplicationsCV"));
                     string fileName = CV.Url; // replace with the actual file name
 
                     // Combine source folder path and file name
                     string sourceFilePath = sourceFolderPath + fileName;
-
+                    
                     // Combine destination folder path and file name
                     string destinationFilePath = destinationFolderPath + fileName;
 
+                    if (!Directory.Exists(sourceFolderPath))
+                    {
+                        Directory.CreateDirectory(sourceFolderPath);
+                    }
+
+                    if (!Directory.Exists(destinationFolderPath))
+                    {
+                        Directory.CreateDirectory(destinationFolderPath);
+                    }
                     // Check if the source file exists
                     if (System.IO.File.Exists(sourceFilePath))
                     {
