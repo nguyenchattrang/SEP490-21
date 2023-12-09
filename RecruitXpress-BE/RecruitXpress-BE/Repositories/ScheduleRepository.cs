@@ -48,6 +48,8 @@ public class ScheduleRepository : IScheduleRepository
                 .ThenInclude(p => p.Account)
                 .Include(s => s.Interviewers)
                 .ThenInclude(i => i.InterviewerNavigation)
+                .Include(s => s.SpecializedExam)
+                .ThenInclude(se => se.Job)
                 .Where(s => s.ScheduleDetails.Count > 0)
                 .AsQueryable();
             switch (account.RoleId)
@@ -70,6 +72,22 @@ public class ScheduleRepository : IScheduleRepository
                 ScheduleId = s.ScheduleId,
                 HumanResourceId = s.HumanResourceId,
                 HumanResourceName = s.HumanResource != null ? s.HumanResource.FullName : null,
+                SpecializedExamId = s.ExamId,
+                SpecializedExam = new SpecializedExamDTO()
+                {
+                    ExamId = s.SpecializedExam != null ? s.SpecializedExam.ExamId : 0,
+                    ExamName = s.SpecializedExam != null ? s.SpecializedExam.ExamName : "",
+                    Description = s.SpecializedExam != null ? s.SpecializedExam.Description : null,
+                    StartDate = s.SpecializedExam != null ? s.SpecializedExam.StartDate : null,
+                    EndDate = s.SpecializedExam != null ? s.SpecializedExam.EndDate : null,
+                    CreatedAt = s.SpecializedExam != null ? s.SpecializedExam.CreatedAt : null,
+                    CreatedBy = s.SpecializedExam != null ? s.SpecializedExam.CreatedBy : null,
+                    Code = s.SpecializedExam != null ? s.SpecializedExam.Code : null,
+                    ExpertEmail = s.SpecializedExam != null ? s.SpecializedExam.ExpertEmail : null,
+                    JobId = s.SpecializedExam != null ? s.SpecializedExam.JobId : null,
+                    Status = s.SpecializedExam != null ? s.SpecializedExam.Status : null,
+                    JobTitle = s.SpecializedExam != null ? s.SpecializedExam.Job != null ? s.SpecializedExam.Job.Title : null : null
+                },
                 Status = s.Status,
                 CreatedTime = s.CreatedTime,
                 UpdatedTime = s.UpdatedTime,
@@ -159,6 +177,8 @@ public class ScheduleRepository : IScheduleRepository
                                 }},
                             HumanResourceId = scheduleDto.HumanResourceId,
                             HumanResourceName = scheduleDto.HumanResourceName,
+                            SpecializedExamId = scheduleDto.SpecializedExamId,
+                            SpecializedExam = scheduleDto.SpecializedExam,
                             Interviewers = scheduleDto.Interviewers.Select(i => new InterviewerSchedule()
                             {
                                 InterviewerId = i.InterviewerId,
@@ -201,6 +221,22 @@ public class ScheduleRepository : IScheduleRepository
             ScheduleId = s.ScheduleId,
             HumanResourceId = s.HumanResource != null ? s.HumanResource.AccountId : null,
             HumanResourceName = s.HumanResource != null ? s.HumanResource.FullName : null,
+            SpecializedExamId = s.ExamId,
+            SpecializedExam = new SpecializedExamDTO()
+            {
+                ExamId = s.SpecializedExam != null ? s.SpecializedExam.ExamId : 0,
+                ExamName = s.SpecializedExam != null ? s.SpecializedExam.ExamName : "",
+                Description = s.SpecializedExam != null ? s.SpecializedExam.Description : null,
+                StartDate = s.SpecializedExam != null ? s.SpecializedExam.StartDate : null,
+                EndDate = s.SpecializedExam != null ? s.SpecializedExam.EndDate : null,
+                CreatedAt = s.SpecializedExam != null ? s.SpecializedExam.CreatedAt : null,
+                CreatedBy = s.SpecializedExam != null ? s.SpecializedExam.CreatedBy : null,
+                Code = s.SpecializedExam != null ? s.SpecializedExam.Code : null,
+                ExpertEmail = s.SpecializedExam != null ? s.SpecializedExam.ExpertEmail : null,
+                JobId = s.SpecializedExam != null ? s.SpecializedExam.JobId : null,
+                Status = s.SpecializedExam != null ? s.SpecializedExam.Status : null,
+                JobTitle = s.SpecializedExam != null ? s.SpecializedExam.Job != null ? s.SpecializedExam.Job.Title : null : null
+            },
             Interviewers = s.Interviewers.Select(i => new InterviewDTO
             {
                 ScheduleId = s.ScheduleId,
@@ -248,6 +284,7 @@ public class ScheduleRepository : IScheduleRepository
             {
                 HumanResourceId = hrAccount.AccountId,
                 Status = scheduleDto.Status,
+                ExamId = scheduleDto.SpecializedExamId,
                 CreatedTime = DateTime.Now,
                 UpdatedTime = DateTime.Now,
                 CreatedBy = scheduleDto.CreatedBy,
@@ -401,6 +438,7 @@ public class ScheduleRepository : IScheduleRepository
 
             schedule.HumanResourceId = hrAccount.AccountId;
             schedule.Status = scheduleDto.Status;
+            schedule.ExamId = scheduleDto.SpecializedExamId;
             schedule.UpdatedTime = DateTime.Now;
             schedule.UpdatedBy = scheduleDto.UpdatedBy;
 
