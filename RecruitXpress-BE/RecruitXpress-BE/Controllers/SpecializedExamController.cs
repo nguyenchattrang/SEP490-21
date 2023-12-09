@@ -79,7 +79,10 @@ namespace RecruitXpress_BE.Controllers
         [HttpDelete("DeleteSpecializedExam/{examId}")]
         public async Task<IActionResult> DeleteSpecializedExam(int examId)
         {
+            try
+            {
 
+         
             var deleted = await _repository.DeleteSpecializedExam(examId);
 
             if (!deleted)
@@ -88,7 +91,11 @@ namespace RecruitXpress_BE.Controllers
             }
 
             return NoContent();
-
+            }
+            catch(Exception e)
+            {
+                return BadRequest("Không thể xóa được bài thi này");
+            }
         }
     }
 }

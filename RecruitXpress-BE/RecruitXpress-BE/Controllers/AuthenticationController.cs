@@ -166,7 +166,7 @@ namespace RecruitXpress_BE.Controllers
                 }
 
                 var token = TokenHelper.GenerateRandomToken(64);
-                string url = _configuration["Website:ClientUrl"] + "/set-password?token=" + token;
+                string url = _configuration["Website:ClientUrl"] + "/set-password/token=" + token;
                 string subject = "Quên mật khẩu";
                 var emailtoken = new EmailToken
                 {
@@ -209,7 +209,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 else
                 {
-                    return BadRequest("Invalid Token");
+                    return BadRequest("Token không hợp lệ");
                 }
             }
             catch
@@ -236,7 +236,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 else
                 {
-                    return BadRequest("Invalid Token");
+                    return BadRequest("Token không hợp lệ");
                 }
             }
             catch
@@ -256,7 +256,7 @@ namespace RecruitXpress_BE.Controllers
         {
             if (model is null)
             {
-                return BadRequest("Invalid user request!!!");
+                return BadRequest("Thông tin tài khoản là bắt buộc nhập!!!");
             }
 
             var user = await _context.Accounts.Include(a => a.Role).Include(r => r.Profiles).Include(c => c.CandidateCvs).SingleOrDefaultAsync(u => u.Account1 == model.Username);
@@ -318,7 +318,7 @@ namespace RecruitXpress_BE.Controllers
         {
             if (model is null)
             {
-                return BadRequest("Invalid user request!!!");
+                return BadRequest("Thông tin tài khoản là bắt buộc nhập!!!");
             }
 
             var user = await _context.AccessCodes.SingleOrDefaultAsync(u => u.Email == model.email && u.Code.Equals(model.code));
@@ -402,7 +402,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 else
                 {
-                    return BadRequest("Invalid Token");
+                    return BadRequest("Token không hợp lệ");
                 }
             }
             catch
