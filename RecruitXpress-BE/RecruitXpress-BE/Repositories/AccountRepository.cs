@@ -52,7 +52,9 @@ public class AccountRepository : IAccountRepository
             };
 
             _context.Entry(user).State = EntityState.Added;
+            
             await _context.SaveChangesAsync();
+
             return user;
         }
         catch (Exception e)
