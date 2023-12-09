@@ -41,6 +41,12 @@ namespace RecruitXpress_BE.Controllers
             {
                 if (accountId == null) return BadRequest("Account is not null");
                 var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
+                var jobpost = await _context.JobPostings.FirstOrDefaultAsync(x => x.JobId == jobId);
+
+                if(jobpost != null)
+                {
+                    if (jobpost.NumOfCandidate == 0) return BadRequest("Nộp hồ sơ thất bại, công việc này đã tuyển đủ số lượng ứng viên");
+                }
 
                 var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId==jobId);
                 if(check != null)
@@ -597,7 +603,7 @@ namespace RecruitXpress_BE.Controllers
                             if(jobpost.NumOfCandidate >0)  jobpost.NumOfCandidate = jobpost.NumOfCandidate - 1;
                             if(jobpost.NumOfCandidate == 0)
                             {
-                                var listApply = await _context.JobApplications.Where(x=> x.JobId == detailJob.JobId).ToListAsync();
+                                var listApply = await _context.JobApplications.Where(x=> x.JobId == detailJob.JobId && x.Status !=8).ToListAsync();
                                 foreach(var candidateApply in listApply)
                                 {
                                     candidateApply.Status = 0;
