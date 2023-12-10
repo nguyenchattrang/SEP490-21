@@ -194,12 +194,23 @@ namespace RecruitXpress_BE.Repositories
             if (job == null)
                 throw new ArgumentException("Không tìm thấy công việc tương ứng");
 
-            exam.CreatedAt = DateTime.Now;
 
             var generatedCode = GenerateUniqueCode();
             exam.Code = generatedCode;
-            var specializedExamDTO = _mapper.Map<SpecializedExam>(exam);
-            _context.SpecializedExams.Add(specializedExamDTO);
+
+            var newExam = new SpecializedExam
+            {
+                ExamName = exam.ExamName,
+                Description = exam.Description,
+                StartDate = exam.StartDate,
+                EndDate = exam.EndDate,
+                CreatedAt = DateTime.Now,
+                Status = exam.Status,
+                Code = generatedCode,
+                JobId = exam.JobId,
+            };
+
+            _context.SpecializedExams.Add(newExam);
             await _context.SaveChangesAsync();
         }
 
