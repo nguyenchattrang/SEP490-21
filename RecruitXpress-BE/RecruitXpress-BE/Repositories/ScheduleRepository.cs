@@ -594,11 +594,11 @@ public class ScheduleRepository : IScheduleRepository
                         if (scheduleCandidate == null) continue;
                         var updateJobAppTask = _jobApplicationRepository.UpdateJobApplicationStatus(
                             (int)scheduleCandidate,
-                            interviewerEntity?.InterviewerId, 6);
+                            null, 5);
 
                         var sendEmailDeleteInterviewScheduleToCandidateTask =
                             _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
-                                (int)scheduleCandidate, "");
+                                (int)scheduleCandidate, "chưa nghĩ ra lý do");
                         await Task.WhenAll(updateJobAppTask, sendEmailDeleteInterviewScheduleToCandidateTask);
                     }
                 }
@@ -628,6 +628,18 @@ public class ScheduleRepository : IScheduleRepository
         var interviewers = await _context.Interviews.Where(i => i.ScheduleId == scheduleId).ToListAsync();
         foreach (var scheduleDetail in scheduleDetails)
         {
+            if (scheduleDetail.CandidateId == null) continue;
+
+            var sendEmailDeleteInterviewScheduleToCandidateTask =
+                _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
+                    (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");
+            var sendEmailDeleteScheduleForInterviewerTask =
+                _emailTemplateRepository.SendEmailDeleteScheduleForInterviewer(
+                    (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");
+            await Task.WhenAll(sendEmailDeleteInterviewScheduleToCandidateTask, sendEmailDeleteScheduleForInterviewerTask);
+            await _jobApplicationRepository.UpdateJobApplicationStatus(
+                (int)scheduleDetail.CandidateId,
+                null, 5);
             _context.Entry(scheduleDetail).State = EntityState.Deleted;
         }
 

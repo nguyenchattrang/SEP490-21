@@ -96,7 +96,111 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 1,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 2,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 3,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 4,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 5,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 6,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 7,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 8,
+                    NewStatus = 0
+                }, new NotificationMessage()
+                {
+                    Title = "Thông báo Kết Quả Ứng Tuyển",
+                    Description =
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
+            },
+            {
+                new StatusChange()
+                {
+                    OldStatus = 9,
                     NewStatus = 0
                 }, new NotificationMessage()
                 {
@@ -122,7 +226,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 1,
                     NewStatus = 2
                 },
                 new NotificationMessage()
@@ -135,7 +239,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 2,
                     NewStatus = 3
                 },
                 new NotificationMessage()
@@ -148,7 +252,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 3,
                     NewStatus = 4
                 },
                 new NotificationMessage()
@@ -161,7 +265,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 4,
                     NewStatus = 5
                 },
                 new NotificationMessage()
@@ -174,7 +278,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 5,
                     NewStatus = 6
                 },
                 new NotificationMessage()
@@ -187,7 +291,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 6,
                     NewStatus = 7
                 },
                 new NotificationMessage()
@@ -200,7 +304,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 7,
                     NewStatus = 8
                 },
                 new NotificationMessage()
@@ -213,7 +317,7 @@ namespace RecruitXpress_BE.Helper
             {
                 new StatusChange()
                 {
-                    OldStatus = 0,
+                    OldStatus = 8,
                     NewStatus = 9
                 },
                 new NotificationMessage()
