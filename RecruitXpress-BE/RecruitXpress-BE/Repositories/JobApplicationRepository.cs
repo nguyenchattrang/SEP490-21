@@ -25,6 +25,7 @@ public class JobApplicationRepository : IJobApplicationRepository
         {
             var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
             if (detailJob == null || status == null) return detailJob;
+            var oldStatus = detailJob.Status ?? -1;
             detailJob.Status = status;
             if (accountId != null)
             {
@@ -33,7 +34,7 @@ public class JobApplicationRepository : IJobApplicationRepository
             _context.Update(detailJob);
             await _context.SaveChangesAsync();
             // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, status);
-            await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
+            await _applicationHubContext.NotifyStatusUpgrade(jobApplyId, (int)status, oldStatus);
             return detailJob;
         }
         catch (Exception ex)
@@ -42,6 +43,7 @@ public class JobApplicationRepository : IJobApplicationRepository
             throw;
         }
     }
+    
     public async Task<JobApplication?> AutoAddStatus(int jobApplyId)
     {
         try
@@ -49,9 +51,10 @@ public class JobApplicationRepository : IJobApplicationRepository
             var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
             if (detailJob == null) throw new Exception("Không tìm thấy thông tin ứng tuyển!");
             if ( detailJob.Status == null) throw new Exception("Không tìm thấy trạng thái ứng tuyển!");
-            var newStatus = detailJob.Status + 1;
+            var oldStatus = detailJob.Status ?? -1;
+            var newStatus = oldStatus + 1;
             // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, newStatus);
-            await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)newStatus);
+            await _applicationHubContext.NotifyStatusUpgrade(jobApplyId, newStatus, oldStatus);
             return detailJob;
         }
         catch (Exception ex)

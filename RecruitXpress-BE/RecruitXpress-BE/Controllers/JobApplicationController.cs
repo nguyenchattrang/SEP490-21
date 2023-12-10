@@ -580,6 +580,7 @@ namespace RecruitXpress_BE.Controllers
                 }
                 if (status != null)
                 {
+                    var oldStatus = detailJob.Status ?? -1;
                     detailJob.Status = status;
                     if (accountId != null)
                     {
@@ -621,7 +622,7 @@ namespace RecruitXpress_BE.Controllers
                     }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
-                    await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
+                    await _applicationHubContext.NotifyStatusUpgrade(jobApplyId, (int)status, oldStatus);
                     return Ok("Cập nhật trạng thái thành công");
                 }
 

@@ -91,18 +91,27 @@ namespace RecruitXpress_BE.Helper
             public static int CANCEL_BY_CANDIDATE = 9;
         }
 
-        public static readonly Dictionary<int, NotificationMessage> APPLICAION_STATUS_NOTIFICATION = new()
+        public static readonly Dictionary<StatusChange, NotificationMessage> APPLICAION_STATUS_NOTIFICATION = new()
         {
             {
-                0, new NotificationMessage()
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 0
+                }, new NotificationMessage()
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi xin được thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
-                    TargetUrl = ""                }
+                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                    TargetUrl = ""
+                }
             },
             {
-                1,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 1
+                },
                 new NotificationMessage()
                 {
                     Title = "Xác Nhận Đơn Ứng Tuyển",
@@ -111,7 +120,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                2,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 2
+                },
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Vượt Qua Vòng Duyệt CV",
@@ -120,7 +133,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                3,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 3
+                },
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Lịch Kiểm Tra Chuyên Môn",
@@ -129,7 +146,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                4,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 4
+                },
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Kết Quả Bài Kiểm Tra",
@@ -138,7 +159,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                5,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 5
+                },
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Vượt Qua Bài Kiểm Tra Chuyên Môn",
@@ -147,7 +172,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                6,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 6
+                },
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Đã Có Lịch Phỏng Vấn",
@@ -156,7 +185,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                7,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 7
+                },
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Cập Nhật Thông Tin Đầy Đủ",
@@ -165,7 +198,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                8,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 8
+                },
                 new NotificationMessage()
                 {
                     Title = "Chào mừng bạn đến với [company]",
@@ -174,7 +211,11 @@ namespace RecruitXpress_BE.Helper
                 }
             },
             {
-                9,
+                new StatusChange()
+                {
+                    OldStatus = 0,
+                    NewStatus = 9
+                },
                 new NotificationMessage()
                 {
                     Title = "Xác nhận Nhận Đơn Ứng viên",

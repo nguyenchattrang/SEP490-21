@@ -18,16 +18,20 @@ public class JobApplicationStatusHub : Hub
         _notificationRepository = notificationRepository;
     }
 
-    public async Task NotifyStatusChange(int jobApplicationId, int newStatus)
+    public async Task NotifyStatusUpgrade(int jobApplicationId, int newStatus, int oldStatus)
     {
         try
         {
-            var notification = Constant.APPLICAION_STATUS_NOTIFICATION[newStatus];
+            var notification = Constant.APPLICAION_STATUS_NOTIFICATION[new StatusChange()
+            {
+                NewStatus = newStatus, OldStatus = oldStatus
+            }];
             if (notification.Title!.Contains("[candidateName]"))
             {
-                var candidate = 
-                notification.Title = notification.Title.Replace("[candidateName]", "");
+                var candidate =
+                    notification.Title = notification.Title.Replace("[candidateName]", "");
             }
+
             await _notificationRepository.SaveNotification(new NotificationDTO()
             {
                 Title = notification.Title,
@@ -38,7 +42,8 @@ public class JobApplicationStatusHub : Hub
                 CreatedDate = DateTime.Now,
                 TargetUrl = notification.TargetUrl
             });
-            await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplicationId, newStatus, notification.Title, notification.Description);
+            await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplicationId, newStatus, notification.Title,
+                notification.Description);
         }
         catch (Exception e)
         {
