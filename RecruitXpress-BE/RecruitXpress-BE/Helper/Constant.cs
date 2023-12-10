@@ -59,7 +59,17 @@ namespace RecruitXpress_BE.Helper
             public static int CANCEL = 9;
             public static int HRINTERVIEWCV = 10;
             public static int HRINTERVIEWSCHEDULE = 11;
-        }
+            public static int CanceledJobToHR = 12;
+            public static int UpdateExamSchedule = 13;
+            public static int DeleteExamSchedule = 14;
+            public static int UpdateInterviewScheduleForCandidate = 15;
+            public static int DeleteInterviewcheduleForCandidate = 16;
+            public static int UpdateInterviewScheduleForInterviewer = 17;
+            public static int DeleteInterviewcheduleForInterviewer = 18;
+
+
+
+                }
 
         public static class SCHEDULE_TYPE
         {
@@ -89,8 +99,7 @@ namespace RecruitXpress_BE.Helper
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
                         "Xin chào [Tên Ứng viên], chúng tôi xin được thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
-                    TargetUrl = ""
-                }
+                    TargetUrl = ""                }
             },
             {
                 1,

@@ -714,7 +714,6 @@ namespace RecruitXpress_BE.Controllers
 
                 }
 
-
                 return Ok(new JobSearchReponse
                 {
                     ListCandidates = jobApplicationDTOs,

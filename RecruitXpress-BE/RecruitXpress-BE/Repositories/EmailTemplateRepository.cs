@@ -308,6 +308,221 @@ namespace RecruitXpress_BE.Repositories
             }
         }
 
+        public async Task CandidateCancelJobApplicationToHR(int jobApplicationID)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.UpdateExamSchedule).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+
+            if (emailTemplate != null)
+            {
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+
+
+                _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+
+        public async Task SendEmailUpdateExamScheduleToCandidate(int jobApplicationID, string time, string location)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.UpdateExamSchedule).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+           
+            if (emailTemplate != null)
+            {
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
+                emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
+
+                _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+        public async Task SendEmailDeleteExamScheduleToCandidate(int jobApplicationID, string reason)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.DeleteExamSchedule).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+
+            if (emailTemplate != null)
+            {
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@reason", reason);
+
+
+                _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+
+        public async Task SendEmailUpdateInterviewScheduleToCandidate(int jobApplicationID, string time, string location)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.UpdateInterviewScheduleForCandidate).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+
+            if (emailTemplate != null)
+            {
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
+                emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
+
+                _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+
+        public async Task SendEmailDeleteInterviewScheduleToCandidate(int jobApplicationID, string reason)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.DeleteInterviewcheduleForCandidate).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+
+            if (emailTemplate != null)
+            {
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@reason", reason);
+
+                _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+
+        public async Task SendEmailUpdateScheduleForInterviewer(int jobApplicationID, string time, string location)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.UpdateInterviewScheduleForInterviewer).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+            Account interviewer = null;
+            var interviewerName = "nhà phỏng vấn";
+            var cvName = "CV_" + account.FullName;
+            if (user.AssignedFor != null)
+            {
+                interviewer = _context.Accounts.Where(a => a.AccountId == user.AssignedFor).FirstOrDefault();
+                if (interviewer != null && interviewer.FullName != null)
+                {
+                    interviewerName = interviewer.FullName;
+                }
+            }
+            else
+            {
+                throw new Exception("Chưa có interviewer");
+            }
+            if (emailTemplate != null)
+            {
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", interviewerName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@candidatename", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@time", time);
+                emailTemplate.Body = emailTemplate.Body.Replace("@location", location);
+
+                _sender.Send(interviewer.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+
+        public async Task SendEmailDeleteScheduleForInterviewer(int jobApplicationID, string reason)
+        {
+            var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.DeleteInterviewcheduleForInterviewer).FirstOrDefault();
+            var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile).FirstOrDefault();
+            var account = _context.Accounts.Where(a => a.AccountId == user.Profile.AccountId).FirstOrDefault();
+            var job = _context.JobPostings.Where(j => j.JobId == user.JobId).FirstOrDefault();
+            Account interviewer = null;
+            var interviewerName = "nhà phỏng vấn";
+            var cvName = "CV_" + account.FullName;
+            if (user.AssignedFor != null)
+            {
+                interviewer = _context.Accounts.Where(a => a.AccountId == user.AssignedFor).FirstOrDefault();
+                if (interviewer != null && interviewer.FullName != null)
+                {
+                    interviewerName = interviewer.FullName;
+                }
+            }
+            else
+            {
+                throw new Exception("Chưa có interviewer");
+            }
+            if (emailTemplate != null)
+            {
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailTemplate.Body = emailTemplate.Body.Replace("@name", interviewerName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@jobTitle", job.Title);
+                emailTemplate.Body = emailTemplate.Body.Replace("@company", job.Company);
+                emailTemplate.Body = emailTemplate.Body.Replace("@candidatename", account.FullName);
+                emailTemplate.Body = emailTemplate.Body.Replace("@reason", reason);
+
+                _sender.Send(interviewer.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+
         public async Task SendEmailUpdateProfile(int jobApplicationID)
         {
             var emailTemplate = _context.EmailTemplates.Where(e => e.MailType == Constant.MailType.PASSINTERVIEW).FirstOrDefault();
