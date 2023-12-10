@@ -108,6 +108,9 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
 
             CreateMap<JobApplication,ShortJobApp>();
+
+
+            CreateMap<SpecializedExam, SpecializedExamDTO>().ReverseMap();
         }
     }
 }

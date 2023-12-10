@@ -184,7 +184,7 @@ namespace RecruitXpress_BE.Repositories
 
         }
 
-        public async Task AddSpecializedExam(SpecializedExam exam)
+        public async Task AddSpecializedExam(SpecializedExamDTO exam)
         {
             if (exam.JobId == null || exam.JobId == 0)
             {
@@ -198,19 +198,19 @@ namespace RecruitXpress_BE.Repositories
 
             var generatedCode = GenerateUniqueCode();
             exam.Code = generatedCode;
-
-            _context.SpecializedExams.Add(exam);
+            var specializedExamDTO = _mapper.Map<SpecializedExam>(exam);
+            _context.SpecializedExams.Add(specializedExamDTO);
             await _context.SaveChangesAsync();
         }
 
 
-        public async Task<SpecializedExam> UpdateSpecializedExam(SpecializedExam exam)
+        public async Task<SpecializedExam> UpdateSpecializedExam(SpecializedExamDTO exam)
         {
             var originalExam = await _context.SpecializedExams.FindAsync(exam.ExamId);
 
             if (originalExam == null)
             {
-                throw new Exception("Không tìm thấy exam");
+                throw new ArgumentException("Không tìm thấy exam");
             }
 
             if (exam.ExamName != null)
