@@ -10,8 +10,8 @@ namespace RecruitXpress_BE.IRepositories
         Task<ApiResponse<SpecializedExamDTO>> GetAllSpecializedExams(SpecializedExamRequest request);
         Task<SpecializedExamDTO> GetSpecializedExamById(int examId);
         Task<SpecializedExamDTO> GetSpecializedExamByCode(string code, int accountId);
-        Task AddSpecializedExam(SpecializedExam exam);
-        Task<SpecializedExam> UpdateSpecializedExam(SpecializedExam exam);
+        Task AddSpecializedExam(SpecializedExamDTO exam);
+        Task<SpecializedExam> UpdateSpecializedExam(SpecializedExamDTO exam);
         Task<bool> DeleteSpecializedExam(int examId);
     }
 }
