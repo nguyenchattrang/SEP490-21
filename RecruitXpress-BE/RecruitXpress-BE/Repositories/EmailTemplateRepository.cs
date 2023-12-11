@@ -382,7 +382,7 @@ namespace RecruitXpress_BE.Repositories
                     .ThenInclude(profile => profile.Account).Include(scheduleDetail => scheduleDetail.Candidate)
                     .ThenInclude(jobApplication => jobApplication.Job)
                     .Where(sd => sd.ScheduleId == scheduleId).ToList();
-                if (scheduleDetails.Count <= 0) throw new Exception("Interviewers or candidates null");
+                if (scheduleDetails.Count <= 0) throw new Exception("Candidates null");
                 var candidateNames = scheduleDetails.Aggregate<ScheduleDetail?, string?>(null,
                     (current, scheduleDetail) =>
                         current + (scheduleDetail?.Candidate?.Profile?.Account?.FullName + ", "));
@@ -637,6 +637,61 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
 
                 _sender.Send(interviewer.Account1, emailCopy.Header, emailCopy.Body);
+            }
+        }
+        
+        public async Task SendEmailUpdateScheduleForInterviewer2(int scheduleId, string time, string location)
+        {
+            try
+            {
+                EmailTemplate? emailTemplate;
+                if (!_emailTemplates.TryGetValue(Constant.MailType.UpdateInterviewScheduleForInterviewer, out emailTemplate))
+                {
+                    emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateInterviewScheduleForInterviewer);
+                    _emailTemplates.Add(Constant.MailType.UpdateInterviewScheduleForInterviewer, emailTemplate);
+                }
+                if (emailTemplate == null) throw new Exception("Email template null");
+                var scheduleDetails = _context.ScheduleDetails
+                    .Include(sd => sd.Candidate).ThenInclude(jobApplication => jobApplication.Profile)
+                    .ThenInclude(profile => profile.Account).Include(scheduleDetail => scheduleDetail.Candidate)
+                    .ThenInclude(jobApplication => jobApplication.Job)
+                    .Where(sd => sd.ScheduleId == scheduleId).ToList();
+                if (scheduleDetails.Count <= 0) throw new Exception("Interviewers or candidates null");
+                var candidateNames = scheduleDetails.Aggregate<ScheduleDetail?, string?>(null,
+                    (current, scheduleDetail) =>
+                        current + (scheduleDetail?.Candidate?.Profile?.Account?.FullName + ", "));
+                var interviewer = await _context.Accounts.FirstOrDefaultAsync(a =>
+                    scheduleDetails.First().Candidate != null &&
+                    a.AccountId == scheduleDetails.First().Candidate.AssignedFor);
+                var job = scheduleDetails.First().Candidate?.Job;
+                var interviewerName = "nhà phỏng vấn";
+                if (interviewer is { FullName: not null })
+                {
+                    interviewerName = interviewer.FullName;
+                }
+
+                // Create a copy of the email template
+                var emailCopy = new EmailTemplate
+                {
+                    MailType = emailTemplate.MailType,
+                    Header = emailTemplate.Header,
+                    Body = emailTemplate.Body
+                };
+
+                emailCopy.Body = emailCopy.Body.Replace("@name", interviewerName);
+                emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
+                emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
+                emailCopy.Body = emailCopy.Body.Replace("@candidatename", candidateNames);
+                emailCopy.Body = emailCopy.Body.Replace("@time", time);
+                emailCopy.Body = emailCopy.Body.Replace("@location", location);
+
+                if (interviewer?.Account1 == null)
+                    throw new Exception("Interviewer account null");
+                _sender.Send(interviewer.Account1, emailCopy.Header, emailCopy.Body);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
 
