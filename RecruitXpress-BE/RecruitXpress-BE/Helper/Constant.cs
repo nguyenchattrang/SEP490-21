@@ -102,7 +102,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -115,7 +115,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -128,7 +128,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -141,7 +141,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -154,7 +154,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -167,7 +167,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -180,7 +180,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -193,7 +193,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -206,7 +206,7 @@ namespace RecruitXpress_BE.Helper
                 {
                     Title = "Thông báo Kết Quả Ứng Tuyển",
                     Description =
-                        "Xin chào [Tên Ứng viên], chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí [industry]. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
+                        "Xin chào @candidateName, chúng tôi rất tiếc phải thông báo rằng đơn ứng tuyển của bạn chưa phù hợp với vị trí @industry. Rất mong có cơ hội hợp tác với bạn trong tương lai.",
                     TargetUrl = ""
                 }
             },
@@ -219,7 +219,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Xác Nhận Đơn Ứng Tuyển",
-                    Description = "Xin chào [candidateName], chúng tôi đã nhận được đơn ứng tuyển của bạn cho vị trí [industry]. Chúng tôi sẽ xem xét đơn của bạn và thông báo kết quả trong thời gian sớm nhất.",
+                    Description = "Xin chào @candidateName, chúng tôi đã nhận được đơn ứng tuyển của bạn cho vị trí @industry. Chúng tôi sẽ xem xét đơn của bạn và thông báo kết quả trong thời gian sớm nhất.",
                     TargetUrl = ""
                 }
             },
@@ -232,7 +232,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Vượt Qua Vòng Duyệt CV",
-                    Description = "Xin chào [candidateName], chúc mừng bạn đã vượt qua vòng duyệt CV. Để tiếp tục quá trình tuyển dụng, chúng tôi sẽ lên lịch cho bạn thực hiện bài thi đánh giá chuyên môn. Chúng tôi sẽ liên lạc với bạn trong thời gian sớm nhất, vui lòng kiểm tra thông báo trong email của bạn.",
+                    Description = "Xin chào @candidateName, chúc mừng bạn đã vượt qua vòng duyệt CV. Để tiếp tục quá trình tuyển dụng, chúng tôi sẽ lên lịch cho bạn thực hiện bài thi đánh giá chuyên môn. Chúng tôi sẽ liên lạc với bạn trong thời gian sớm nhất, vui lòng kiểm tra thông báo trong email của bạn.",
                     TargetUrl = ""
                 }
             },
@@ -245,7 +245,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Lịch Kiểm Tra Chuyên Môn",
-                    Description = "Xin chào [candidateName], chúng tôi đã sắp xếp lịch làm bài thi đánh giá chuyên môn cho bạn. Vui lòng kiểm tra email để biết thêm thông tin chi tiết.",
+                    Description = "Xin chào @candidateName, chúng tôi đã sắp xếp lịch làm bài thi đánh giá chuyên môn cho bạn. Vui lòng kiểm tra email để biết thêm thông tin chi tiết.",
                     TargetUrl = ""
                 }
             },
@@ -258,7 +258,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Kết Quả Bài Kiểm Tra",
-                    Description = "Xin chào [candidateName], đã có kết quả bài kiểm tra của bạn. Vui lòng kiểm tra kết quả chi tiết. Nếu bạn có bất kỳ câu hỏi hoặc cần thêm thông tin, hãy liên hệ với chúng tôi.",
+                    Description = "Xin chào @candidateName, đã có kết quả bài kiểm tra của bạn. Vui lòng kiểm tra kết quả chi tiết. Nếu bạn có bất kỳ câu hỏi hoặc cần thêm thông tin, hãy liên hệ với chúng tôi.",
                     TargetUrl = ""
                 }
             },
@@ -271,7 +271,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Vượt Qua Bài Kiểm Tra Chuyên Môn",
-                    Description = "Xin chào [candidateName], chúc mừng bạn đã vượt qua bài kiểm tra chuyên môn. Chúng tôi sẽ lên lịch phỏng vấn cho bạn trong thời gian sớm nhất. Vui lòng kiểm tra thông báo trong email của bạn.",
+                    Description = "Xin chào @candidateName, chúc mừng bạn đã vượt qua bài kiểm tra chuyên môn. Chúng tôi sẽ lên lịch phỏng vấn cho bạn trong thời gian sớm nhất. Vui lòng kiểm tra thông báo trong email của bạn.",
                     TargetUrl = ""
                 }
             },
@@ -284,7 +284,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Đã Có Lịch Phỏng Vấn",
-                    Description = "Xin chào [candidateName], chúng tôi đã sắp xếp lịch phỏng vấn cho bạn. Vui lòng kiểm tra email để biết thêm thông tin chi tiết.",
+                    Description = "Xin chào @candidateName, chúng tôi đã sắp xếp lịch phỏng vấn cho bạn. Vui lòng kiểm tra email để biết thêm thông tin chi tiết.",
                     TargetUrl = ""
                 }
             },
@@ -297,7 +297,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Cập Nhật Thông Tin Đầy Đủ",
-                    Description = "Xin chào [candidateName], chúc mừng bạn đã vượt qua vòng phỏng vấn và có thể gia nhập vào đại gia đình [company]. Vui lòng cập nhật đầy đủ thông tin để hoàn tất quá trình uứng tuyển và xác nhận gia nhập vào đại gia đình. Nếu có bất kỳ thắc mắc nào, hãy vui lòng liên hệ với chúng tôi.",
+                    Description = "Xin chào @candidateName, chúc mừng bạn đã vượt qua vòng phỏng vấn và có thể gia nhập vào đại gia đình @company. Vui lòng cập nhật đầy đủ thông tin để hoàn tất quá trình uứng tuyển và xác nhận gia nhập vào đại gia đình. Nếu có bất kỳ thắc mắc nào, hãy vui lòng liên hệ với chúng tôi.",
                     TargetUrl = ""
                 }
             },
@@ -309,8 +309,8 @@ namespace RecruitXpress_BE.Helper
                 },
                 new NotificationMessage()
                 {
-                    Title = "Chào mừng bạn đến với [company]",
-                    Description = "Xin chúc mừng [Tên Ứng viên], chúng tôi chúc mừng bạn đã xuất sắc vượt qua các bài phỏng vấn để chính thức tiếp nhận vị trí [industry]. Chào mừng bạn gia nhập vào đại gia đình [company].",
+                    Title = "Chào mừng bạn đến với @company",
+                    Description = "Xin chúc mừng @candidateName, chúng tôi chúc mừng bạn đã xuất sắc vượt qua các bài phỏng vấn để chính thức tiếp nhận vị trí @industry. Chào mừng bạn gia nhập vào đại gia đình @company.",
                     TargetUrl = ""
                 }
             },
@@ -323,7 +323,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Xác nhận Nhận Đơn Ứng viên",
-                    Description = "Xin chào [candidateName], Chúng tôi đã nhận được đơn ứng tuyển của bạn cho vị trí [industry]. Chúng tôi sẽ xem xét đơn của bạn và thông báo kết quả trong thời gian sớm nhất.",
+                    Description = "Xin chào @candidateName, Chúng tôi đã nhận được đơn ứng tuyển của bạn cho vị trí @industry. Chúng tôi sẽ xem xét đơn của bạn và thông báo kết quả trong thời gian sớm nhất.",
                     TargetUrl = ""
                 }
             },

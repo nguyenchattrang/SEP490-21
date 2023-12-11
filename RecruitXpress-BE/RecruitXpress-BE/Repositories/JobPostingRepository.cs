@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
@@ -203,7 +204,7 @@ public class JobPostingRepository : IJobPostingRepository
 
     public async Task<JobPosting> UpdateJobPostings(int id, JobPosting jobPosting)
     {
-        if (jobPosting.ApplicationDeadline < DateTime.Now)
+        if (jobPosting.ApplicationDeadline < DateTime.Now && jobPosting.Status == Constant.ENTITY_STATUS.ACTIVE)
         {
             throw new Exception("Ngày hết hạn phải lớn hơn ngày hiện tại!");
         }

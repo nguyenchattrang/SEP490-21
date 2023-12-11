@@ -23,6 +23,7 @@ namespace RecruitXpress_BE.IRepositories
         Task SendEmailCanceled(int jobApplicationID);
         Task SendEmailCVToInterviewer(int jobApplicationID);
         Task SendEmailScheduleForInterviewer(int jobApplicationID, string time, string location);
+        Task SendEmailScheduleForInterviewer2(int jobApplicationID, string time, string location);
 
         Task SendEmailUpdateExamScheduleToCandidate(int jobApplicationID, string time, string location);
         Task SendEmailDeleteExamScheduleToCandidate(int jobApplicationID, string reason);

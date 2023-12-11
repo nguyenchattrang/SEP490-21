@@ -47,6 +47,10 @@ namespace RecruitXpress_BE.Controllers
                 {
                     if (jobpost.NumOfCandidate == 0) return BadRequest("Nộp hồ sơ thất bại, công việc này đã tuyển đủ số lượng ứng viên");
                 }
+                if (profile == null)
+                {
+                    return BadRequest("Hãy cập nhật thông tin cá nhân đầy đủ trước khi nộp hồ sơ");
+                }
 
                 var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId==jobId);
                 if(check != null)
@@ -55,10 +59,7 @@ namespace RecruitXpress_BE.Controllers
                 }
 
                 var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
-                if (profile == null)
-                {
-                    return BadRequest("Hãy cập nhật thông tin cá nhân đầy đủ trước khi nộp hồ sơ");
-                }
+
                 if (CV == null)
                 {
                     return BadRequest("Hãy cập nhật thông tin CV đầy đủ trước khi nộp hồ sơ");
@@ -573,7 +574,10 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
+                var detailJob = await _context.JobApplications
+                    .Include(ja => ja.Profile)
+                    .ThenInclude(p => p.Account)
+                    .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (detailJob == null)
                 {
                     return NotFound("Không có kết quả");
@@ -622,7 +626,7 @@ namespace RecruitXpress_BE.Controllers
                     }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
-                    await _applicationHubContext.NotifyStatusUpgrade(jobApplyId, (int)status, oldStatus);
+                    await _applicationHubContext.NotifyStatusUpgrade(detailJob, (int)status, oldStatus);
                     return Ok("Cập nhật trạng thái thành công");
                 }
 
@@ -675,30 +679,40 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
+                var query = _context.JobApplications
+                    .Include(q => q.Profile).ThenInclude(x => x.Account)
+                    .Where(ja => ja.JobId == jobId).AsQueryable();
+                query = status switch
+                {
+                    2 => query.Where(ja => ja.Status == 2 || ja.Status == 3),
+                    5 => query.Where(ja => ja.Status == 5 || ja.Status == 6),
+                    _ => query.Where(ja => true)
+                };
 
-                var query = await _context.JobApplications
-                .Include(q => q.Profile).ThenInclude(x => x.Account)
-                .Where(j=> j.JobId==jobId && (status != null ? j.Status == status : j.Status == j.Status))
-                .ToListAsync();
-                if (query == null)
+                // var query = await _context.JobApplications
+                // .Include(q => q.Profile).ThenInclude(x => x.Account)
+                // .Where(j=> j.JobId==jobId && (status != null ? j.Status == status : j.Status == j.Status))
+                // .ToListAsync();
+                var result = await query.ToListAsync();
+                if (result.Count < 0)
                     return NotFound("Không kết quả");
-                var jobApplicationDTOs = _mapper.Map<List<ShortJobApp>>(query);
+                var jobApplicationDTOs = _mapper.Map<List<ShortJobApp>>(result);
 
                 var listExams = await _context.SpecializedExams
-                .Where(j => j.JobId == jobId && j.Status ==1)
-                .OrderByDescending(j=> j.ExamId)
-                .ToListAsync();
+                    .Where(j => j.JobId == jobId && j.Status == 1)
+                    .OrderByDescending(j => j.ExamId)
+                    .ToListAsync();
 
                 var listMap = _mapper.Map<List<SpecializedExamDTO>>(listExams);
 
-                var location = await _context.JobPostings.Where(j => j.JobId == jobId).Select(j => j.DetailLocation).FirstOrDefaultAsync();
+                var location = await _context.JobPostings.Where(j => j.JobId == jobId).Select(j => j.DetailLocation)
+                    .FirstOrDefaultAsync();
 
                 foreach (var jobApplicationDTO in jobApplicationDTOs)
                 {
                     var acc = jobApplicationDTO.AssignedFor;
                     if (acc != null)
                     {
-
                         var profile = _context.Accounts.FirstOrDefault(x => x.AccountId == acc);
                         if (profile != null)
                         {
@@ -707,12 +721,10 @@ namespace RecruitXpress_BE.Controllers
                                 AccountId = (int)acc,
                                 Name = profile.FullName,
                                 Email = profile.Account1
-
                             };
                             jobApplicationDTO.AssignedForInfor = profileDTO;
                         }
                     }
-
                 }
 
                 return Ok(new JobSearchReponse
@@ -720,8 +732,7 @@ namespace RecruitXpress_BE.Controllers
                     ListCandidates = jobApplicationDTOs,
                     ListSpecializedExams = listMap,
                     Location = location,
-                }) ;
-
+                });
             }
             catch (Exception ex)
             {

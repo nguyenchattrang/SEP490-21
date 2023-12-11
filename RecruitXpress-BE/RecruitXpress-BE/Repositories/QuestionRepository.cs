@@ -213,7 +213,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<bool> DeleteOption(int optionId)
         {
-            var option = _context.Options.Where(o => o.OptionId == optionId).FirstOrDefault();
+            var option = _context.Options.FirstOrDefault(o => o.OptionId == optionId);
             if (option == null)
             {
                 return false;
