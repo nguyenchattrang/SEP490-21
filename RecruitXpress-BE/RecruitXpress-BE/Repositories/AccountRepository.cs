@@ -45,7 +45,10 @@ public class AccountRepository : IAccountRepository
             var user = new Account
             {
                 Account1 = account.Account1,
-                Password = account.Password != null ? HashHelper.Encrypt(account.Password, _configuration) : null,
+                Password = HashHelper.Encrypt(account.Password, _configuration),
+                FullName = account.FullName,
+                Gender= account.Gender,
+                Dob = account.Dob,
                 RoleId = account.RoleId,
                 CreatedAt = DateTime.Now,
                 Status = account.Status,
