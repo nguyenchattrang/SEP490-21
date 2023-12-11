@@ -339,7 +339,7 @@ namespace RecruitXpress_BE.Controllers
                 var profileId = 0;
                 if (accountId != null && accountId != 0)
                 {
-                    var getAccountId = _context.Profiles.Where(x => x.AccountId == accountId).FirstOrDefault();
+                    var getAccountId = await _context.Profiles.Where(x => x.AccountId == accountId).FirstOrDefaultAsync();
                     if (getAccountId != null)
                     {
                         profileId = getAccountId.ProfileId;
@@ -358,7 +358,8 @@ namespace RecruitXpress_BE.Controllers
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
-                .Include(q => q.Template).AsQueryable();
+                .Include(q => q.Template).Where(x=>x.ProfileId ==profileId)
+                .AsQueryable();
 
                 if (request.LocationId != null)
                 {
