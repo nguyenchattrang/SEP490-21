@@ -477,12 +477,12 @@ public class ScheduleRepository : IScheduleRepository
             if (await ValidateSchedule(scheduleDto, "update"))
             {
                 var scheduleCandidates = await _context.ScheduleDetails.Where(sd =>
-                    sd.ScheduleId == schedule.ScheduleId).Select(sd => sd.CandidateId).ToListAsync();
+                    sd.ScheduleId == schedule.ScheduleId).ToListAsync();
+                var isUpdated = false;
                 foreach (var scheduleDetail in scheduleDto.ScheduleDetails)
                 {
-                    var scheduleDetailEntity = await _context.ScheduleDetails.Where(sd =>
-                            sd.ScheduleId == schedule.ScheduleId && sd.CandidateId == scheduleDetail.ApplicationId)
-                        .FirstOrDefaultAsync();
+                    var scheduleDetailEntity = scheduleCandidates
+                        .FirstOrDefault(sd => sd.ScheduleId == schedule.ScheduleId && sd.CandidateId == scheduleDetail.ApplicationId);
 
                     if (scheduleDetailEntity == null)
                     {
@@ -535,36 +535,44 @@ public class ScheduleRepository : IScheduleRepository
                         {
                             throw new Exception("Không thể xác định được loại lịch!");
                         }
+
+                        isUpdated = true;
                     }
                     else
                     {
-                        scheduleDetailEntity.UpdatedTime = DateTime.Now;
-                        scheduleDetailEntity.Status = scheduleDetail.Status;
-                        scheduleDetailEntity.ScheduleType = scheduleDetail.ScheduleType;
-                        scheduleDetailEntity.StartDate = scheduleDetail.StartDate;
-                        scheduleDetailEntity.EndDate = scheduleDetail.EndDate;
-                        scheduleDetailEntity.Note = scheduleDetail.Note;
-                        scheduleDetailEntity.UpdatedBy = scheduleDetail.UpdatedBy;
-                        scheduleDetailEntity.UpdatedTime = DateTime.Now;
-                        _context.Entry(scheduleDetailEntity).State = EntityState.Modified;
+                        scheduleCandidates.Remove(scheduleDetailEntity);
+                        var newScheduleDetailEntity = scheduleDetailEntity;
+                        newScheduleDetailEntity.Status = scheduleDetail.Status;
+                        newScheduleDetailEntity.ScheduleType = scheduleDetail.ScheduleType;
+                        newScheduleDetailEntity.StartDate = scheduleDetail.StartDate;
+                        newScheduleDetailEntity.EndDate = scheduleDetail.EndDate;
+                        newScheduleDetailEntity.Note = scheduleDetail.Note;
+                        if (newScheduleDetailEntity.Equals(scheduleDetailEntity))
+                        {
+                            continue;
+                        }
 
+                        newScheduleDetailEntity.UpdatedTime = DateTime.Now;
+                        newScheduleDetailEntity.UpdatedBy = scheduleDetail.UpdatedBy;
+                        _context.Entry(newScheduleDetailEntity).State = EntityState.Modified;
+                        isUpdated = true;
                         if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
                         {
                             await _jobApplicationRepository.UpdateJobApplicationStatus(
                                 (int)scheduleDetail.ApplicationId,
                                 interviewerEntity?.InterviewerId, 6);
-                            _emailTemplateRepository.SendEmailUpdateInterviewScheduleToCandidate(
+                            await _emailTemplateRepository.SendEmailUpdateInterviewScheduleToCandidate(
                                 (int)scheduleDetail.ApplicationId,
                                 scheduleDetail.StartDate.ToString() ??
                                 throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
                                 scheduleDetail.Location ??
                                 throw new InvalidOperationException("Địa điểm phỏng vấn không được để trống!")
                             );
-                            _emailTemplateRepository.SendEmailUpdateScheduleForInterviewer(
-                                (int)scheduleDetail.ApplicationId,
-                                scheduleDetail.StartDate.ToString() ??
-                                throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
-                                scheduleDetail.Location);
+                            // _emailTemplateRepository.SendEmailUpdateScheduleForInterviewer(
+                            //     (int)scheduleDetail.ApplicationId,
+                            //     scheduleDetail.StartDate.ToString() ??
+                            //     throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
+                            //     scheduleDetail.Location);
                         }
                         else if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM)
                         {
@@ -583,20 +591,31 @@ public class ScheduleRepository : IScheduleRepository
                             throw new Exception("Không thể xác định được loại lịch!");
                         }
 
-                        scheduleCandidates.Remove(scheduleDetail.ApplicationId);
+                        
                     }
                 }
 
                 if (scheduleCandidates.Count > 0)
                 {
-                    foreach (var scheduleCandidate in scheduleCandidates)
+                    foreach (var scheduleCandidate in scheduleCandidates.Where(scheduleCandidate => scheduleCandidate.CandidateId != null))
                     {
                         await _jobApplicationRepository.UpdateJobApplicationStatus(
-                            (int)scheduleCandidate,
+                            (int)scheduleCandidate.CandidateId!,
                             null, 5);
-                        _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
-                            (int)scheduleCandidate, "chưa nghĩ ra lý do");
+                        await _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
+                            (int)scheduleCandidate.CandidateId, "chưa nghĩ ra lý do");
                     }
+
+                    isUpdated = true;
+                }
+                
+                if (isUpdated && scheduleDto.ScheduleDetails.First().ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
+                {
+                    await _emailTemplateRepository.SendEmailUpdateScheduleForInterviewer2(
+                        scheduleDto.ScheduleId,
+                        scheduleDto.ScheduleDetails.First().StartDate.ToString() ??
+                        throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
+                        scheduleDto.ScheduleDetails.First().Location ?? throw new InvalidOperationException("Địa điểm phỏng vấn không được để trống!"));
                 }
             }
 
