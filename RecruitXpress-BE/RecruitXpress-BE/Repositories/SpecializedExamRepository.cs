@@ -136,7 +136,7 @@ namespace RecruitXpress_BE.Repositories
                     throw new ArgumentException("Không có tài khoản");
                 }
 
-                var profile = _context.Profiles.Where(p => p.AccountId == accountId).FirstOrDefault();
+                var profile = _context.Profiles.FirstOrDefault(p => p.AccountId == accountId);
                 if (profile == null)
                 {
                     throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
@@ -159,7 +159,7 @@ namespace RecruitXpress_BE.Repositories
                 if (specExam.JobId == null)
                     throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
 
-                var jobApplication = _context.JobApplications.Where(j => j.JobId == specExam.JobId && j.ProfileId == profile.ProfileId).FirstOrDefault();
+                var jobApplication = _context.JobApplications.FirstOrDefault(j => j.JobId == specExam.JobId && j.ProfileId == profile.ProfileId);
                 if (jobApplication == null)
                 {
                     throw new ArgumentException("Bạn chưa đăng kí công việc này");

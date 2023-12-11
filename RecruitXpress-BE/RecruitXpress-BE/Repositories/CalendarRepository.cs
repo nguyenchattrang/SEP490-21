@@ -35,7 +35,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<List<CalendarDTO>> GetListByAccountIdDate(int accountId, int? year, int? month, int? day)
         {
-            var account = _context.Accounts.Where(a => a.AccountId == accountId).FirstOrDefault();
+            var account = _context.Accounts.FirstOrDefault(a => a.AccountId == accountId);
             if(account==null)
             {
                 throw new ArgumentException("Không tìm thấy tài khoản");

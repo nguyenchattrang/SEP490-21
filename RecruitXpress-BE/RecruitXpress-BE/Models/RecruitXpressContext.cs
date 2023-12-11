@@ -25,7 +25,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<Cvtemplate> Cvtemplates { get; set; } = null!;
         public virtual DbSet<District> Districts { get; set; } = null!;
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
-        public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
+        public virtual DbSet<EmailTemplate?> EmailTemplates { get; set; } = null!;
         public virtual DbSet<EmailToken> EmailTokens { get; set; } = null!;
         public virtual DbSet<EmploymentType> EmploymentTypes { get; set; } = null!;
         public virtual DbSet<Evaluate> Evaluates { get; set; } = null!;

@@ -8,6 +8,7 @@ namespace RecruitXpress_BE.Models
         public SpecializedExam()
         {
             Exams = new HashSet<Exam>();
+            Schedules = new HashSet<Schedule>();
         }
 
         public int ExamId { get; set; }

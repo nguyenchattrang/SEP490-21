@@ -22,6 +22,7 @@ namespace RecruitXpress_BE.Models
         public DateTime? CreatedAt { get; set; }
 
         public virtual JobPosting? Job { get; set; }
+        // public virtual Account? AssignedFors { get; set; }
         public virtual Profile? Profile { get; set; }
         public virtual CandidateCv? Template { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }

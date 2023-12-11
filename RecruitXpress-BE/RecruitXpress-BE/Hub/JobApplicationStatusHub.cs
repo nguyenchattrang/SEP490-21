@@ -1,6 +1,7 @@
 ﻿using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
+using RecruitXpress_BE.Models;
 
 namespace RecruitXpress_BE.Hub;
 
@@ -18,27 +19,41 @@ public class JobApplicationStatusHub : Hub
         _notificationRepository = notificationRepository;
     }
 
-    public async Task NotifyStatusChange(int jobApplicationId, int newStatus)
+    public async Task NotifyStatusUpgrade(JobApplication? jobApplication, int newStatus, int oldStatus)
     {
         try
         {
-            var notification = Constant.APPLICAION_STATUS_NOTIFICATION[newStatus];
-            if (notification.Title!.Contains("[candidateName]"))
+            var notification = Constant.APPLICAION_STATUS_NOTIFICATION[new StatusChange()
             {
-                var candidate = 
-                notification.Title = notification.Title.Replace("[candidateName]", "");
+                NewStatus = newStatus, OldStatus = oldStatus
+            }];
+            if (notification.Description!.Contains("@candidateName"))
+            {
+                notification.Description =
+                    notification.Description?.Replace("@candidateName", jobApplication?.Profile?.Account?.FullName);
             }
-            await _notificationRepository.SaveNotification(new NotificationDTO()
+
+            if (jobApplication != null)
             {
-                Title = notification.Title,
-                Description = notification.Description,
-                Seen = false,
-                Status = 1,
-                ApplicationId = jobApplicationId,
-                CreatedDate = DateTime.Now,
-                TargetUrl = notification.TargetUrl
-            });
-            await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplicationId, newStatus, notification.Title, notification.Description);
+                await _notificationRepository.SaveNotification(new NotificationDTO()
+                {
+                    Title = notification.Title,
+                    Description = notification.Description,
+                    Seen = false,
+                    Status = 1,
+                    ApplicationId = jobApplication.ApplicationId,
+                    CreatedDate = DateTime.Now,
+                    TargetUrl = notification.TargetUrl,
+                    ReceiverId = jobApplication.Profile?.AccountId
+                });
+                await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplication.ApplicationId, newStatus,
+                    notification.Title,
+                    notification.Description);
+            }
+        }
+        catch (KeyNotFoundException ex)
+        {
+            Console.WriteLine(ex);
         }
         catch (Exception e)
         {
