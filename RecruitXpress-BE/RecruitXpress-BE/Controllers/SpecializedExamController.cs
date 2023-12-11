@@ -82,10 +82,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-
-                await _repository.AddSpecializedExam(exam);
-                return Ok(exam);
-
                 if (examId != exam.ExamId)
                 {
                     return BadRequest("Examid không khớp");
