@@ -5,6 +5,7 @@ using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -574,6 +575,7 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 var detailJob = await _context.JobApplications
                     .Include(ja => ja.Profile)
                     .ThenInclude(p => p.Account)
@@ -589,7 +591,7 @@ namespace RecruitXpress_BE.Controllers
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
-                      await  _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
+                        await  _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
                     switch (status)
@@ -627,9 +629,10 @@ namespace RecruitXpress_BE.Controllers
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     await _applicationHubContext.NotifyStatusUpgrade(detailJob, (int)status, oldStatus);
+                    stopwatch.Stop();
+                    Console.WriteLine($"Thời gian thực hiện: {stopwatch.ElapsedMilliseconds} ms");
                     return Ok("Cập nhật trạng thái thành công");
                 }
-
                 return Ok(detailJob);
 
             }

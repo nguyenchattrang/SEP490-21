@@ -297,7 +297,7 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Thông Báo Cập Nhật Thông Tin Đầy Đủ",
-                    Description = "Xin chào @candidateName, chúc mừng bạn đã vượt qua vòng phỏng vấn và có thể gia nhập vào đại gia đình @company. Vui lòng cập nhật đầy đủ thông tin để hoàn tất quá trình uứng tuyển và xác nhận gia nhập vào đại gia đình. Nếu có bất kỳ thắc mắc nào, hãy vui lòng liên hệ với chúng tôi.",
+                    Description = "Xin chào @candidateName, chúc mừng bạn đã vượt qua vòng phỏng vấn và có thể gia nhập vào đại gia đình @company. Vui lòng cập nhật đầy đủ thông tin để hoàn tất quá trình ứng tuyển và xác nhận gia nhập vào đại gia đình. Nếu có bất kỳ thắc mắc nào, hãy vui lòng liên hệ với chúng tôi.",
                     TargetUrl = ""
                 }
             },

@@ -3,7 +3,6 @@ using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
-using System.Net.NetworkInformation;
 
 namespace RecruitXpress_BE.Repositories
 {
@@ -11,6 +10,7 @@ namespace RecruitXpress_BE.Repositories
     {
         private readonly RecruitXpressContext _context;
         private readonly IEmailSender _sender;
+        private static Dictionary<int, EmailTemplate?> _emailTemplates = new();
 
         public EmailTemplateRepository(RecruitXpressContext context, IEmailSender sender)
         {
@@ -20,7 +20,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<ApiResponse<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request)
         {
-            IQueryable<EmailTemplate> query = _context.EmailTemplates;
+            IQueryable<EmailTemplate?> query = _context.EmailTemplates;
 
             if (!string.IsNullOrWhiteSpace(request.Title))
             {
@@ -108,7 +108,13 @@ namespace RecruitXpress_BE.Repositories
         //Email template
         public async Task SendEmailRefuse(int jobApplicationID, string reason)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.REFUSED);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.REFUSED, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.REFUSED);
+                _emailTemplates.Add(Constant.MailType.REFUSED, emailTemplate);
+            }
+            // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.REFUSED);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -132,7 +138,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailSubmitJob(int jobApplicationID)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.SUBMIT);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.SUBMIT, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.SUBMIT);
+                _emailTemplates.Add(Constant.MailType.SUBMIT, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.SUBMIT);
             if (emailTemplate == null)
             {
                 throw new ArgumentException("Email hiện tại chưa sẵn sàng");
@@ -175,19 +187,21 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailCVToInterviewer(int jobApplicationID)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWCV);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.HRINTERVIEWCV, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWCV);
+                _emailTemplates.Add(Constant.MailType.HRINTERVIEWCV, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWCV);
             var application = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID)
                 .Include(j => j.Profile).ThenInclude(p => p.Account)
-                .Include(jobApplication => jobApplication.AssignedFor)
                 .Include(jobApplication => jobApplication.Job)
                 .FirstOrDefault();
-            // var account = _context.Accounts.FirstOrDefault(a =>
-            //     application != null && application.Profile != null && a.AccountId == application.Profile.AccountId);
-            Account interviewer = null;
+            Account? interviewer;
             var interviewerName = "nhà phỏng vấn";
             var cvName = "CV_" + application?.Profile?.Account?.FullName;
-            if (application.AssignedFor != null)
+            if (application?.AssignedFor != null)
             {
                 interviewer = _context.Accounts.FirstOrDefault(a => a.AccountId == application.AssignedFor);
                 if (interviewer != null && interviewer.FullName != null)
@@ -214,7 +228,6 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@name", interviewerName);
                 emailCopy.Body = emailCopy.Body.Replace("@candidatename", application?.Profile?.Account?.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@cv", cvName);
-
                 //take CV
                 var result =
                     await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == application.TemplateId);
@@ -223,11 +236,10 @@ namespace RecruitXpress_BE.Repositories
                     throw new ArgumentException("Không tìm thấy CV");
                 }
 
-                string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+                var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
 
                 var filePath = path + result.Url;
-
-                if (!System.IO.File.Exists(filePath))
+                if (!File.Exists(filePath))
                 {
                     throw new ArgumentException("Không tìm thấy địa chỉ CV");
                 }
@@ -239,8 +251,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailExamSchedule(int jobApplicationID, string time, string location)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.EXAMSCHEDULE);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.EXAMSCHEDULE, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.EXAMSCHEDULE);
+                _emailTemplates.Add(Constant.MailType.EXAMSCHEDULE, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.EXAMSCHEDULE);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -267,8 +284,13 @@ namespace RecruitXpress_BE.Repositories
         public async Task SendEmailInterviewSchedule(int jobApplicationID, string time, string location,
             string? interviewer)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.INTERVIEWSCHEDULE);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.INTERVIEWSCHEDULE, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.INTERVIEWSCHEDULE);
+                _emailTemplates.Add(Constant.MailType.INTERVIEWSCHEDULE, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.INTERVIEWSCHEDULE);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -295,8 +317,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailScheduleForInterviewer(int jobApplicationID, string time, string location)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWSCHEDULE);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.HRINTERVIEWSCHEDULE, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWSCHEDULE);
+                _emailTemplates.Add(Constant.MailType.HRINTERVIEWSCHEDULE, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWSCHEDULE);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -342,8 +369,13 @@ namespace RecruitXpress_BE.Repositories
         {
             try
             {
-                var emailTemplate = _context.EmailTemplates.FirstOrDefault(
-                    e => e.MailType == Constant.MailType.HRINTERVIEWSCHEDULE);
+                EmailTemplate? emailTemplate;
+                if (!_emailTemplates.TryGetValue(Constant.MailType.HRINTERVIEWSCHEDULE, out emailTemplate))
+                {
+                    emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWSCHEDULE);
+                    _emailTemplates.Add(Constant.MailType.HRINTERVIEWSCHEDULE, emailTemplate);
+                }
+                    // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.HRINTERVIEWSCHEDULE);
                 if (emailTemplate == null) throw new Exception("Email template null");
                 var scheduleDetails = _context.ScheduleDetails
                     .Include(sd => sd.Candidate).ThenInclude(jobApplication => jobApplication.Profile)
@@ -391,8 +423,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task CandidateCancelJobApplicationToHR(int jobApplicationID)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateExamSchedule);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.UpdateExamSchedule, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateExamSchedule);
+                _emailTemplates.Add(Constant.MailType.UpdateExamSchedule, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateExamSchedule);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -419,8 +456,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailUpdateExamScheduleToCandidate(int jobApplicationID, string time, string location)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateExamSchedule);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.UpdateExamSchedule, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateExamSchedule);
+                _emailTemplates.Add(Constant.MailType.UpdateExamSchedule, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateExamSchedule);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -448,8 +490,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailDeleteExamScheduleToCandidate(int jobApplicationID, string reason)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.DeleteExamSchedule);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.DeleteExamSchedule, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.DeleteExamSchedule);
+                _emailTemplates.Add(Constant.MailType.DeleteExamSchedule, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.DeleteExamSchedule);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -478,8 +525,13 @@ namespace RecruitXpress_BE.Repositories
         public async Task SendEmailUpdateInterviewScheduleToCandidate(int jobApplicationID, string time,
             string location)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e =>
-                e.MailType == Constant.MailType.UpdateInterviewScheduleForCandidate);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.UpdateInterviewScheduleForCandidate, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateInterviewScheduleForCandidate);
+                _emailTemplates.Add(Constant.MailType.UpdateInterviewScheduleForCandidate, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateInterviewScheduleForCandidate);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -507,8 +559,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailDeleteInterviewScheduleToCandidate(int jobApplicationID, string reason)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e =>
-                e.MailType == Constant.MailType.DeleteInterviewcheduleForCandidate);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.DeleteInterviewcheduleForCandidate, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.DeleteInterviewcheduleForCandidate);
+                _emailTemplates.Add(Constant.MailType.DeleteInterviewcheduleForCandidate, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.DeleteInterviewcheduleForCandidate);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -535,8 +592,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailUpdateScheduleForInterviewer(int jobApplicationID, string time, string location)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e =>
-                e.MailType == Constant.MailType.UpdateInterviewScheduleForInterviewer);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.UpdateInterviewScheduleForInterviewer, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateInterviewScheduleForInterviewer);
+                _emailTemplates.Add(Constant.MailType.UpdateInterviewScheduleForInterviewer, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.UpdateInterviewScheduleForInterviewer);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -580,8 +642,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailDeleteScheduleForInterviewer(int jobApplicationID, string reason)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e =>
-                e.MailType == Constant.MailType.DeleteInterviewcheduleForInterviewer);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.DeleteInterviewcheduleForInterviewer, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.DeleteInterviewcheduleForInterviewer);
+                _emailTemplates.Add(Constant.MailType.DeleteInterviewcheduleForInterviewer, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.DeleteInterviewcheduleForInterviewer);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -624,8 +691,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailUpdateProfile(int jobApplicationID)
         {
-            var emailTemplate =
-                _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.PASSINTERVIEW);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.PASSINTERVIEW, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.PASSINTERVIEW);
+                _emailTemplates.Add(Constant.MailType.PASSINTERVIEW, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.PASSINTERVIEW);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -649,7 +721,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailAccepted(int jobApplicationID)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.ACCEPTED);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.ACCEPTED, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.ACCEPTED);
+                _emailTemplates.Add(Constant.MailType.ACCEPTED, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.ACCEPTED);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -674,7 +752,13 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task SendEmailCanceled(int jobApplicationID)
         {
-            var emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.CANCEL);
+            EmailTemplate? emailTemplate;
+            if (!_emailTemplates.TryGetValue(Constant.MailType.CANCEL, out emailTemplate))
+            {
+                emailTemplate = _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.CANCEL);
+                _emailTemplates.Add(Constant.MailType.CANCEL, emailTemplate);
+            }
+                // _context.EmailTemplates.FirstOrDefault(e => e.MailType == Constant.MailType.CANCEL);
             var user = _context.JobApplications.Where(j => j.ApplicationId == jobApplicationID).Include(j => j.Profile)
                 .FirstOrDefault();
             var account = _context.Accounts.FirstOrDefault(a => a.AccountId == user.Profile.AccountId);
@@ -699,10 +783,11 @@ namespace RecruitXpress_BE.Repositories
             }
         }
 
-        public async Task CreateEmailTemplate(EmailTemplate emailTemplate)
+        public async Task CreateEmailTemplate(EmailTemplate? emailTemplate)
         {
             _context.EmailTemplates.Add(emailTemplate);
             await _context.SaveChangesAsync();
+            _emailTemplates.Add(emailTemplate.TemplateId, emailTemplate);
         }
 
 /*        public async Task UpdateEmailTemplate(EmailTemplate emailTemplate)
@@ -719,6 +804,8 @@ namespace RecruitXpress_BE.Repositories
                 _context.EmailTemplates.Remove(emailTemplate);
                 await _context.SaveChangesAsync();
             }
+
+            _emailTemplates.Remove(templateId);
         }
     }
 }

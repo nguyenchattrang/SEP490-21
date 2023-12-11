@@ -9,7 +9,7 @@ namespace RecruitXpress_BE.IRepositories
         Task<ApiResponse<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request);
 
         Task<EmailTemplate> GetEmailTemplateById(int templateId);
-        Task CreateEmailTemplate(EmailTemplate emailTemplate);
+        Task CreateEmailTemplate(EmailTemplate? emailTemplate);
 
 /*        Task UpdateEmailTemplate(EmailTemplate emailTemplate);*/
 
