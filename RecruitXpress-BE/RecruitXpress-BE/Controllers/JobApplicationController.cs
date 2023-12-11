@@ -621,7 +621,6 @@ namespace RecruitXpress_BE.Controllers
                     }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
-                    // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, Status);
                     await _applicationHubContext.NotifyStatusChange(jobApplyId, (int)status);
                     return Ok("Cập nhật trạng thái thành công");
                 }
@@ -671,24 +670,27 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet("ListByJobPosting")]
-        public async Task<IActionResult> ListByJobPosting(int jobId)
+        public async Task<IActionResult> ListByJobPosting(int jobId, int status)
         {
             try
             {
 
                 var query = await _context.JobApplications
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
-                .Where(j=> j.JobId==jobId && j.Status==2)
+                .Where(j=> j.JobId==jobId && (status != null ? j.Status == status : j.Status == j.Status))
                 .ToListAsync();
                 if (query == null)
                     return NotFound("Không kết quả");
                 var jobApplicationDTOs = _mapper.Map<List<ShortJobApp>>(query);
 
                 var listExams = await _context.SpecializedExams
-                .Where(j => j.JobId == jobId && j.Status==1)
+                .Where(j => j.JobId == jobId && j.Status ==1)
                 .OrderByDescending(j=> j.ExamId)
                 .ToListAsync();
+
                 var listMap = _mapper.Map<List<SpecializedExamDTO>>(listExams);
+
+                var location = await _context.JobPostings.Where(j => j.JobId == jobId).Select(j => j.DetailLocation).FirstOrDefaultAsync();
 
                 foreach (var jobApplicationDTO in jobApplicationDTOs)
                 {
@@ -712,11 +714,11 @@ namespace RecruitXpress_BE.Controllers
 
                 }
 
-
                 return Ok(new JobSearchReponse
                 {
                     ListCandidates = jobApplicationDTOs,
                     ListSpecializedExams = listMap,
+                    Location = location,
                 }) ;
 
             }

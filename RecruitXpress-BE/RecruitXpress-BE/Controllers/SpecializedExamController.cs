@@ -59,27 +59,56 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpPost("CreateSpecializedExam")]
-        public async Task<IActionResult> CreateSpecializedExam(SpecializedExam exam)
+        public async Task<IActionResult> CreateSpecializedExam(SpecializedExamDTO exam)
         {
+            try
+            {
+
             await _repository.AddSpecializedExam(exam);
             return Ok(exam);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Đã có lỗi xảy ra");
+            }
         }
 
         [HttpPut("UpdateSpecializedExam/{examId}")]
-        public async Task<IActionResult> UpdateSpecializedExam(int examId, SpecializedExam exam)
+        public async Task<IActionResult> UpdateSpecializedExam(int examId, SpecializedExamDTO exam)
         {
-            if (examId != exam.ExamId)
+            try
             {
-                return BadRequest("Examid không khớp");
-            }
 
-            return Ok(await _repository.UpdateSpecializedExam(exam));
+                await _repository.AddSpecializedExam(exam);
+                return Ok(exam);
+
+                if (examId != exam.ExamId)
+                {
+                    return BadRequest("Examid không khớp");
+                }
+
+                return Ok(await _repository.UpdateSpecializedExam(exam));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {     
+                return BadRequest("Đã có lỗi xảy ra");
+            }
         }
 
         [HttpDelete("DeleteSpecializedExam/{examId}")]
         public async Task<IActionResult> DeleteSpecializedExam(int examId)
         {
-
+            try
+            {
+         
             var deleted = await _repository.DeleteSpecializedExam(examId);
 
             if (!deleted)
@@ -88,7 +117,11 @@ namespace RecruitXpress_BE.Controllers
             }
 
             return NoContent();
-
+            }
+            catch(Exception e)
+            {
+                return BadRequest("Không thể xóa được bài thi này");
+            }
         }
     }
 }

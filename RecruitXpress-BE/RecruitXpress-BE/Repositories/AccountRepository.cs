@@ -37,7 +37,7 @@ public class AccountRepository : IAccountRepository
         {
             var check = await _context.Accounts.FirstOrDefaultAsync(x => x.Account1 == account.Account1);
 
-            if (check == null)
+            if (check != null)
             {
                 throw new Exception("Tài khoản đã tồn tại");
             }

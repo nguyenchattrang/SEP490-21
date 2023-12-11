@@ -116,7 +116,7 @@ namespace RecruitXpress_BE.DTO
     {
         public List<ShortJobApp> ListCandidates { get; set; }
         public List<SpecializedExamDTO> ListSpecializedExams { get; set; }
-
+        public string Location { get; set; }
     }
     public partial class InterviewerProfile
     {
