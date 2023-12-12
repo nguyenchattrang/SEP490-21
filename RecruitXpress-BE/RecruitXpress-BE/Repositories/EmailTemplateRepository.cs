@@ -249,7 +249,7 @@ namespace RecruitXpress_BE.Repositories
                     throw new ArgumentException("Không tìm thấy địa chỉ CV");
                 }
 
-                emailTemplate.Body = emailTemplate.Body.Replace("@cv", result.Url);
+                emailCopy.Body = emailCopy.Body.Replace("@cv", result.Url);
                 _sender.SendWithAttach(interviewer.Account1, emailCopy.Header, emailCopy.Body, filePath, cvName);
             }
         }
