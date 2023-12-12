@@ -15,7 +15,7 @@ public class JobPostingSearchDTO
     public double? MinSalary { get; set; }
     public double? MaxSalary { get; set; }
     public DateTime? ApplicationDeadline { get; set; }
-    public int? Status { get; set; }
+    public int? status { get; set; }
 
     public string? SortBy { get; set; }
 

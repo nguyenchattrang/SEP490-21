@@ -52,7 +52,6 @@ namespace RecruitXpress_BE.DTO
         public string? Company { get; set; }
         public string? Title { get; set; }
         public int? Status { get; set; }
-        public int? Shorted { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
         public DateTime? DatePosted { get; set; }
 
@@ -64,8 +63,6 @@ namespace RecruitXpress_BE.DTO
         public string? Description { get; set; }
         public int? CreatedBy { get; set; }
         public int? ProfileId { get; set; }
-        public int? Score { get; set; }
-        public int? TimeCount { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 

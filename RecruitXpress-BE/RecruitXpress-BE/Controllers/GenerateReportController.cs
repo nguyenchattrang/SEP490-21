@@ -401,9 +401,9 @@ namespace RecruitXpress_BE.Controllers
                         companyNumber.Add(data.CompanyNumber);
                         candidateNumber.Add(data.CandidateNumber);
                         candidateNumberAppliedJob.Add(data.CandidateNumberAppliedJob);
-                        acceptedCandidateNumber.Add(data.CandidateNumberAppliedJob);
-                        rejectdCandidateNumber.Add(data.CandidateNumberAppliedJob);
-                        onGoingCandidateNumber.Add(data.CandidateNumberAppliedJob);
+                        acceptedCandidateNumber.Add(data.AcceptedCandidateNumber);
+                        rejectdCandidateNumber.Add(data.RejectedCandidateNumber);
+                        onGoingCandidateNumber.Add(data.OnGoingCandidateNumber);
                     }
                 }
 

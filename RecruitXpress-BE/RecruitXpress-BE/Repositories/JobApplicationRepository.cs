@@ -9,26 +9,20 @@ namespace RecruitXpress_BE.Repositories;
 public class JobApplicationRepository : IJobApplicationRepository
 {
     private readonly RecruitXpressContext _context;
-    // private readonly IHubContext<JobApplicationStatusHub> _hubContext;
-    private readonly JobApplicationStatusHub _applicationHubContext;
+    private readonly IHubContext<JobApplicationStatusHub> _hubContext;
 
-    public JobApplicationRepository(RecruitXpressContext context, IHubContext<JobApplicationStatusHub> hubContext, JobApplicationStatusHub applicationHubContext)
+    public JobApplicationRepository(RecruitXpressContext context, IHubContext<JobApplicationStatusHub> hubContext)
     {
         _context = context;
-        // _hubContext = hubContext;
-        _applicationHubContext = applicationHubContext;
+        _hubContext = hubContext;
     }
 
     public async Task<JobApplication?> UpdateJobApplicationStatus(int jobApplyId, int? accountId, int? status)
     {
         try
         {
-            var detailJob = await _context.JobApplications
-                .Include(ja => ja.Profile)
-                .ThenInclude(p => p.Account)
-                .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
+            var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
             if (detailJob == null || status == null) return detailJob;
-            var oldStatus = detailJob.Status ?? -1;
             detailJob.Status = status;
             if (accountId != null)
             {
@@ -36,8 +30,7 @@ public class JobApplicationRepository : IJobApplicationRepository
             }
             _context.Update(detailJob);
             await _context.SaveChangesAsync();
-            // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, status);
-            await _applicationHubContext.NotifyStatusUpgrade(detailJob, (int)status, oldStatus);
+            await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, status);
             return detailJob;
         }
         catch (Exception ex)
@@ -46,21 +39,13 @@ public class JobApplicationRepository : IJobApplicationRepository
             throw;
         }
     }
-    
     public async Task<JobApplication?> AutoAddStatus(int jobApplyId)
     {
         try
         {
-            var detailJob = await _context.JobApplications
-                .Include(ja => ja.Profile)
-                .ThenInclude(p => p.Account)
-                .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
-            if (detailJob == null) throw new Exception("Không tìm thấy thông tin ứng tuyển!");
-            if ( detailJob.Status == null) throw new Exception("Không tìm thấy trạng thái ứng tuyển!");
-            var oldStatus = detailJob.Status ?? -1;
-            var newStatus = oldStatus + 1;
-            // await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, newStatus);
-            await _applicationHubContext.NotifyStatusUpgrade(detailJob, newStatus, oldStatus);
+            var detailJob = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
+            var newStatus = detailJob.Status + 1;
+            await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplyId, newStatus);
             return detailJob;
         }
         catch (Exception ex)

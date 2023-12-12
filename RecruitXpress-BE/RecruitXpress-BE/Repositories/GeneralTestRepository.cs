@@ -69,7 +69,6 @@ namespace RecruitXpress_BE.Repositories
 
             if (!string.IsNullOrEmpty(request.SortBy))
             {
-
                 switch (request.SortBy)
                 {
                     case "testName":
@@ -77,27 +76,19 @@ namespace RecruitXpress_BE.Repositories
                             ? query.OrderBy(gt => gt.TestName)
                             : query.OrderByDescending(gt => gt.TestName);
                         break;
+
                     case "generalTestId":
                         query = request.OrderByAscending
                             ? query.OrderBy(gt => gt.GeneralTestId)
                             : query.OrderByDescending(gt => gt.GeneralTestId);
                         break;
 
-                    case "score":
-                        query = request.OrderByAscending
-                            ? query.OrderBy(gt => gt.Score).ThenByDescending(gt=> gt.GeneralTestId)
-                            : query.OrderByDescending(gt => gt.Score).ThenByDescending(gt => gt.GeneralTestId);
-                        break;
-                    case "timeCount":
-                        query = request.OrderByAscending
-                            ? query.OrderBy(gt => gt.TimeCount).ThenByDescending(gt => gt.GeneralTestId)
-                            : query.OrderByDescending(gt => gt.TimeCount).ThenByDescending(gt => gt.GeneralTestId);
-                        break;
                     case "createAt":
                         query = request.OrderByAscending
                             ? query.OrderBy(gt => gt.CreatedAt)
                             : query.OrderByDescending(gt => gt.CreatedAt);
                         break;
+
                     default:
                         query = request.OrderByAscending
                             ? query.OrderBy(gt => gt.GeneralTestId)

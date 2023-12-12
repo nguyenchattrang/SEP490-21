@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "apis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/RecruitXpress-BEapi/apis/RecruitXpress-BE",
+      "type": "apis.azure"
+    },
+    "mssql1": {
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/recruitxpressdb1/databases/recruitxpressdb",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:RecruitXpress",
+      "dynamicId": null
+    }
+  }
+}

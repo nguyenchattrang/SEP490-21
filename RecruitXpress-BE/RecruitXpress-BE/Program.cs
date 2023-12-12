@@ -36,13 +36,6 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IJobPostingManagementRepository, JobPostingManagementRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMaritalStatusRepository, MaritalStatusRepository>();
-builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<ICityRepository, CityRepository>();
-builder.Services.AddScoped<IIndustryRepository, IndustryRepository>();
-builder.Services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
-builder.Services.AddScoped<JobApplicationStatusHub>();
-
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
         .Get<EmailConfiguration>();
@@ -84,10 +77,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddDbContext<RecruitXpressContext>(opt
-   // => opt.UseSqlServer("Server=35.193.217.3;database=recruitxpressdb;uid=sqlserver;pwd=vutiendat2001a@A;;Encrypt=True;TrustServerCertificate=true;Connection Timeout=30;"));
-//builder.Services.AddDbContext<RecruitXpressContext>(opt
-//    => opt.UseSqlServer("Server=tcp:recruitxpressdb1.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
-    => opt.UseSqlServer("Server=tcp:recruitxpressserverdb.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+    => opt.UseSqlServer("server =35.225.17.252; database = recruitxpress;uid=sqlserver;pwd=vutiendat2001a@A; TrustServerCertificate=True"));
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -113,23 +103,42 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddSignalR();
 
+
 builder.Services.AddAuthorization();
 var app = builder.Build();
-app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+//using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+//{
+//    using (var dbContext = scope.ServiceProvider.GetRequiredService<RecruitXpressContext>())
+//    {
+//        if (dbContext.Database.GetPendingMigrations().Any())
+//        {
+//            dbContext.Database.Migrate();
+//        }
+//    }
+//}
+app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+//app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+if (!app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<HubContext>("/api/JobApplicationStatusHub"); // Đặt đường dẫn Hub của bạn
+    endpoints.MapHub<JobApplicationStatusHub>("/JobApplicationStatusHub"); // Đặt đường dẫn Hub của bạn
     endpoints.MapControllers();
 });
 

@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Upload\JobApplications\**" />
-    <Content Remove="Upload\JobApplications\**" />
-    <EmbeddedResource Remove="Upload\JobApplications\**" />
-    <None Remove="Upload\JobApplications\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Google.Apis" Version="1.63.0" />
     <PackageReference Include="Google.Apis.Auth" Version="1.63.0" />
@@ -29,14 +22,15 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.23" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Contracts\" />
     <Folder Include="Upload\CandidateCvs\" />
-    <Folder Include="Upload\JobApplicationsCV\" />
+    <Folder Include="Upload\ExamFiles\" />
+    <Folder Include="Upload\JobApplications\" />
   </ItemGroup>
 
 </Project>

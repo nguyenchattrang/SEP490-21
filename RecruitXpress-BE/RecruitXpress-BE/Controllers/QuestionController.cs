@@ -37,8 +37,8 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-
-                return Ok(new
+              
+                return Ok( new
                 {
                     easy = ConstantQuestion.easy,
                     medium = ConstantQuestion.medium,
@@ -56,7 +56,7 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                await _repository.SetUpLevelOfGeneralTests(easy, medium, hard);
+                await _repository.SetUpLevelOfGeneralTests(easy,medium,hard);
                 return Ok();
             }
             catch (Exception ex)
@@ -131,12 +131,14 @@ namespace RecruitXpress_BE.Controllers
 
             return NoContent();
         }
-        [HttpPut("SetQuestionStatus/{id}")]
-        public async Task<IActionResult> SetQuestionStatus(int id, int status)
-        {
-            var updated = await _repository.SetQuestionStatus(id, status);
 
-            if (!updated)
+        // DELETE: api/questions/{id}
+        [HttpDelete("DeleteQuestion/{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var deleted = await _repository.DeleteQuestion(id);
+
+            if (!deleted)
             {
                 return NotFound();
             }
@@ -144,51 +146,18 @@ namespace RecruitXpress_BE.Controllers
             return NoContent();
         }
 
-        // DELETE: api/questions/{id}
-        [HttpDelete("DeleteQuestion/{id}")]
-        public async Task<IActionResult> DeleteQuestion(int id)
-        {
-            try
-            {
-
-
-                var deleted = await _repository.DeleteQuestion(id);
-
-                if (!deleted)
-                {
-                    return NotFound();
-                }
-
-                return NoContent();
-            }
-            catch (Exception e)
-            {
-                return BadRequest("Không thể xóa được câu hỏi này");
-            }
-        }
-
-
         [HttpDelete("DeleteOption/{id}")]
         public async Task<IActionResult> DeleteOption(int id)
         {
-            try
+            var deleted = await _repository.DeleteOption(id);
+
+            if (!deleted)
             {
-
-
-                var deleted = await _repository.DeleteOption(id);
-
-                if (!deleted)
-                {
-                    return NotFound();
-                }
-
-                return NoContent();
+                return NotFound();
             }
-            catch (Exception e)
-            {
-                return BadRequest("Không thể xóa được đáp án này");
-            }
+
+            return NoContent();
         }
-    }
 
+    }
 }

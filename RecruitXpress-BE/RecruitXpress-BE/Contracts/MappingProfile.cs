@@ -31,9 +31,13 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Location,
                     opt => opt.MapFrom(src =>
                         src.DetailLocation + (src.LocationNavigation != null
-                            ? src.DetailLocation != null
-                                ? ", " + src.LocationNavigation.CityName
-                                : src.LocationNavigation.CityName 
+                            ? (src.DetailLocation != null
+                                ? (", " + src.LocationNavigation.DistrictName + (src.LocationNavigation.City != null
+                                    ? ", " + src.LocationNavigation.City.CityName
+                                    : null))
+                                : (src.LocationNavigation.DistrictName + (src.LocationNavigation.City != null
+                                    ? ", " + src.LocationNavigation.City.CityName
+                                    : null)))
                             : null)))
                 .ForMember(dest => dest.EmploymentType,
                     otp => otp.MapFrom(src =>
@@ -108,9 +112,6 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
 
             CreateMap<JobApplication,ShortJobApp>();
-
-
-            CreateMap<SpecializedExam, SpecializedExamDTO>().ReverseMap();
         }
     }
 }
