@@ -18,7 +18,7 @@ namespace RecruitXpress_BE.Repositories
         }
  
 
-        public void Send(string to, string subject, string html, string from = null)
+        public async Task Send(string to, string subject, string html, string from = null)
         {
             // create message
             var email = new MimeMessage();
@@ -28,13 +28,9 @@ namespace RecruitXpress_BE.Repositories
             email.Body = new TextPart(TextFormat.Html) { Text = html };
 
             // send email
-            using var smtp = new SmtpClient();
-            smtp.Connect(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_emailConfig.UserName, _emailConfig.Password);
-            smtp.Send(email);
-            smtp.Disconnect(true);
+            await Task.Run(() => SendEmailAsync(email));
         }
-        public void SendWithAttach(string to, string subject, string html, string filePath, string fileName, string from = null)
+        public async Task SendWithAttach(string to, string subject, string html, string filePath, string fileName, string from = null)
         {
             // Create the MIME message
             var email = new MimeMessage();
@@ -64,13 +60,16 @@ namespace RecruitXpress_BE.Repositories
             email.Body = multipart;
 
             // Send email
-            using (var smtp = new SmtpClient())
-            {
-                smtp.Connect(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);
-                smtp.Authenticate(_emailConfig.UserName, _emailConfig.Password);
-                smtp.Send(email);
-                smtp.Disconnect(true);
-            }
+            await Task.Run(() => SendEmailAsync(email));
+        }
+        
+        private async Task SendEmailAsync(MimeMessage email)
+        {
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
         }
     }
 }

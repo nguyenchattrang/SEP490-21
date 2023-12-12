@@ -35,38 +35,76 @@ namespace RecruitXpress_BE.Controllers
             return Ok(exam);
         }
         [HttpGet("GetSpecializedExamByCode/{code}")]
-        public async Task<IActionResult> GetSpecializedExamByCode(string code)
+        public async Task<IActionResult> GetSpecializedExamByCode(string code, int accountId)
         {
-            var exam = await _repository.GetSpecializedExamByCode(code);
+            try
+            {
+
+   
+            var exam = await _repository.GetSpecializedExamByCode(code, accountId);
             if (exam == null)
             {
                 return NotFound("Không tìm thấy exam code");
             }
             return Ok(exam);
+            }
+            catch(ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Đã có xảy ra. Vui lòng thử lại");
+            }
         }
 
         [HttpPost("CreateSpecializedExam")]
-        public async Task<IActionResult> CreateSpecializedExam(SpecializedExam exam)
+        public async Task<IActionResult> CreateSpecializedExam(SpecializedExamDTO exam)
         {
+            try
+            {
+
             await _repository.AddSpecializedExam(exam);
             return Ok(exam);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Đã có lỗi xảy ra");
+            }
         }
 
         [HttpPut("UpdateSpecializedExam/{examId}")]
-        public async Task<IActionResult> UpdateSpecializedExam(int examId, SpecializedExam exam)
+        public async Task<IActionResult> UpdateSpecializedExam(int examId, SpecializedExamDTO exam)
         {
-            if (examId != exam.ExamId)
+            try
             {
-                return BadRequest("Examid không khớp");
-            }
+                if (examId != exam.ExamId)
+                {
+                    return BadRequest("Examid không khớp");
+                }
 
-            return Ok(await _repository.UpdateSpecializedExam(exam));
+                return Ok(await _repository.UpdateSpecializedExam(exam));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {     
+                return BadRequest("Đã có lỗi xảy ra");
+            }
         }
 
         [HttpDelete("DeleteSpecializedExam/{examId}")]
         public async Task<IActionResult> DeleteSpecializedExam(int examId)
         {
-
+            try
+            {
+         
             var deleted = await _repository.DeleteSpecializedExam(examId);
 
             if (!deleted)
@@ -75,7 +113,11 @@ namespace RecruitXpress_BE.Controllers
             }
 
             return NoContent();
-
+            }
+            catch(Exception e)
+            {
+                return BadRequest("Không thể xóa được bài thi này");
+            }
         }
     }
 }
