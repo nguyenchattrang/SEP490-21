@@ -39,7 +39,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateEmailTemplate([FromBody] EmailTemplate? emailTemplate)
+        public async Task<IActionResult> CreateEmailTemplate([FromBody] EmailTemplate emailTemplate)
         {
             await _emailTemplateRepository.CreateEmailTemplate(emailTemplate);
             return CreatedAtAction("GetEmailTemplateById", new { templateId = emailTemplate.TemplateId }, emailTemplate);

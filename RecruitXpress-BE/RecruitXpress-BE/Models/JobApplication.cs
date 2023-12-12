@@ -17,12 +17,9 @@ namespace RecruitXpress_BE.Models
         public int? TemplateId { get; set; }
         public int? Status { get; set; }
         public int? AssignedFor { get; set; }
-        public int? Shorted { get; set; }
-        public string? UrlCandidateCV { get; set; }
         public DateTime? CreatedAt { get; set; }
 
         public virtual JobPosting? Job { get; set; }
-        // public virtual Account? AssignedFors { get; set; }
         public virtual Profile? Profile { get; set; }
         public virtual CandidateCv? Template { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }

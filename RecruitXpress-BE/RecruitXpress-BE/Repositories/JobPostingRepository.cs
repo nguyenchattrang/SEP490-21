@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
-using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
@@ -40,7 +39,12 @@ public class JobPostingRepository : IJobPostingRepository
                 Title = jobPosting.Title,
                 Description = jobPosting.Description,
                 Company = jobPosting.Company,
-                Location = jobPosting.LocationNavigation != null ? jobPosting.LocationNavigation.CityName : null,
+                Location = (jobPosting.LocationNavigation != null ? jobPosting.LocationNavigation.DistrictName : null) +
+                           " - " + (jobPosting.LocationNavigation != null
+                               ? jobPosting.LocationNavigation.City != null
+                                   ? jobPosting.LocationNavigation.City.CityName
+                                   : null
+                               : null),
                 EmploymentType = jobPosting.EmploymentTypeNavigation != null
                     ? jobPosting.EmploymentTypeNavigation.EmploymentTypeName
                     : null,
@@ -102,7 +106,14 @@ public class JobPostingRepository : IJobPostingRepository
                     Title = jobPosting.Title,
                     Description = jobPosting.Description,
                     Company = jobPosting.Company,
-                    Location = jobPosting.LocationNavigation != null ? jobPosting.LocationNavigation.CityName : null,
+                    Location = (jobPosting.LocationNavigation != null
+                                   ? jobPosting.LocationNavigation.DistrictName
+                                   : null) + " - " +
+                               (jobPosting.LocationNavigation != null
+                                   ? jobPosting.LocationNavigation.City != null
+                                       ? jobPosting.LocationNavigation.City.CityName
+                                       : null
+                                   : null),
                     EmploymentType = jobPosting.EmploymentTypeNavigation != null
                         ? jobPosting.EmploymentTypeNavigation.EmploymentTypeName
                         : null,
@@ -113,8 +124,6 @@ public class JobPostingRepository : IJobPostingRepository
                     IndustryId = jobPosting.Industry,
                     DetailLocation = jobPosting.DetailLocation,
                     Requirements = jobPosting.Requirements,
-                    Benefit = jobPosting.Benefit,
-                    NumOfCandidate = jobPosting.NumOfCandidate,
                     MinSalary = jobPosting.MinSalary,
                     MaxSalary = jobPosting.MaxSalary,
                     ApplicationDeadline = jobPosting.ApplicationDeadline,
@@ -150,7 +159,8 @@ public class JobPostingRepository : IJobPostingRepository
             Title = jobPosting.Title,
             Description = jobPosting.Description,
             Company = jobPosting.Company,
-            Location = jobPosting.LocationNavigation?.CityName,
+            Location = jobPosting.LocationNavigation?.DistrictName + " - " +
+                       jobPosting.LocationNavigation?.City?.CityName,
             EmploymentType = jobPosting.EmploymentTypeNavigation?.EmploymentTypeName,
             Industry = jobPosting.IndustryNavigation?.IndustryName,
             LocationId = jobPosting.Location,
@@ -158,8 +168,6 @@ public class JobPostingRepository : IJobPostingRepository
             EmploymentTypeId = jobPosting.EmploymentType,
             IndustryId = jobPosting.Industry,
             Requirements = jobPosting.Requirements,
-            Benefit = jobPosting.Benefit,
-            NumOfCandidate = jobPosting.NumOfCandidate,
             MinSalary = jobPosting.MinSalary,
             MaxSalary = jobPosting.MaxSalary,
             ApplicationDeadline = jobPosting.ApplicationDeadline,
@@ -181,16 +189,6 @@ public class JobPostingRepository : IJobPostingRepository
             }
 
             jobPosting.DatePosted = DateTime.Now;
-
-            if (string.IsNullOrEmpty(jobPosting.Title))
-            {
-                throw new Exception("Tiêu đề không đươc để trống!");
-            }
-            
-            if (_context.JobPostings.Any(j => j.Title == jobPosting.Title.Trim()))
-            {
-                throw new Exception("Tiêu đề công việc đã tồn tại, vui lòng đặt một tiêu đề khác!");
-            }
             _context.Entry(jobPosting).State = EntityState.Added;
             await _context.SaveChangesAsync();
             return jobPosting;
@@ -204,7 +202,7 @@ public class JobPostingRepository : IJobPostingRepository
 
     public async Task<JobPosting> UpdateJobPostings(int id, JobPosting jobPosting)
     {
-        if (jobPosting.ApplicationDeadline < DateTime.Now && jobPosting.Status == Constant.ENTITY_STATUS.ACTIVE)
+        if (jobPosting.ApplicationDeadline < DateTime.Now)
         {
             throw new Exception("Ngày hết hạn phải lớn hơn ngày hiện tại!");
         }
@@ -229,13 +227,7 @@ public class JobPostingRepository : IJobPostingRepository
         var jobPosting = await _context.JobPostings.FindAsync(jobId);
         if (jobPosting == null)
         {
-            throw new Exception("Không tìm thấy thông tin đăng tuyển!");
-        }
-        
-        var jobApplication = await _context.JobApplications.Where(ja => ja.JobId == jobId).CountAsync();
-        if (jobApplication > 0)
-        {
-            throw new Exception("Đã có ứng viên ứng tuyển vào bài đăng tuyển!");
+            return false;
         }
 
         _context.Entry(jobPosting).State = EntityState.Deleted;
@@ -249,6 +241,7 @@ public class JobPostingRepository : IJobPostingRepository
             .Include(j => j.EmploymentTypeNavigation)
             .Include(j => j.IndustryNavigation)
             .Include(j => j.LocationNavigation)
+            .ThenInclude(d => d.City)
             .AsQueryable();
 
         if (accountId != null)
@@ -294,28 +287,19 @@ public class JobPostingRepository : IJobPostingRepository
             query = query.Where(j => j.ApplicationDeadline <= searchDto.ApplicationDeadline);
         }
 
-        if (searchDto.Status.HasValue)
+        if (searchDto.status.HasValue)
         {
-            query = query.Where(j => j.Status == searchDto.Status);
+            query = query.Where(j => j.Status == searchDto.status);
         }
 
         if (!string.IsNullOrEmpty(searchDto.SortBy))
         {
             query = searchDto.SortBy switch
             {
-                "Title" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.Title)
-                    : query.OrderByDescending(j => j.Title),
                 "Location" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.LocationNavigation != null ? j.LocationNavigation.CityName : null)
+                    ? query.OrderBy(j => j.LocationNavigation != null ? j.LocationNavigation.DistrictName : null)
                     : query.OrderByDescending(j =>
-                        j.LocationNavigation != null ? j.LocationNavigation.CityName : null),
-                "DatePosted" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.DatePosted)
-                    : query.OrderByDescending(j => j.DatePosted),
-                "ContactPerson" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.ContactPerson)
-                    : query.OrderByDescending(j => j.ContactPerson),
+                        j.LocationNavigation != null ? j.LocationNavigation.DistrictName : null),
                 "EmploymentType" => searchDto.IsSortAscending
                     ? query.OrderBy(j =>
                         j.EmploymentTypeNavigation != null ? j.EmploymentTypeNavigation.EmploymentTypeName : null)
@@ -327,12 +311,6 @@ public class JobPostingRepository : IJobPostingRepository
                         j.IndustryNavigation != null ? j.IndustryNavigation.IndustryName : null),
                 "ApplicationDeadline" => searchDto.IsSortAscending
                     ? query.OrderBy(j => j.ApplicationDeadline)
-                    : query.OrderByDescending(j => j.ApplicationDeadline),
-                "MinSalary" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.MinSalary)
-                    : query.OrderByDescending(j => j.ApplicationDeadline),
-                "MaxSalary" => searchDto.IsSortAscending
-                    ? query.OrderBy(j => j.MaxSalary)
                     : query.OrderByDescending(j => j.ApplicationDeadline),
                 _ => searchDto.IsSortAscending ? query.OrderBy(j => j.JobId) : query.OrderByDescending(j => j.JobId)
             };

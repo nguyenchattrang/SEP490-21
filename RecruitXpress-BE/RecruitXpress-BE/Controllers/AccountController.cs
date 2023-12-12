@@ -51,8 +51,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var result = await _accountRepository.AddAccount(account);
-
-                return Ok(result);
+                return CreatedAtAction(nameof(AddAccount), result);
             }
             catch (Exception e)
             {

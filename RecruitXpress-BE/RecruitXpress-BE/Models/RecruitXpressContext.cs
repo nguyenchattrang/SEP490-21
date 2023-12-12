@@ -25,7 +25,7 @@ namespace RecruitXpress_BE.Models
         public virtual DbSet<Cvtemplate> Cvtemplates { get; set; } = null!;
         public virtual DbSet<District> Districts { get; set; } = null!;
         public virtual DbSet<EducationalBackground> EducationalBackgrounds { get; set; } = null!;
-        public virtual DbSet<EmailTemplate?> EmailTemplates { get; set; } = null!;
+        public virtual DbSet<EmailTemplate> EmailTemplates { get; set; } = null!;
         public virtual DbSet<EmailToken> EmailTokens { get; set; } = null!;
         public virtual DbSet<EmploymentType> EmploymentTypes { get; set; } = null!;
         public virtual DbSet<Evaluate> Evaluates { get; set; } = null!;
@@ -704,11 +704,7 @@ namespace RecruitXpress_BE.Models
                 entity.HasOne(d => d.HumanResource)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.HumanResourceId)
-                    .HasConstraintName("FK_Schedule_Account");
-                entity.HasOne(d => d.SpecializedExam)
-                    .WithMany(p => p.Schedules)
-                    .HasForeignKey(d => d.ExamId)
-                    .HasConstraintName("FK_Schedule_SpecializedExam");
+                    .HasConstraintName("FK_Schedule_Profile");
             });
 
             modelBuilder.Entity<ScheduleDetail>(entity =>

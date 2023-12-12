@@ -78,6 +78,16 @@ C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\Recru
 C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MailKit.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MimeKit.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\NETCore.MailKit.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
+C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\BouncyCastle.Crypto.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\appsettings.Development.json
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\appsettings.json
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\RecruitXpress-BE.exe
@@ -85,11 +95,21 @@ C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\RecruitXpress-BE.runtimeconfig.json
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\RecruitXpress-BE.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\RecruitXpress-BE.pdb
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.Auth.PlatformServices.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.Auth.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.Core.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Humanizer.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MailKit.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNet.SignalR.Client.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.Internal.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.Data.SqlClient.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll
@@ -116,13 +136,20 @@ C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.OpenApi.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MimeKit.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\NETCore.MailKit.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\BouncyCastle.Crypto.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.CodeDom.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Configuration.ConfigurationManager.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Diagnostics.DiagnosticSource.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Drawing.Common.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Management.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Runtime.Caching.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Security.Permissions.dll
@@ -138,6 +165,7 @@ C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
+C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Management.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
@@ -163,31 +191,3 @@ C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\RecruitXpress-BE.pdb
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\RecruitXpress-BE.genruntimeconfig.cache
 C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\obj\Debug\net6.0\ref\RecruitXpress-BE.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MailKit.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MimeKit.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\NETCore.MailKit.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\BouncyCastle.Crypto.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MailKit.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\MimeKit.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\NETCore.MailKit.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
-C:\Users\ADMIN\Documents\Kì 9 Fall 2023\SEP490\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\BouncyCastle.Crypto.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.Auth.PlatformServices.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.Auth.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Google.Apis.Core.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.CodeDom.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\System.Management.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Management.dll
-C:\Users\vutie\OneDrive\Máy tính\SEP\SEP490-21\RecruitXpress-BE\RecruitXpress-BE\bin\Debug\net6.0\Microsoft.AspNet.SignalR.Client.dll
