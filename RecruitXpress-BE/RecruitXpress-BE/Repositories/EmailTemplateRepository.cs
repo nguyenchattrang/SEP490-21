@@ -11,11 +11,13 @@ namespace RecruitXpress_BE.Repositories
         private readonly RecruitXpressContext _context;
         private readonly IEmailSender _sender;
         private static Dictionary<int, EmailTemplate?> _emailTemplates = new();
+        private readonly IConfiguration _configuration;
 
-        public EmailTemplateRepository(RecruitXpressContext context, IEmailSender sender)
+        public EmailTemplateRepository(RecruitXpressContext context, IEmailSender sender, IConfiguration configuration)
         {
             _context = context;
             _sender = sender;
+            _configuration = configuration;
         }
 
         public async Task<ApiResponse<EmailTemplate>> GetAllEmailTemplates(EmailTemplateRequest request)
@@ -132,6 +134,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@name", account.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@reason", reason);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
         }
@@ -181,6 +184,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@name", account.FullName);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
         }
@@ -228,6 +232,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@name", interviewerName);
                 emailCopy.Body = emailCopy.Body.Replace("@candidatename", application?.Profile?.Account?.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@cv", cvName);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
                 //take CV
                 var result =
                     await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == application.TemplateId);
@@ -276,6 +281,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@name", account.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -310,6 +316,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
                 emailCopy.Body = emailCopy.Body.Replace("@interviewer", interviewer);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -360,6 +367,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@candidatename", account.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(interviewer.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -410,6 +418,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@candidatename", candidateNames);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 if (interviewer?.Account1 == null)
                     throw new Exception("Interviewer account null");
@@ -448,6 +457,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@name", account.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
@@ -483,6 +493,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -516,6 +527,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@reason", reason);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
@@ -552,6 +564,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -585,6 +598,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@reason", reason);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -635,6 +649,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@candidatename", account.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(interviewer.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -684,6 +699,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@candidatename", candidateNames);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 if (interviewer?.Account1 == null)
                     throw new Exception("Interviewer account null");
@@ -739,6 +755,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@candidatename", account.FullName);
                 emailCopy.Body = emailCopy.Body.Replace("@reason", reason);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(interviewer.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -770,6 +787,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@name", account.FullName);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
         }
@@ -800,6 +818,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@name", account.FullName);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
             }
@@ -832,6 +851,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
                 emailCopy.Body = emailCopy.Body.Replace("@name", account.FullName);
+                emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
 
                 // Send the email using the modified copy
                 _sender.Send(account.Account1, emailCopy.Header, emailCopy.Body);
