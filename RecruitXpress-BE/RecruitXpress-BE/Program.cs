@@ -119,8 +119,8 @@ var app = builder.Build();
 //        }
 //    }
 //}
-//app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+//app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
