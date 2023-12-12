@@ -8,6 +8,7 @@ namespace RecruitXpress_BE.Models
         public SpecializedExam()
         {
             Exams = new HashSet<Exam>();
+            Schedules = new HashSet<Schedule>();
         }
 
         public int ExamId { get; set; }
@@ -25,5 +26,6 @@ namespace RecruitXpress_BE.Models
         public virtual Account? CreatedByNavigation { get; set; }
         public virtual JobPosting? Job { get; set; }
         public virtual ICollection<Exam> Exams { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }

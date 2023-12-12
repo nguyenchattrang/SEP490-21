@@ -133,7 +133,12 @@ namespace RecruitXpress_BE.Repositories
         public async Task CreateQuestion(Question questiondto)
         {
             /*var questions = _mapper.Map<Question>(questiondto);*/
+            if(questiondto.Options==null || !questiondto.Options.Any(opt => (bool)opt.IsCorrect))
+            {
+                throw new ArgumentException("Phải có ít nhất một đáp án đúng");
+            }    
             _context.Questions.Add(questiondto);
+
             await _context.SaveChangesAsync();
 
         }
@@ -173,7 +178,20 @@ namespace RecruitXpress_BE.Repositories
             await _context.SaveChangesAsync();
             return question;
         }
+        public async Task<bool> SetQuestionStatus(int questionId, int status)
+        {
 
+            var question = await _context.Questions.FindAsync(questionId);
+            if (question == null)
+            {
+                return false;
+            }
+            if (status != null)
+                question.Status = status;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
         public async Task<bool> DeleteQuestion(int questionId)
         {
 
@@ -195,7 +213,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<bool> DeleteOption(int optionId)
         {
-            var option = _context.Options.Where(o => o.OptionId == optionId).FirstOrDefault();
+            var option = _context.Options.FirstOrDefault(o => o.OptionId == optionId);
             if (option == null)
             {
                 return false;
@@ -212,7 +230,7 @@ namespace RecruitXpress_BE.Repositories
             var query = await _context.Questions
                 .Include(q => q.Options)
                 .Include(q => q.CreatedByNavigation)
-                .Where(q => q.Type == difficulty) // Adjust the status condition as needed
+                .Where(q => q.Type == difficulty && q.Status==1) // Adjust the status condition as needed
                 .OrderBy(q => Guid.NewGuid()) // Randomly order the questions
                 .Take(count).ToListAsync();
 

@@ -12,6 +12,7 @@ namespace RecruitXpress_BE.DTO
         public int? ProfileId { get; set; }
         public int? TemplateId { get; set; }
         public int? Status { get; set; }
+        public int? Shorted { get; set; }
         public int? AssignedFor { get; set; }
 
         public virtual JobDTO? Job { get; set; }
@@ -107,7 +108,21 @@ namespace RecruitXpress_BE.DTO
         public int ApplicationId { get; set; }
         public int? AssignedFor { get; set; }
         public virtual ShortProfile? Profile { get; set; }
-        public virtual AssignedProfileDTO? AssignedForInfor { get; set; }
+        public virtual InterviewerProfile? AssignedForInfor { get; set; }
+
+    }
+
+    public class JobSearchReponse
+    {
+        public List<ShortJobApp> ListCandidates { get; set; }
+        public List<SpecializedExamDTO> ListSpecializedExams { get; set; }
+        public string Location { get; set; }
+    }
+    public partial class InterviewerProfile
+    {
+        public int AccountId { get; set; }
+        public string? Name { get; set; }
+        public string? Email { get; set; }
 
     }
 }

@@ -17,4 +17,7 @@ public class GoogleTokenResponse
 public class GoogleUserInfo
 {
     public string Email { get; set; }
+    public string Name { get; set; }
+    public DateTime DoB { get; set; }
+    public string? Gender { get; set; }
 }

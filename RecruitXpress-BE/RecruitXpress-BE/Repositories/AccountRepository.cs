@@ -37,7 +37,7 @@ public class AccountRepository : IAccountRepository
         {
             var check = await _context.Accounts.FirstOrDefaultAsync(x => x.Account1 == account.Account1);
 
-            if (check == null)
+            if (check != null)
             {
                 throw new Exception("Tài khoản đã tồn tại");
             }
@@ -46,13 +46,18 @@ public class AccountRepository : IAccountRepository
             {
                 Account1 = account.Account1,
                 Password = HashHelper.Encrypt(account.Password, _configuration),
+                FullName = account.FullName,
+                Gender= account.Gender,
+                Dob = account.Dob,
                 RoleId = account.RoleId,
                 CreatedAt = DateTime.Now,
                 Status = account.Status,
             };
 
             _context.Entry(user).State = EntityState.Added;
+            
             await _context.SaveChangesAsync();
+
             return user;
         }
         catch (Exception e)
