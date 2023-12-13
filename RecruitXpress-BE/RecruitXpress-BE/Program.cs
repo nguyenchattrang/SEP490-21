@@ -84,10 +84,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddDbContext<RecruitXpressContext>(opt
-   // => opt.UseSqlServer("Server=35.193.217.3;database=recruitxpressdb;uid=sqlserver;pwd=vutiendat2001a@A;;Encrypt=True;TrustServerCertificate=true;Connection Timeout=30;"));
-//builder.Services.AddDbContext<RecruitXpressContext>(opt
-//    => opt.UseSqlServer("Server=tcp:recruitxpressdb1.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
-    => opt.UseSqlServer("Server=tcp:recruitxpressserverdb.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+    => opt.UseSqlServer("server =35.225.17.252; database = recruitxpress;uid=sqlserver;pwd=vutiendat2001a@A; TrustServerCertificate=True"));
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -115,10 +112,19 @@ builder.Services.AddSignalR();
 
 builder.Services.AddAuthorization();
 var app = builder.Build();
-app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+app.UseCors(option => option.AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+//app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+if (!app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
