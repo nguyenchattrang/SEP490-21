@@ -71,6 +71,17 @@ namespace RecruitXpress_BE.Repositories
                 query = query.Where(e => e.Code.Contains(request.Code));
             }
 
+            if (!string.IsNullOrEmpty(request.SearchAll))
+            {
+                // Assuming that searchAll is a string that the user provides for a general search
+                query = query.Where(e =>
+                    e.ExamName.Contains(request.SearchAll) ||
+                    (e.Description != null && e.Description.Contains(request.SearchAll)) ||
+                    e.ExpertEmail.Contains(request.SearchAll) ||
+                    e.Code.Contains(request.SearchAll)
+                );
+            }
+
             if (request.SortBy != null)
             {
                 switch (request.SortBy)
