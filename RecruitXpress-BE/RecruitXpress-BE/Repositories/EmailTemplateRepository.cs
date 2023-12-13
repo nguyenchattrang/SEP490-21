@@ -234,22 +234,20 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@cv", cvName);
                 emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);
                 //take CV
-                var result =
-                    await _context.CandidateCvs.FirstOrDefaultAsync(x => x.TemplateId == application.TemplateId);
-                if (result == null)
+                if (application.UrlCandidateCV == null)
                 {
                     throw new ArgumentException("Không tìm thấy CV");
                 }
 
                 var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
 
-                var filePath = path + result.Url;
+                var filePath = path + application.UrlCandidateCV;
                 if (!File.Exists(filePath))
                 {
                     throw new ArgumentException("Không tìm thấy địa chỉ CV");
                 }
 
-                emailCopy.Body = emailCopy.Body.Replace("@cv", result.Url);
+                emailCopy.Body = emailCopy.Body.Replace("@cv", application.UrlCandidateCV);
                 _sender.SendWithAttach(interviewer.Account1, emailCopy.Header, emailCopy.Body, filePath, cvName);
             }
         }
