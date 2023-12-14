@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -98,6 +99,38 @@ namespace RecruitXpress_BE.Controllers
                 throw new Exception(ex.Message);
             }
         }
+       
+       /* [HttpGet("ViewCV/{jobAppId}")]
+        public async Task<IActionResult> ViewCV(int jobAppId)
+        {
+            var result = await _context.JobApplications.FirstOrDefaultAsync(x => x.ApplicationId == jobAppId);
+
+            if (result == null || result.Token == null)
+            {
+                return NotFound("Không tìm thấy file");
+            }
+
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\CandidateCvs"));
+            var filePath = path + result.Url;
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Không tìm thấy file" + filePath);
+            }
+
+            var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
+            var contentType = "application/pdf"; // Set the content type to PDF
+
+            string baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
+
+            *//* string baseUrl = _configuration["Website:HostUrl"];
+           *//*
+            // Construct the link to the documents endpoint
+            string documentsLink = Url.Action("GetAddress", "CV", new { result.Token });
+
+            // Return a JSON object containing the link
+            return Ok(baseUrl + documentsLink);
+        }*/
 
         [HttpGet("ViewCV/{accId}")]
         public async Task<IActionResult> ViewCV(int accId)

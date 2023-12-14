@@ -18,11 +18,11 @@ namespace RecruitXpress_BE.Repositories
         }
  
 
-        public async Task Send(string to, string subject, string html, string from = null)
+        public async Task Send(string to, string subject, string html, string from = "RecruitXpress")
         {
             // create message
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(from ?? _emailConfig.From));
+            email.From.Add(new MailboxAddress(_emailConfig.From, _emailConfig.UserName));
             email.To.Add(MailboxAddress.Parse(to));
             email.Subject = subject;
             email.Body = new TextPart(TextFormat.Html) { Text = html };
@@ -34,7 +34,7 @@ namespace RecruitXpress_BE.Repositories
         {
             // Create the MIME message
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(from ?? _emailConfig.From));
+            email.From.Add(new MailboxAddress(_emailConfig.From, _emailConfig.UserName));
             email.To.Add(MailboxAddress.Parse(to));
             email.Subject = subject;
 
