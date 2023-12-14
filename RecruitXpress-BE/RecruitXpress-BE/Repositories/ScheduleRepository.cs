@@ -405,7 +405,8 @@ public class ScheduleRepository : IScheduleRepository
                         CreatedTime = DateTime.Now,
                         UpdatedTime = DateTime.Now,
                         CreatedBy = scheduleDto.CreatedBy,
-                        UpdatedBy = scheduleDto.UpdatedBy
+                        UpdatedBy = scheduleDto.UpdatedBy,
+                        Location = scheduleDetail.Location
                     };
                     _context.Entry(scheduleDetailEntity).State = EntityState.Added;
                 }
@@ -517,7 +518,8 @@ public class ScheduleRepository : IScheduleRepository
                             CreatedTime = DateTime.Now,
                             UpdatedTime = DateTime.Now,
                             CreatedBy = scheduleDto.CreatedBy,
-                            UpdatedBy = scheduleDto.UpdatedBy
+                            UpdatedBy = scheduleDto.UpdatedBy,
+                            Location = scheduleDetail.Location
                         };
                         _context.Entry(scheduleDetailEntity).State = EntityState.Added;
                         if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
@@ -532,11 +534,6 @@ public class ScheduleRepository : IScheduleRepository
                                 scheduleDetail.Location ??
                                 throw new InvalidOperationException("Địa điểm phỏng vấn không được để trống!"),
                                 interviewerEntity?.InterviewerNavigation?.FullName);
-                            _emailTemplateRepository.SendEmailScheduleForInterviewer(
-                                (int)scheduleDetail.ApplicationId,
-                                scheduleDetail.StartDate.ToString() ??
-                                throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
-                                scheduleDetail.Location);
                         }
                         else if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM)
                         {
@@ -576,6 +573,7 @@ public class ScheduleRepository : IScheduleRepository
                         scheduleDetailEntity.Note = scheduleDetail.Note;
                         scheduleDetailEntity.UpdatedTime = DateTime.Now;
                         scheduleDetailEntity.UpdatedBy = scheduleDetail.UpdatedBy;
+                        scheduleDetailEntity.Location = scheduleDetail.Location;
                         _context.Entry(scheduleDetailEntity).State = EntityState.Modified;
                         isUpdated = true;
                         if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
