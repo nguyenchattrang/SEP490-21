@@ -79,6 +79,27 @@ namespace RecruitXpress_BE.Controllers
 
                 return NotFound("Không kết quả");
             }
+        }   [HttpPut("UpdateStatus")]
+        public async Task<ActionResult<Account>> UpdateStatusAccount(int accountId, int status)
+        {
+            
+            try
+            {
+               if(accountId == null)
+                {
+                    return BadRequest("Khong co accountId");
+
+                }
+                var Account = await _context.Accounts.FirstOrDefaultAsync(x => x.AccountId == accountId);
+                if(Account == null) { return BadRequest("Không tìm thấy tài khoản"); }
+                Account.Status = status;
+                _context.SaveChanges();
+                return Ok("Cập nhật thành công");
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Khong co accountId");
+            }
         }
 
         //DELETE: api/AccountManagement
