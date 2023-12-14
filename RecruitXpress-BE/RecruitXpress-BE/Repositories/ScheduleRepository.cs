@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Google.Apis.Util;
+using Microsoft.EntityFrameworkCore;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
@@ -47,6 +48,9 @@ public class ScheduleRepository : IScheduleRepository
                 .ThenInclude(sd => sd.Candidate)
                 .ThenInclude(ja => ja.Profile)
                 .ThenInclude(p => p.Account)
+                .Include(s => s.ScheduleDetails)
+                .ThenInclude(sd => sd.Candidate)
+                .ThenInclude(ja => ja.Job)
                 .Include(s => s.Interviewers)
                 .ThenInclude(i => i.InterviewerNavigation)
                 .Include(s => s.SpecializedExam)
@@ -135,7 +139,9 @@ public class ScheduleRepository : IScheduleRepository
                         Strength = sd.Strength,
                         Imperfection = sd.Imperfection,
                         Evaluate = sd.Evaluate,
-                        Status = sd.Status
+                        Status = sd.Status,
+                        JobId = sd.Candidate != null ? sd.Candidate.JobId : null,
+                        JobTitle = sd.Candidate != null ? sd.Candidate.Job != null ? sd.Candidate.Job.Title : null : null
                     }).ToList()
             }).ToListAsync();
 
@@ -181,7 +187,9 @@ public class ScheduleRepository : IScheduleRepository
                             CandidateId = scheduleDtoScheduleDetail.CandidateId,
                             ApplicationId = scheduleDtoScheduleDetail.ApplicationId,
                             CandidateName = scheduleDtoScheduleDetail.CandidateName,
-                            CandidateEmail = scheduleDtoScheduleDetail.CandidateEmail
+                            CandidateEmail = scheduleDtoScheduleDetail.CandidateEmail,
+                            JobId = scheduleDtoScheduleDetail.JobId,
+                            JobTitle = scheduleDtoScheduleDetail.JobTitle 
                         });
                     }
                     else
@@ -197,7 +205,9 @@ public class ScheduleRepository : IScheduleRepository
                                         CandidateId = scheduleDtoScheduleDetail.CandidateId,
                                         ApplicationId = scheduleDtoScheduleDetail.ApplicationId,
                                         CandidateName = scheduleDtoScheduleDetail.CandidateName,
-                                        CandidateEmail = scheduleDtoScheduleDetail.CandidateEmail
+                                        CandidateEmail = scheduleDtoScheduleDetail.CandidateEmail,
+                                        JobId = scheduleDtoScheduleDetail.JobId,
+                                        JobTitle = scheduleDtoScheduleDetail.JobTitle 
                                     }
                                 },
                                 ScheduleId = scheduleDto.ScheduleId,
