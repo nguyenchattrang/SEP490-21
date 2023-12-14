@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 
@@ -12,7 +13,63 @@ public class EmploymentTypeRepository : IEmploymentTypeRepository
     {
         _context = context;
     }
-    
+
+    public async Task<EmploymentTypeResponse> GetEmploymentTypes(EmploymentTypeRequest request)
+    {
+        try
+        {
+            var query = _context.EmploymentTypes.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(request.Name))
+            {
+                query = query.Where(e => e.EmploymentTypeName != null && e.EmploymentTypeName.Contains(request.Name));
+            }
+
+            if (request.SortBy == "name")
+            {
+                query = request.OrderByAscending
+                    ? query.OrderBy(e => e.EmploymentTypeName)
+                    : query.OrderByDescending(e => e.EmploymentTypeName);
+            }
+
+            var total = await query.CountAsync();
+
+            if (string.IsNullOrWhiteSpace(request.SearchAll))
+            {
+                query = query.Skip((request.Page - 1) * request.Size).Take(request.Size);
+            }
+
+            return new EmploymentTypeResponse()
+            {
+                TotalCount = total,
+                Items = await query.ToListAsync()
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<EmploymentType> GetEmploymentType(int id)
+    {
+        try
+        {
+            var employmentType = await _context.EmploymentTypes.FirstOrDefaultAsync(i => i.EmploymentTypeId ==  id);
+            if (employmentType == null)
+            {
+                throw new Exception("Không tìm thấy thông tin loại công việc");
+            }
+
+            return employmentType;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     public async Task<EmploymentType> AddEmploymentType(EmploymentType employmentType)
     {
         try

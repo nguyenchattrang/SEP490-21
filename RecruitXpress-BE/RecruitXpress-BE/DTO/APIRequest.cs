@@ -136,4 +136,22 @@ namespace RecruitXpress_BE.DTO
         public List<int> CandidateIds { get; set; }
         public CalendarTemp Calendar { get; set; }
     }
+
+    public class CityRequest : ApiRequest<City>
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+    
+    public class IndustryRequest : ApiRequest<Industry>
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+    
+    public class EmploymentTypeRequest : ApiRequest<EmploymentType>
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
 }
