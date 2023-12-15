@@ -141,7 +141,8 @@ public class ScheduleRepository : IScheduleRepository
                         Evaluate = sd.Evaluate,
                         Status = sd.Status,
                         JobId = sd.Candidate != null ? sd.Candidate.JobId : null,
-                        JobTitle = sd.Candidate != null ? sd.Candidate.Job != null ? sd.Candidate.Job.Title : null : null
+                        JobTitle = sd.Candidate != null ? sd.Candidate.Job != null ? sd.Candidate.Job.Title : null : null,
+                        Location = sd.Location
                     }).ToList()
             }).ToListAsync();
 
