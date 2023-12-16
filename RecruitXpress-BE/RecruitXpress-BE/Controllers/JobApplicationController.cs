@@ -772,17 +772,34 @@ namespace RecruitXpress_BE.Controllers
                 }
 
                 var result = query
-                .GroupBy(j => j.JobId)
-                .Select(g => new
-                {
-                    JobId = g.Key,
-                    JobTitle = g.First().Job.Title,
-                    Company = g.First().Job.Company,
-                    Count = g.Count()
-
-                })
-                 .OrderByDescending(j => j.Count) 
-                .ToList();
+      .GroupBy(j => j.JobId)
+      .Select(g => new
+      {
+          JobId = g.Key,
+          JobTitle = g.First().Job.Title,
+          Company = g.First().Job.Company,
+          Description = g.First().Job.Description,
+          Location = g.First().Job.Location,
+          EmploymentType = g.First().Job.EmploymentType,
+          Industry = g.First().Job.Industry,
+          DetailLocation = g.First().Job.DetailLocation,
+          Requirements = g.First().Job.Requirements,
+          Benefit = g.First().Job.Benefit,
+          NumOfCandidate = g.First().Job.NumOfCandidate,
+          ApplicationDeadline = g.First().Job.ApplicationDeadline,
+          DatePosted = g.First().Job.DatePosted,
+          ContactPerson = g.First().Job.ContactPerson,
+          ApplicationInstructions = g.First().Job.ApplicationInstructions,
+          Status = g.First().Job.Status,
+          MinSalary = g.First().Job.MinSalary,
+          MaxSalary = g.First().Job.MaxSalary,
+          EmploymentTypeNavigation = g.First().Job.EmploymentTypeNavigation,
+          IndustryNavigation = g.First().Job.IndustryNavigation,
+          LocationNavigation = g.First().Job.LocationNavigation,
+          Count = g.Count()
+      })
+      .OrderByDescending(j => j.Count)
+      .ToList();
 
                 return Ok(result);
             }
