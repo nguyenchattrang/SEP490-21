@@ -51,7 +51,7 @@ public class AccountRepository : IAccountRepository
                 Dob = account.Dob,
                 RoleId = account.RoleId,
                 CreatedAt = DateTime.Now,
-                Status = account.Status,
+                Status = account.Status
             };
 
             _context.Entry(user).State = EntityState.Added;
