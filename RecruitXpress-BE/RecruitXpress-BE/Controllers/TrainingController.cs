@@ -56,7 +56,7 @@ namespace RecruitXpress_BE.Controllers
                 if (data != null && accountId != null)
                 {
                     var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.AccountId == accountId);
-                    if (profile == null) return NotFound("Account chua co profile");
+                    if (profile == null) return BadRequest("Account chua co profile");
 
                     var listUpdate = new List<training>();
                     foreach (var trainingData in data)

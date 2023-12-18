@@ -58,7 +58,7 @@ namespace UnitTest
         public async Task AddAccountByAdmin_ReturnsOk_WhenSuccessful()
         {
             // Arrange
-            
+
             var Account = new Account
             {
                 AccountId = 1,
@@ -71,19 +71,19 @@ namespace UnitTest
                 FullName = "John Doe",
                 Dob = new DateTime(1990, 1, 1),
                 Gender = "Male",
-               
-            }; 
+
+            };
             // Act
             var result = await _controller.AddAccount(Account);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-        }    
+        }
         [TestMethod]
         public async Task AddAccountByAdmin_ReturnsBadRequest_WhenRoleIDInvalid()
         {
             // Arrange
-            
+
             var Account = new Account
             {
                 AccountId = 1,
@@ -96,8 +96,8 @@ namespace UnitTest
                 FullName = "John Doe",
                 Dob = new DateTime(1990, 1, 1),
                 Gender = "Male",
-               
-            }; 
+
+            };
             // Act
             var result = await _controller.AddAccount(Account);
 
@@ -118,7 +118,7 @@ namespace UnitTest
                 Token = "sampleToken",
                 CreatedAt = DateTime.Now,
                 Status = 1,
-                FullName =  null,
+                FullName = null,
                 Dob = new DateTime(1990, 1, 1),
                 Gender = "Male",
 
@@ -134,9 +134,9 @@ namespace UnitTest
         {
             // Arrange
             var accountId = 12;
-            var Account = new Account{ FullName = "Dat" };
+            var Account = new Account { FullName = "Dat" };
             // Act
-            var result = await _controller.UpdateAccount(accountId,Account);
+            var result = await _controller.UpdateAccount(accountId, Account);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
@@ -172,25 +172,44 @@ namespace UnitTest
             var accountId = 0;
 
             // Act
-            var result =  _controller.DeleteAccount(accountId);
+            var result = _controller.DeleteAccount(accountId);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
-       
+
         [TestMethod]
         public async Task DeleteAccount_ShouldReturnOk()
         {
             // Arrange
             var Account = 1;
             // Act
-            var result =  _controller.DeleteAccount(Account);
+            var result = _controller.DeleteAccount(Account);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
-       
-       
-        // Add similar test methods for other actions (AddAccount, UpdateAccount, DeleteAccount) based on your specific requirements.
+        [TestMethod]
+        public async Task GetAccount_WithValidId_ReturnsOkResultWithAccount()
+        {
+            // Arrange
+            var accountId = 1;
+            var mockRepository = new Mock<IAccountRepository>();
+            var account = new Account { AccountId = accountId };
+            mockRepository.Setup(repo => repo.GetAccount(accountId)).ReturnsAsync(account);
+            var controller = new AccountController(mockRepository.Object, null);
+
+            // Act
+            var result = await controller.GetAccount(accountId);
+
+            // Assert
+           
+            Assert.AreEqual(result, typeof(OkObjectResult));
+        }
     }
-}
+
+        // Add similar tests for other actions (AddAccount, UpdateAccount, DeleteAccount, getMyCV)
+    }
+
+
+    // Add similar test methods for other actions (AddAccount, UpdateAccount, DeleteAccount) based on your specific requirements.

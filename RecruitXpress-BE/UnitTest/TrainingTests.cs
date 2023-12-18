@@ -18,10 +18,10 @@ using Profile = RecruitXpress_BE.Models.Profile;
 namespace UnitTest
 {
     [TestClass]
-    public class MaritalStatusControllerTests
+    public class TrainingControllerTests
     {
         private IMapper _mapper;
-        private MaritalStatusController _controller;
+        private TrainingController _controller;
 
 
         [TestInitialize]
@@ -45,131 +45,124 @@ namespace UnitTest
             _mapper = mappingConfig.CreateMapper();
 
             // Create an instance of your controller with the mock context and mapper
-            _controller = new MaritalStatusController(dbContext, _mapper);
+            _controller = new TrainingController(dbContext, _mapper);
 
         }
 
         [TestMethod]
-        public async Task GetMaritalStatus_ReturnsNotFound_WhenMaritalStatusNotFound()
+        public async Task GetTraining_ReturnsNotFound_WhenTrainingNotFound()
         {
             // Arrange
-            
+            int account = 99;
             // Act
-            var result = await _controller.GetMaritalStatus();
+            var result = await _controller.GetTraining( account);
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
 
         }
 
         [TestMethod]
-        public async Task AddMaritalStatus_ReturnsOk_WhenSuccessful()
+        public async Task AddTraining_ReturnsOk_WhenSuccessful()
         {
             // Arrange
-            var accountId = 22; // Change this value based on your test scenario
-            var maritalStatus = 1;
+            var accountId = 1; // Change this value based on your test scenario
+            var listTest = new List<training>();
+            listTest.Add(new training { ProfileId = 1 });
             // Act
-            var result = await _controller.AddMaritalStatus(maritalStatus, accountId);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
-        }
-        [TestMethod]
-        public async Task AddMaritalStatusByAdmin_ReturnsOk_WhenSuccessful()
-        {
-            // Arrange
-           // Change this value based on your test scenario
-            var maritalStatus = new MaritalStatus{ Description = "Doc than" };
-            // Act
-            var result = await _controller.CreateNewMaritalStauts(maritalStatus);
+            var result = await _controller.AddTraining(listTest, accountId);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
+      
         [TestMethod]
-        public async Task AddMaritalStatusByAdmin_ReturnsBadRequest_WhenFail()
-        {
-            // Arrange
-            // Change this value based on your test scenario
-            var maritalStatus = new MaritalStatus { Description= null };
-            // Act
-            var result = await _controller.CreateNewMaritalStauts(maritalStatus);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-        }
-        [TestMethod]
-        public async Task AddMaritalStatus_ReturnsBadRequest_WhenMaritalStatusIsNotFound()
-        {
-            // Arrange
-            var accountId = 22; // Change this value based on your test scenario
-            var maritalStatus = 99;
-            // Act
-            var result = await _controller.AddMaritalStatus(maritalStatus, accountId);
-
-            // Assert
-            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-        }
-        [TestMethod]
-        public async Task AddMaritalStatus_ReturnsBadRequest_WhenAccountIsNotFound()
+        public async Task AddTrainingByAdmin_ReturnsBadRequest_WhenFail()
         {
             // Arrange
             var accountId = 99; // Change this value based on your test scenario
-            var maritalStatus = 1;
-            // Act
-            var result = await _controller.AddMaritalStatus(maritalStatus, accountId);
-
+            var listTest = new List<training>();
+            listTest.Add(new training { ProfileId = 1 });
+            var result = await _controller.AddTraining(listTest, accountId);
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
         [TestMethod]
-        public async Task DeleteMaritalStatus_ShouldReturnNotFound()
+        public async Task AddTraining_ReturnsNotFound_WhenTrainingIsNotFound()
         {
             // Arrange
-            
-            var maritalStatus = 99;
+            var accountId = 22; // Change this value based on your test scenario
+        
             // Act
-            var result = await _controller.DeleteMaritalStatus(maritalStatus);
+            var result = await _controller.GetTraining(accountId);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
         }
         [TestMethod]
-        public async Task DeleteMaritalStatus_ShouldReturnOk()
+        public async Task AddTraining_ReturnsNotFound_WhenAccountIsNotFound()
         {
             // Arrange
-            var maritalStatus = 1;
+            var accountId = 99; // Change this value based on your test scenario
+            var Training = 1;
             // Act
-            var result = await _controller.DeleteMaritalStatus(maritalStatus);
+            var result = await _controller.GetTraining( accountId);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+        }
+        [TestMethod]
+        public async Task DeleteTraining_ShouldReturnNotFound()
+        {
+            // Arrange
+            
+            var Training = 99;
+            // Act
+            var result = await _controller.DeleteTraining(Training);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+        }
+        [TestMethod]
+        public async Task DeleteTraining_ShouldReturnOk()
+        {
+            // Arrange
+            var Training = 1;
+            // Act
+            var result = await _controller.DeleteTraining(Training);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
        
         [TestMethod]
-        public async Task UpdateMaritalStatus_ShouldReturnOk()
+        public async Task UpdateTraining_ShouldReturnOk()
         {
             // Arrange
             
-            var maritalStatus = new MaritalStatus { StatusId =1, Description = "ly hon"};
+            var Training = new training { TrainingId =1, SkillsCovered = "C#"};
+            var listTest = new List<training>();
+            listTest.Add(Training);
             // Act
-            var result = await _controller.UpdateMaritalStatus(maritalStatus);
+            var result = await _controller.UpdateTraining(listTest);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
         [TestMethod]
-        public async Task UpdateMaritalStatus_ShouldReturnBadRequest()
+        public async Task UpdateTraining_ShouldReturnBadRequest()
         {
             // Arrange
-            var maritalStatus = new MaritalStatus { StatusId = 99, Description = "ly hon" };
+            var Training = new training { TrainingId = 99, SkillsCovered = "C#" };
+            var listTest = new List<training>();
+            listTest.Add(Training);
             // Act
-            var result = await _controller.UpdateMaritalStatus(maritalStatus);
+            var result = await _controller.UpdateTraining(listTest);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
        
-        // Add similar test methods for other actions (AddMaritalStatus, UpdateMaritalStatus, DeleteMaritalStatus) based on your specific requirements.
+        // Add similar test methods for other actions (AddTraining, UpdateTraining, DeleteTraining) based on your specific requirements.
     }
 }
