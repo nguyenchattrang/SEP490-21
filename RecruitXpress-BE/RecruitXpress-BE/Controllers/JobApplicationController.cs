@@ -638,6 +638,10 @@ namespace RecruitXpress_BE.Controllers
                             }
                         }
                     }
+                    if(commentHr != null)
+                    {
+                        detailJob.CommentHR = commentHr;
+                    }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     await _applicationHubContext.NotifyStatusUpgrade(detailJob, (int)status, oldStatus);
