@@ -1,4 +1,6 @@
-﻿namespace RecruitXpress_BE.DTO
+﻿using RecruitXpress_BE.Models;
+
+namespace RecruitXpress_BE.DTO
 {
     public class ApiResponse<T>
     {
@@ -14,7 +16,9 @@
         {
          
         }
-
-
     }
+
+    public class CityResponse : ApiResponse<City>{}
+    public class IndustryResponse : ApiResponse<Industry>{}
+    public class EmploymentTypeResponse : ApiResponse<EmploymentType>{}
 }

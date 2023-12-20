@@ -14,13 +14,14 @@ public class ScheduleDTO
     public int? HumanResourceId { get; set; }
     public string? HumanResourceName { get; set; }
     public int? SpecializedExamId { get; set; }
+    public int? JobId { get; set; }
+    public string? JobTitle { get; set; }
     public int? Status { get; set; }
     public DateTime? CreatedTime { get; set; }
     public DateTime? UpdatedTime { get; set; }
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
     public SpecializedExamDTO? SpecializedExam { get; set; }
-
     public virtual ICollection<InterviewDTO> Interviewers { get; set; }
     public virtual ICollection<ScheduleDetailDTO> ScheduleDetails { get; set; }
 }
@@ -48,6 +49,8 @@ public class CandidateSchedule
     public int? ApplicationId { get; set; }
     public string? CandidateName { get; set; }
     public string? CandidateEmail { get; set; }
+    public int? JobId { get; set; }
+    public string? JobTitle { get; set; }
 }
 
 public class InterviewerSchedule

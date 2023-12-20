@@ -42,7 +42,8 @@ namespace RecruitXpress_BE.Controllers
                     .Include(x => x.EducationalBackgrounds)
                     .Include(x => x.FamilyInformations)
                     .Include(x => x.WorkExperiences)
-                    .Include(x => x.JobApplications)
+                    .Include(x => x.JobApplications).ThenInclude(x=> x.Exams)
+                    .Include(x => x.JobApplications).ThenInclude(x=> x.ScheduleDetails)
                     .AsQueryable(); // Convert to queryable for dynamic filtering
 
                 if (request.Email != null)

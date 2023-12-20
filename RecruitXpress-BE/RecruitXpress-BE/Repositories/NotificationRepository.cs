@@ -19,6 +19,7 @@ public class NotificationRepository : INotificationRepository
 
     public async Task<List<NotificationDTO>> GetNotificationByAccountId(int accountId) =>
         _mapper.Map<List<NotificationDTO>>(await _context.Notifications.Where(n => n.ReceiverId == accountId)
+            .OrderByDescending(n => n.NotificationId)
             .ToListAsync());
 
     public async Task<NotificationDTO> SaveNotification(NotificationDTO notificationDto)

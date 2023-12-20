@@ -305,6 +305,7 @@ namespace RecruitXpress_BE.Controllers
                     Token = tokenString,
                     AccountId = user.AccountId,
                     UserName = user.Account1,
+                    FullName = user.FullName,
                     RoleId = user.RoleId,
                     IsProfile = (user.Profiles != null && user.Profiles.Any()).ToString().ToLower(),
                     IsCV = (user.CandidateCvs != null && user.CandidateCvs.Any()).ToString().ToLower(),
@@ -457,6 +458,7 @@ namespace RecruitXpress_BE.Controllers
                     Token = token,
                     AccountId = user.AccountId,
                     UserName = user.Account1,
+                    FullName = user.FullName,
                     RoleId = user.RoleId,
                     IsProfile = (user.Profiles != null && user.Profiles.Any()).ToString().ToLower(),
                     IsCV = (user.CandidateCvs != null && user.CandidateCvs.Any()).ToString().ToLower()

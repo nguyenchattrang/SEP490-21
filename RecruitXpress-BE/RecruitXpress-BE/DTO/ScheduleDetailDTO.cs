@@ -23,5 +23,7 @@ public partial class ScheduleDetailDTO
     public string? Strength { get; set; }
     public string? Imperfection { get; set; }
     public int? Evaluate { get; set; }
+    public int? JobId { get; set; }
+    public string? JobTitle { get; set; }
 
 }

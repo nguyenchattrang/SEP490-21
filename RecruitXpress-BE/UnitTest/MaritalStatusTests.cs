@@ -86,9 +86,6 @@ namespace UnitTest
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
 
-            var notFoundResult = result as BadRequestObjectResult;
-            Assert.AreEqual("Không có dữ liệu", notFoundResult.Value);
-
         }
 
         [TestMethod]

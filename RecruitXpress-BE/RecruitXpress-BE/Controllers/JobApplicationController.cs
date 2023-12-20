@@ -44,7 +44,7 @@ namespace RecruitXpress_BE.Controllers
                 var profile = await _context.Profiles.FirstOrDefaultAsync(x => x.AccountId == accountId);
                 var jobpost = await _context.JobPostings.FirstOrDefaultAsync(x => x.JobId == jobId);
 
-                if(jobpost != null)
+                if (jobpost != null)
                 {
                     if (jobpost.NumOfCandidate == 0) return BadRequest("Nộp hồ sơ thất bại, công việc này đã tuyển đủ số lượng ứng viên");
                 }
@@ -53,8 +53,8 @@ namespace RecruitXpress_BE.Controllers
                     return BadRequest("Hãy cập nhật thông tin cá nhân đầy đủ trước khi nộp hồ sơ");
                 }
 
-                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId==jobId);
-                if(check != null)
+                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId == jobId);
+                if (check != null)
                 {
                     return BadRequest("Công việc này đã được bạn ứng tuyển");
                 }
@@ -72,7 +72,8 @@ namespace RecruitXpress_BE.Controllers
                     ProfileId = profile.ProfileId,
                     TemplateId = CV.TemplateId,
                     UrlCandidateCV = CV.Url,
-                    Status = 1
+                    Status = 1,
+                    CreatedAt = DateTime.Now
                 };
                 try
                 {
@@ -83,7 +84,7 @@ namespace RecruitXpress_BE.Controllers
 
                     // Combine source folder path and file name
                     string sourceFilePath = sourceFolderPath + fileName;
-                    
+
                     // Combine destination folder path and file name
                     string destinationFilePath = destinationFolderPath + fileName;
 
@@ -103,7 +104,7 @@ namespace RecruitXpress_BE.Controllers
                         {
                             // Copy the file to the destination folder
                             System.IO.File.Copy(sourceFilePath, destinationFilePath, true);
-                            
+
                         }
                         catch (Exception ex)
                         {
@@ -115,7 +116,7 @@ namespace RecruitXpress_BE.Controllers
                         return BadRequest("Lỗi khi copying file");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
 
                 }
@@ -138,7 +139,7 @@ namespace RecruitXpress_BE.Controllers
             {
 
                 var query = _context.JobApplications
-                .Include(q=> q.Evaluates)
+                .Include(q => q.Evaluates)
                 .Include(q => q.Exams)
                 .Include(q => q.Profile).ThenInclude(x => x.Account)
                 //.Include(q => q.Profile).ThenInclude(x=> x.Schedules).ThenInclude(x => x.ScheduleDetails)
@@ -273,6 +274,11 @@ namespace RecruitXpress_BE.Controllers
                                 ? query.OrderBy(j => j.Job.DatePosted)
                                 : query.OrderByDescending(j => j.Job.DatePosted);
                             break;
+                        case "CreatedAt":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.CreatedAt)
+                                : query.OrderByDescending(j => j.CreatedAt);
+                            break;
                         default:
                             query = request.OrderByAscending
                                    ? query.OrderBy(j => j.Job.ApplicationDeadline)
@@ -360,7 +366,7 @@ namespace RecruitXpress_BE.Controllers
                 .Include(q => q.Job).ThenInclude(j => j.IndustryNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.LocationNavigation)
                 .Include(q => q.Job).ThenInclude(j => j.EmploymentTypeNavigation)
-                .Include(q => q.Template).Where(x=>x.ProfileId ==profileId)
+                .Include(q => q.Template).Where(x => x.ProfileId == profileId)
                 .AsQueryable();
 
                 if (request.LocationId != null)
@@ -480,6 +486,11 @@ namespace RecruitXpress_BE.Controllers
                                 ? query.OrderBy(j => j.Job.DatePosted)
                                 : query.OrderByDescending(j => j.Job.DatePosted);
                             break;
+                        case "CreatedAt":
+                            query = request.OrderByAscending
+                                ? query.OrderBy(j => j.CreatedAt)
+                                : query.OrderByDescending(j => j.CreatedAt);
+                            break;
                         default:
                             query = request.OrderByAscending
                                    ? query.OrderBy(j => j.Job.ApplicationDeadline)
@@ -592,7 +603,7 @@ namespace RecruitXpress_BE.Controllers
                     if (accountId != null)
                     {
                         detailJob.AssignedFor = accountId;
-                        await  _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
+                        await _emailTemplateRepository.SendEmailCVToInterviewer(jobApplyId);
                     }
 
                     switch (status)
@@ -611,20 +622,20 @@ namespace RecruitXpress_BE.Controllers
                             await _emailTemplateRepository.SendEmailCanceled(jobApplyId);
                             break;
                     }
-                    if(status == 8)
+                    if (status == 8)
                     {
-                        var jobpost = await _context.JobPostings.FirstOrDefaultAsync(x=>x.JobId== detailJob.JobId);
-                        if(jobpost != null)
+                        var jobpost = await _context.JobPostings.FirstOrDefaultAsync(x => x.JobId == detailJob.JobId);
+                        if (jobpost != null)
                         {
-                            if(jobpost.NumOfCandidate >0)  jobpost.NumOfCandidate = jobpost.NumOfCandidate - 1;
-                            if(jobpost.NumOfCandidate == 0)
+                            if (jobpost.NumOfCandidate > 0) jobpost.NumOfCandidate = jobpost.NumOfCandidate - 1;
+                            if (jobpost.NumOfCandidate == 0)
                             {
-                                var listApply = await _context.JobApplications.Where(x=> x.JobId == detailJob.JobId && x.Status !=8).ToListAsync();
-                                foreach(var candidateApply in listApply)
+                                var listApply = await _context.JobApplications.Where(x => x.JobId == detailJob.JobId && x.Status != 8).ToListAsync();
+                                foreach (var candidateApply in listApply)
                                 {
                                     candidateApply.Status = 0;
                                 }
-                            } 
+                            }
                         }
                     }
                     _context.Update(detailJob);
@@ -737,6 +748,60 @@ namespace RecruitXpress_BE.Controllers
                     ListSpecializedExams = listMap,
                     Location = location,
                 });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("TopJobPosting")]
+        public async Task<IActionResult> TopJobPosting(DateTime? from, DateTime? to)
+        {
+            try
+            {
+                var query = _context.JobApplications.Include(j => j.Job).AsQueryable();
+
+                if (from.HasValue)
+                {
+                    query = query.Where(j => j.CreatedAt > from);
+                }
+                if (to.HasValue)
+                {
+                    query = query.Where(j => j.CreatedAt < to);
+                }
+
+                var result = query
+      .GroupBy(j => j.JobId)
+      .Select(g => new
+      {
+          JobId = g.Key,
+          JobTitle = g.First().Job.Title,
+          Company = g.First().Job.Company,
+          Description = g.First().Job.Description,
+          Location = g.First().Job.Location,
+          EmploymentType = g.First().Job.EmploymentType,
+          Industry = g.First().Job.Industry,
+          DetailLocation = g.First().Job.DetailLocation,
+          Requirements = g.First().Job.Requirements,
+          Benefit = g.First().Job.Benefit,
+          NumOfCandidate = g.First().Job.NumOfCandidate,
+          ApplicationDeadline = g.First().Job.ApplicationDeadline,
+          DatePosted = g.First().Job.DatePosted,
+          ContactPerson = g.First().Job.ContactPerson,
+          ApplicationInstructions = g.First().Job.ApplicationInstructions,
+          Status = g.First().Job.Status,
+          MinSalary = g.First().Job.MinSalary,
+          MaxSalary = g.First().Job.MaxSalary,
+          EmploymentTypeNavigation = g.First().Job.EmploymentTypeNavigation,
+          IndustryNavigation = g.First().Job.IndustryNavigation,
+          LocationNavigation = g.First().Job.LocationNavigation,
+          Count = g.Count()
+      })
+      .OrderByDescending(j => j.Count)
+      .ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
