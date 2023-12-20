@@ -583,7 +583,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpPut("UpdateStatus")]
-        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? status)
+        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? status, string? commentHr)
         {
             try
             {
@@ -637,6 +637,10 @@ namespace RecruitXpress_BE.Controllers
                                 }
                             }
                         }
+                    }
+                    if(commentHr != null)
+                    {
+                        detailJob.CommentHR = commentHr;
                     }
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
