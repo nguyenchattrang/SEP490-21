@@ -14,6 +14,7 @@ namespace RecruitXpress_BE.DTO
         public int? Status { get; set; }
         public int? Shorted { get; set; }
         public int? AssignedFor { get; set; }
+        public string? CommnetHR { get; set; }
         public DateTime? CreatedAt { get; set; }
 
         public virtual JobDTO? Job { get; set; }

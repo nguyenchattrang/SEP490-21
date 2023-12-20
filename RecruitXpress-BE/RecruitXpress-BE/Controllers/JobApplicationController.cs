@@ -583,7 +583,7 @@ namespace RecruitXpress_BE.Controllers
             }
         }
         [HttpPut("UpdateStatus")]
-        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? status)
+        public async Task<IActionResult> UpdatejobApplicationStatus(int jobApplyId, int? accountId, int? status, string? commentHr)
         {
             try
             {
