@@ -53,10 +53,18 @@ namespace RecruitXpress_BE.Controllers
                     return BadRequest("Hãy cập nhật thông tin cá nhân đầy đủ trước khi nộp hồ sơ");
                 }
 
-                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId == jobId);
+                var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId == jobId );
                 if (check != null)
                 {
-                    return BadRequest("Công việc này đã được bạn ứng tuyển");
+                    if(check.Status == 0)
+                    {
+                        return BadRequest("Công việc này đã được HR đánh giá là bạn không phù hợp");
+                    }
+                    if (check.Status != 9)
+                    {
+                        return BadRequest("Công việc này đã được bạn ứng tuyển");
+                    }
+                   
                 }
 
                 var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
@@ -118,13 +126,11 @@ namespace RecruitXpress_BE.Controllers
                 }
                 catch (Exception ex)
                 {
-
+                    return BadRequest(ex.Message);
                 }
-
                 _context.Add(jobApp);
                 await _context.SaveChangesAsync();
                 return Ok("Nộp hồ sơ thành công");
-
 
             }
             catch (Exception ex)
@@ -281,8 +287,8 @@ namespace RecruitXpress_BE.Controllers
                             break;
                         default:
                             query = request.OrderByAscending
-                                   ? query.OrderBy(j => j.Job.ApplicationDeadline)
-                                   : query.OrderByDescending(j => j.Job.ApplicationDeadline);
+                                   ? query.OrderBy(j => j.ApplicationId)
+                                   : query.OrderByDescending(j => j.ApplicationId);
                             break;
                     }
                 }
@@ -493,8 +499,8 @@ namespace RecruitXpress_BE.Controllers
                             break;
                         default:
                             query = request.OrderByAscending
-                                   ? query.OrderBy(j => j.Job.ApplicationDeadline)
-                                   : query.OrderByDescending(j => j.Job.ApplicationDeadline);
+                                   ? query.OrderBy(j => j.ApplicationId)
+                                   : query.OrderByDescending(j => j.ApplicationId);
                             break;
                     }
                 }
