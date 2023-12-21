@@ -659,9 +659,19 @@ public class ScheduleRepository : IScheduleRepository
         var interviewers = await _context.Interviews.Where(i => i.ScheduleId == scheduleId).ToListAsync();
         foreach (var scheduleDetail in scheduleDetails)
         {
-            await _jobApplicationRepository.UpdateJobApplicationStatus(
-                (int)scheduleDetail.CandidateId,
-                null, 5);
+            if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
+            {
+                await _jobApplicationRepository.UpdateJobApplicationStatus(
+                    (int)scheduleDetail.CandidateId,
+                    null, 5);
+            }
+            else if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM)
+            {
+                await _jobApplicationRepository.UpdateJobApplicationStatus(
+                    (int)scheduleDetail.CandidateId,
+                    null, 2);
+            }
+
             if (scheduleDetail.CandidateId == null) continue;
             _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
                 (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");
