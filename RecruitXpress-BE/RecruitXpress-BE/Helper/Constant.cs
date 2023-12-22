@@ -310,23 +310,10 @@ namespace RecruitXpress_BE.Helper
                 new NotificationMessage()
                 {
                     Title = "Chào mừng bạn đến với @company",
-                    Description = "Xin chúc mừng @candidateName, chúng tôi chúc mừng bạn đã xuất sắc vượt qua các bài phỏng vấn để chính thức tiếp nhận vị trí @industry. Chào mừng bạn gia nhập vào đại gia đình @company.",
+                    Description = "Xin chúc mừng @candidateName, chúng tôi hân hạnh thông báo rằng bạn đã được chọn để gia nhập với gia đình @company. Chúng tôi tin rằng bạn sẽ là một thành viên tài năng và đóng góp tích cực cho sự phát triển của công ty.",
                     TargetUrl = ""
                 }
-            },
-            {
-                new StatusChange()
-                {
-                    OldStatus = 8,
-                    NewStatus = 9
-                },
-                new NotificationMessage()
-                {
-                    Title = "Xác nhận Nhận Đơn Ứng viên",
-                    Description = "Xin chào @candidateName, Chúng tôi đã nhận được đơn ứng tuyển của bạn cho vị trí @industry. Chúng tôi sẽ xem xét đơn của bạn và thông báo kết quả trong thời gian sớm nhất.",
-                    TargetUrl = ""
-                }
-            },
+            }
         };
     }
 
