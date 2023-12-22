@@ -15,6 +15,7 @@ namespace RecruitXpress_BE.Models
         public int? HumanResourceId { get; set; }
         public int? ExamId { get; set; }
         public int? Status { get; set; }
+        public string? Note { get; set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? UpdatedTime { get; set; }
         public string? CreatedBy { get; set; }

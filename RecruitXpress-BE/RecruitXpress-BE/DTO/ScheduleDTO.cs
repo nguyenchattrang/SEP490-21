@@ -16,6 +16,7 @@ public class ScheduleDTO
     public int? SpecializedExamId { get; set; }
     public int? JobId { get; set; }
     public string? JobTitle { get; set; }
+    public string? Note { get; set; }
     public int? Status { get; set; }
     public DateTime? CreatedTime { get; set; }
     public DateTime? UpdatedTime { get; set; }
@@ -37,9 +38,9 @@ public class ScheduleAdditionDataDTO
     public List<InterviewerSchedule> Interviewers { get; set; } = new();
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
-    public int? type { get; set; }
-    public string? note { get; set; }
-    public string? location { get; set; }
+    public int? Type { get; set; }
+    public string? Note { get; set; }
+    public string? Location { get; set; }
 }
 
 public class CandidateSchedule
@@ -51,6 +52,7 @@ public class CandidateSchedule
     public string? CandidateEmail { get; set; }
     public int? JobId { get; set; }
     public string? JobTitle { get; set; }
+    public string? Note { get; set; }
 }
 
 public class InterviewerSchedule

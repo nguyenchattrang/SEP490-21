@@ -95,6 +95,7 @@ public class ScheduleRepository : IScheduleRepository
                         ? s.SpecializedExam.Job != null ? s.SpecializedExam.Job.Title : null
                         : null
                 },
+                Note = s.Note,
                 Status = s.Status,
                 CreatedTime = s.CreatedTime,
                 UpdatedTime = s.UpdatedTime,
@@ -179,7 +180,7 @@ public class ScheduleRepository : IScheduleRepository
                             .FirstOrDefault(i =>
                                 i.StartTime == scheduleDtoScheduleDetail.StartDate &&
                                 i.EndTime == scheduleDtoScheduleDetail.EndDate &&
-                                i.type == scheduleDtoScheduleDetail.ScheduleType);
+                                i.Type == scheduleDtoScheduleDetail.ScheduleType);
                     if (scheduleFilterByTime != null)
                     {
                         scheduleFilterByTime.Candidates.Add(new CandidateSchedule()
@@ -208,7 +209,8 @@ public class ScheduleRepository : IScheduleRepository
                                         CandidateName = scheduleDtoScheduleDetail.CandidateName,
                                         CandidateEmail = scheduleDtoScheduleDetail.CandidateEmail,
                                         JobId = scheduleDtoScheduleDetail.JobId,
-                                        JobTitle = scheduleDtoScheduleDetail.JobTitle 
+                                        JobTitle = scheduleDtoScheduleDetail.JobTitle,
+                                        Note = scheduleDtoScheduleDetail.Note
                                     }
                                 },
                                 ScheduleId = scheduleDto.ScheduleId,
@@ -221,11 +223,11 @@ public class ScheduleRepository : IScheduleRepository
                                     InterviewerId = i.InterviewerId,
                                     InterviewerName = i.InterviewerName
                                 }).ToList(),
-                                type = scheduleDtoScheduleDetail.ScheduleType,
+                                Type = scheduleDtoScheduleDetail.ScheduleType,
+                                Note = scheduleDto.Note,
                                 StartTime = scheduleDtoScheduleDetail.StartDate,
                                 EndTime = scheduleDtoScheduleDetail.EndDate,
-                                note = scheduleDtoScheduleDetail.Note,
-                                location = scheduleDtoScheduleDetail.Location
+                                Location = scheduleDtoScheduleDetail.Location
                             });
                     }
                 }
@@ -659,9 +661,19 @@ public class ScheduleRepository : IScheduleRepository
         var interviewers = await _context.Interviews.Where(i => i.ScheduleId == scheduleId).ToListAsync();
         foreach (var scheduleDetail in scheduleDetails)
         {
-            await _jobApplicationRepository.UpdateJobApplicationStatus(
-                (int)scheduleDetail.CandidateId,
-                null, 5);
+            if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.INTERVIEW)
+            {
+                await _jobApplicationRepository.UpdateJobApplicationStatus(
+                    (int)scheduleDetail.CandidateId,
+                    null, 5);
+            }
+            else if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM)
+            {
+                await _jobApplicationRepository.UpdateJobApplicationStatus(
+                    (int)scheduleDetail.CandidateId,
+                    null, 2);
+            }
+
             if (scheduleDetail.CandidateId == null) continue;
             _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
                 (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");

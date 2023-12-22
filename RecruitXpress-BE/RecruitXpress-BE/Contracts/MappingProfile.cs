@@ -62,6 +62,12 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
                 .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
 
+            CreateMap<Models.Account, ProfileDTO>()
+              .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account1))
+              .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FullName))
+              .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
+              .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Dob));
+
             CreateMap<ScheduleDetail, ScheduleDetailDTO>();
             CreateMap<Schedule, ScheduleDetailDTO>();
 

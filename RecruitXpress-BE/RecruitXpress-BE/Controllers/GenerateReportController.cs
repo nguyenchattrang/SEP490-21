@@ -209,7 +209,7 @@ namespace RecruitXpress_BE.Controllers
 
                         return Ok(responseData1);
 
-                    }
+                    } 
                     //so luong job trong he thong
                     var countJobNumber = await _context.JobPostings
                     .Where(x => x.DatePosted.HasValue && x.DatePosted.Value.Month == month && x.DatePosted.Value.Year == year)
