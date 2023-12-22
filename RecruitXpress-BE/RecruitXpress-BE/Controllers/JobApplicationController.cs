@@ -593,10 +593,11 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
                 var detailJob = await _context.JobApplications
                     .Include(ja => ja.Profile)
                     .ThenInclude(p => p.Account)
+                    .Include(ja => ja.Job)
+                    .ThenInclude(i => i.IndustryNavigation)
                     .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (detailJob == null)
                 {
@@ -651,8 +652,6 @@ namespace RecruitXpress_BE.Controllers
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     await _applicationHubContext.NotifyStatusUpgrade(detailJob, (int)status, oldStatus);
-                    stopwatch.Stop();
-                    Console.WriteLine($"Thời gian thực hiện: {stopwatch.ElapsedMilliseconds} ms");
                     return Ok("Cập nhật trạng thái thành công");
                 }
                 return Ok(detailJob);
