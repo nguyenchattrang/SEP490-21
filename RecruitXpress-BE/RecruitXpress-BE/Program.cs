@@ -87,9 +87,9 @@ builder.Services.AddDbContext<RecruitXpressContext>(opt
    // => opt.UseSqlServer("Server=35.193.217.3;database=recruitxpressdb;uid=sqlserver;pwd=vutiendat2001a@A;;Encrypt=True;TrustServerCertificate=true;Connection Timeout=30;"));
 //builder.Services.AddDbContext<RecruitXpressContext>(opt
 //    => opt.UseSqlServer("Server=tcp:recruitxpressdb1.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
-    => opt.UseSqlServer("Server=MSI;Initial Catalog=recruitxpress;Persist Security Info=False;User ID=sa;Password=123456;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"));
+    => opt.UseSqlServer("server =35.192.161.27; database = recruitxpress;uid=sqlserver;pwd=vutiendat2001a@A; TrustServerCertificate=True"));
 builder.Services.AddHangfire(configuration => configuration
-    .UseSqlServerStorage("Server=MSI;Initial Catalog=recruitxpress;Persist Security Info=False;User ID=sa;Password=123456;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"));
+    .UseSqlServerStorage("server =35.192.161.27; database = recruitxpress;uid=sqlserver;pwd=vutiendat2001a@A; TrustServerCertificate=True"));
 builder.Services.AddHangfireServer();
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
