@@ -56,7 +56,7 @@ namespace RecruitXpress_BE.Controllers
                 var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId == jobId );
                 if (check != null)
                 {
-                    if(check.Status == 0)
+                    if (check.Status == 0)
                     {
                         return BadRequest("Công việc này đã được HR đánh giá là bạn không phù hợp");
                     }
@@ -64,7 +64,6 @@ namespace RecruitXpress_BE.Controllers
                     {
                         return BadRequest("Công việc này đã được bạn ứng tuyển");
                     }
-                   
                 }
 
                 var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
