@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RecruitXpress_BE.Contracts;
 using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
 using System.Text;
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.SqlServer;
+
 using RecruitXpress_BE.Hub;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,7 @@ builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IIndustryRepository, IndustryRepository>();
 builder.Services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
 builder.Services.AddScoped<JobApplicationStatusHub>();
+builder.Services.AddScoped<IJobJobPostingService, JobJobPostingService>();
 
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
@@ -51,9 +53,7 @@ builder.Services.AddSingleton(emailConfig);
 builder.Services.AddControllersWithViews()
                 .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -84,7 +84,13 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddDbContext<RecruitXpressContext>(opt
-    => opt.UseSqlServer("server =35.225.17.252; database = recruitxpress;uid=sqlserver;pwd=vutiendat2001a@A; TrustServerCertificate=True"));
+   // => opt.UseSqlServer("Server=35.193.217.3;database=recruitxpressdb;uid=sqlserver;pwd=vutiendat2001a@A;;Encrypt=True;TrustServerCertificate=true;Connection Timeout=30;"));
+//builder.Services.AddDbContext<RecruitXpressContext>(opt
+//    => opt.UseSqlServer("Server=tcp:recruitxpressdb1.database.windows.net,1433;Initial Catalog=recruitxpressdb;Persist Security Info=False;User ID=recruitxpress;Password=vutiendat2001a@A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+    => opt.UseSqlServer("server =35.192.161.27; database = recruitxpress;uid=sqlserver;pwd=vutiendat2001a@A; TrustServerCertificate=True"));
+builder.Services.AddHangfire(configuration => configuration
+    .UseSqlServerStorage("server =35.192.161.27; database = recruitxpress;uid=sqlserver;pwd=vutiendat2001a@A; TrustServerCertificate=True"));
+builder.Services.AddHangfireServer();
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -139,6 +145,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
+app.UseHangfireDashboard();
 
 app.MapControllers();
 

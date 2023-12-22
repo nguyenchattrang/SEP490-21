@@ -13,17 +13,23 @@ namespace RecruitXpress_BE.Repositories;
 public class GoogleService : IGoogleService
 {
     private readonly HttpClient _httpClient = new();
+    private readonly IConfiguration _configuration;
+
+    public GoogleService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     public string GetAuthUrl()
     {
         try
         {
             return
-                $"{Constant.GOOGLE_SERVICE.SCOPE_URL}" +
+                $"{_configuration["GoogleService:ScopeUrl"]}" +
                 // "prompt=consent" +
-                $"redirect_uri={GoogleHelper.urlEncodeForGoogle(Constant.GOOGLE_SERVICE.CALL_BACK)}" +
+                $"redirect_uri={GoogleHelper.urlEncodeForGoogle(_configuration["Website:ClientUrl"] + "/api/Authentication/auth/callback")}" +
                 $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
-                $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
+                $"&client_id={_configuration["GoogleService:ClientId"]}" +
                 $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}+{Constant.GOOGLE_SERVICE.SCOPE.PROFILE}" +
                 $"&access_type={Constant.GOOGLE_SERVICE.ACCESS_TYPE}";
         }
@@ -37,10 +43,10 @@ public class GoogleService : IGoogleService
     {
         var content = new StringContent(
             $"code={code}" +
-            $"&redirect_uri={Uri.EscapeDataString(Constant.GOOGLE_SERVICE.CALL_BACK)}" +
+            $"&redirect_uri={Uri.EscapeDataString(_configuration["Website:ClientUrl"] + "/api/Authentication/auth/callback")}" +
             $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
-            $"&client_id={Constant.GOOGLE_SERVICE.CLIENT_ID}" +
-            $"&client_secret={Constant.GOOGLE_SERVICE.CLIENT_SERCRET}" +
+            $"&client_id={_configuration["GoogleService:ClientId"]}" +
+            $"&client_secret={_configuration["GoogleService:ClientSecret"]}" +
             $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}+{Constant.GOOGLE_SERVICE.SCOPE.PROFILE}" +
             $"&access_type={Constant.GOOGLE_SERVICE.ACCESS_TYPE}" +
             $"&grant_type=authorization_code",

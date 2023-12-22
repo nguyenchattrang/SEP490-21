@@ -208,6 +208,16 @@ public class JobPostingRepository : IJobPostingRepository
         {
             throw new Exception("Ngày hết hạn phải lớn hơn ngày hiện tại!");
         }
+        
+        if (_context.JobPostings.Any(j => j.Title == jobPosting.Title.Trim()))
+        {
+            throw new Exception("Tiêu đề công việc đã tồn tại, vui lòng đặt một tiêu đề khác!");
+        }
+        
+        if (_context.JobApplications.Any(ja => ja.JobId == id))
+        {
+            throw new Exception("Đã có ứng viên ứng tuyển vào bài đăng tuyển!");
+        }
 
         jobPosting.DatePosted = DateTime.Now;
         jobPosting.JobId = id;
@@ -232,8 +242,7 @@ public class JobPostingRepository : IJobPostingRepository
             throw new Exception("Không tìm thấy thông tin đăng tuyển!");
         }
         
-        var jobApplication = await _context.JobApplications.Where(ja => ja.JobId == jobId).CountAsync();
-        if (jobApplication > 0)
+        if (_context.JobApplications.Any(ja => ja.JobId == jobId))
         {
             throw new Exception("Đã có ứng viên ứng tuyển vào bài đăng tuyển!");
         }

@@ -52,7 +52,9 @@ namespace RecruitXpress_BE.Controllers
                 var profile = await _context.Profiles.Include(p=>p.Account).FirstOrDefaultAsync(x => x.AccountId == id);
                 if (profile == null)
                 {
-                    return NotFound("Không kết quả");
+                    var acc = await _context.Accounts.FirstOrDefaultAsync(x => x.AccountId == id);
+                    var accDTO = _mapper.Map<ProfileDTO>(acc);
+                    return Ok(accDTO);
                 }
                 var profileDTO= _mapper.Map<ProfileDTO>(profile);
                 return Ok(profileDTO);
