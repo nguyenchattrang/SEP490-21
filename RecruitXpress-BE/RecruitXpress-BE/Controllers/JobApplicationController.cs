@@ -144,7 +144,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-
                 var query = _context.JobApplications
                 .Include(q => q.Evaluates)
                 .Include(q => q.Exams)

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Repositories;
@@ -24,9 +25,9 @@ namespace RecruitXpress_BE.Controllers
         }
         //GET: api/AccountManagement
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount()
+        public async Task<ActionResult<IEnumerable<Account>>> GetListAccount([FromQuery] AccountRequest request)
         {
-             var result =  await _accountRepository.GetListAccount();
+             var result =  await _accountRepository.GetListAccount(request);
            return Ok(result);
            
         }

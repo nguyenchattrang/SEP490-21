@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNet.SignalR.Client.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Asn1.Ocsp;
+using RecruitXpress_BE.DTO;
 using RecruitXpress_BE.Helper;
 using RecruitXpress_BE.IRepositories;
 using RecruitXpress_BE.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RecruitXpress_BE.Repositories;
 
@@ -20,10 +24,91 @@ public class AccountRepository : IAccountRepository
         _mapper = mapper;
         _configuration = configuration;
     }
-    public async Task<List<Account>> GetListAccount()
+    public async Task<ApiResponse<AccountInfoDTO>> GetListAccount([FromQuery] AccountRequest request)
     {
-        var result = await _context.Accounts.ToListAsync();
-        return result;
+        var query = _context.Accounts.Include(x => x.Profiles).Include(x => x.Role).AsQueryable();
+
+        if (request.Username != null)
+        {
+            query = query.Where(x => x.Account1 == request.Username);
+        }
+        if (request.FullName != null)
+        {
+            query = query.Where(x => x.FullName == request.FullName);
+        }
+        if (request.Gender != null)
+        {
+            query = query.Where(x => x.Gender == request.Gender);
+        }
+        if (request.RoleId != null)
+        {
+            query = query.Where(x => x.RoleId == request.RoleId);
+        }
+        if (request.Dob != null)
+        {
+            query = query.Where(x => x.Dob == request.Dob);
+        }
+        if (request.SortBy != null)
+        {
+            switch (request.SortBy)
+            {
+                case "FullName":
+                    query = request.OrderByAscending
+                        ? query.OrderBy(j => j.FullName)
+                        : query.OrderByDescending(j => j.FullName);
+                    break;
+                case "Username":
+                    query = request.OrderByAscending
+                        ? query.OrderBy(j => j.FullName)
+                        : query.OrderByDescending(j => j.FullName);
+                    break;
+                case "Gender":
+                    query = request.OrderByAscending
+                        ? query.OrderBy(j => j.Gender)
+                        : query.OrderByDescending(j => j.Gender);
+                    break;
+                case "Dob":
+                    query = request.OrderByAscending
+                        ? query.OrderBy(j => j.Dob)
+                        : query.OrderByDescending(j => j.Dob);
+                    break;
+                case "RoleId":
+                    query = request.OrderByAscending
+                        ? query.OrderBy(j => j.RoleId)
+                        : query.OrderByDescending(j => j.RoleId);
+                    break;
+                default:
+                    query = request.OrderByAscending
+                           ? query.OrderBy(j => j.AccountId)
+                           : query.OrderByDescending(j => j.AccountId);
+                    break;
+            }
+        }
+            if (!string.IsNullOrEmpty(request.SearchAll))
+            {
+                query = query.Where(s => s.Account1.Contains(request.SearchAll) ||
+                 s.FullName.Contains(request.SearchAll) ||
+                 s.RoleId == request.RoleId || 
+                 s.Gender.Contains(request.SearchAll));
+
+            }
+
+            var totalCount = await query.CountAsync();
+            var pageNumber = request.Page > 0 ? request.Page : 1;
+            var pageSize = request.Size > 0 ? request.Size : 20;
+            var accountList = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            var accountDTOs = _mapper.Map<List<AccountInfoDTO>>(accountList);
+
+            var response =  new ApiResponse<AccountInfoDTO>
+            {
+                Items = accountDTOs,
+                TotalCount = totalCount
+            };
+
+            return response;
     }
 
     public async Task<Account?> GetAccount(int id)
