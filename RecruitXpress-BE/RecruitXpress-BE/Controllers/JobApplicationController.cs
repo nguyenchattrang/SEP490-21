@@ -56,7 +56,14 @@ namespace RecruitXpress_BE.Controllers
                 var check = await _context.JobApplications.FirstOrDefaultAsync(x => x.ProfileId == profile.ProfileId && x.JobId == jobId);
                 if (check != null)
                 {
-                    return BadRequest("Công việc này đã được bạn ứng tuyển");
+                    if (check.Status == 0)
+                    {
+                        return BadRequest("Công việc này đã được HR đánh giá là bạn không phù hợp");
+                    }
+                    if (check.Status != 9)
+                    {
+                        return BadRequest("Công việc này đã được bạn ứng tuyển");
+                    }
                 }
 
                 var CV = _context.CandidateCvs.FirstOrDefault(x => x.AccountId == accountId);
@@ -137,7 +144,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-
                 var query = _context.JobApplications
                 .Include(q => q.Evaluates)
                 .Include(q => q.Exams)
@@ -281,8 +287,8 @@ namespace RecruitXpress_BE.Controllers
                             break;
                         default:
                             query = request.OrderByAscending
-                                   ? query.OrderBy(j => j.Job.ApplicationDeadline)
-                                   : query.OrderByDescending(j => j.Job.ApplicationDeadline);
+                                   ? query.OrderBy(j => j.ApplicationId)
+                                   : query.OrderByDescending(j => j.ApplicationId);
                             break;
                     }
                 }
@@ -493,8 +499,8 @@ namespace RecruitXpress_BE.Controllers
                             break;
                         default:
                             query = request.OrderByAscending
-                                   ? query.OrderBy(j => j.Job.ApplicationDeadline)
-                                   : query.OrderByDescending(j => j.Job.ApplicationDeadline);
+                                   ? query.OrderBy(j => j.ApplicationId)
+                                   : query.OrderByDescending(j => j.ApplicationId);
                             break;
                     }
                 }
