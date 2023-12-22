@@ -67,6 +67,8 @@ namespace RecruitXpress_BE.Repositories
                 );
             }
 
+            query = query.OrderByDescending(gt => gt.GeneralTestId);
+        
             if (!string.IsNullOrEmpty(request.SortBy))
             {
 

@@ -760,7 +760,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet("TopJobPosting")]
-        public async Task<IActionResult> TopJobPosting(DateTime? from, DateTime? to)
+        public async Task<IActionResult> TopJobPosting(DateTime? from, DateTime? to, int? accountId)
         {
             try
             {
@@ -800,6 +800,7 @@ namespace RecruitXpress_BE.Controllers
           EmploymentTypeNavigation = g.First().Job.EmploymentTypeNavigation,
           IndustryNavigation = g.First().Job.IndustryNavigation,
           LocationNavigation = g.First().Job.LocationNavigation,
+          IsPreferred = accountId != null && g.First().Job.WishLists.Any(w => w.AccountId == accountId),
           Count = g.Count()
       })
       .OrderByDescending(j => j.Count)
