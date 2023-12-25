@@ -86,6 +86,11 @@ public class AccountRepository : IAccountRepository
                         ? query.OrderBy(j => j.RoleId)
                         : query.OrderByDescending(j => j.RoleId);
                     break;
+                case "Status":
+                    query = request.OrderByAscending
+                        ? query.OrderBy(j => j.Status)
+                        : query.OrderByDescending(j => j.Status);
+                    break;
                 default:
                     query = request.OrderByAscending
                            ? query.OrderByDescending(j => j.AccountId)
@@ -96,10 +101,7 @@ public class AccountRepository : IAccountRepository
             if (!string.IsNullOrEmpty(request.SearchAll))
             {
                 query = query.Where(s => s.Account1.Contains(request.SearchAll) ||
-                 s.FullName.Contains(request.SearchAll) ||
-                 s.RoleId == request.RoleId || 
-                 s.Gender.Contains(request.SearchAll));
-
+                 s.FullName.Contains(request.SearchAll));
             }
 
             var totalCount = await query.CountAsync();
