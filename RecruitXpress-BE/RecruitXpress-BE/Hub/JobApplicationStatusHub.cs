@@ -32,6 +32,18 @@ public class JobApplicationStatusHub : Hub
                 notification.Description =
                     notification.Description?.Replace("@candidateName", jobApplication?.Profile?.Account?.FullName);
             }
+            
+            if (notification.Description!.Contains("@industry"))
+            {
+                notification.Description =
+                    notification.Description?.Replace("@industry", jobApplication?.Job?.IndustryNavigation?.IndustryName);
+            }
+            
+            if (notification.Description!.Contains("@company"))
+            {
+                notification.Description =
+                    notification.Description?.Replace("@company", jobApplication?.Job?.Company);
+            }
 
             if (jobApplication != null)
             {
@@ -46,7 +58,7 @@ public class JobApplicationStatusHub : Hub
                     TargetUrl = notification.TargetUrl,
                     ReceiverId = jobApplication.Profile?.AccountId
                 });
-                await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplication.ApplicationId, newStatus,
+                await _hubContext.Clients.All.SendAsync("StatusChanged", jobApplication?.Profile?.Account?.AccountId, newStatus,
                     notification.Title,
                     notification.Description);
             }
