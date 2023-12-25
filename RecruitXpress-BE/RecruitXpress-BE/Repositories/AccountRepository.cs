@@ -47,6 +47,9 @@ public class AccountRepository : IAccountRepository
         if (request.Dob != null)
         {
             query = query.Where(x => x.Dob == request.Dob);
+        }  if (request.Status != null)
+        {
+            query = query.Where(x => x.Status == request.Status);
         }
         if (request.SortBy != null)
         {
@@ -76,6 +79,11 @@ public class AccountRepository : IAccountRepository
                     query = request.OrderByAscending
                         ? query.OrderBy(j => j.RoleId)
                         : query.OrderByDescending(j => j.RoleId);
+                    break;
+                case "Status":
+                    query = request.OrderByAscending
+                        ? query.OrderBy(j => j.Status)
+                        : query.OrderByDescending(j => j.Status);
                     break;
                 default:
                     query = request.OrderByAscending
