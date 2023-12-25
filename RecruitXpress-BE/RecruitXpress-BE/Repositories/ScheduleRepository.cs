@@ -61,14 +61,14 @@ public class ScheduleRepository : IScheduleRepository
             {
                 case Constant.ROLE.INTERVIEWER:
                     query = query.Where(s =>
-                        s.Interviewers.Select(i => i.InterviewerNavigation.AccountId).Contains(accountId));
+                        s.Interviewers.Select(i => i.InterviewerId).Contains(accountId));
                     break;
                 case Constant.ROLE.CANDIDATE:
                     query = query.Where(s =>
                         s.ScheduleDetails.Select(sd => sd.Candidate.Profile.AccountId).Contains(accountId));
                     break;
                 default:
-                    query = query.Where(s => s.HumanResource != null && s.HumanResource.AccountId == accountId);
+                    query = query.Where(s => s.HumanResourceId == accountId);
                     break;
             }
 
@@ -622,7 +622,7 @@ public class ScheduleRepository : IScheduleRepository
                             (int)scheduleCandidate.CandidateId!,
                             null, 5);
                         await _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
-                            (int)scheduleCandidate.CandidateId, "chưa nghĩ ra lý do");
+                            (int)scheduleCandidate.CandidateId, "Lý do bất khả kháng");
                     }
 
                     isUpdated = true;
@@ -678,9 +678,9 @@ public class ScheduleRepository : IScheduleRepository
 
             if (scheduleDetail.CandidateId == null) continue;
             _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
-                (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");
+                (int)scheduleDetail.CandidateId, "Lý do bất khả kháng");
             _emailTemplateRepository.SendEmailDeleteScheduleForInterviewer(
-                (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");
+                (int)scheduleDetail.CandidateId, "Lý do bất khả kháng");
             _context.Entry(scheduleDetail).State = EntityState.Deleted;
         }
 

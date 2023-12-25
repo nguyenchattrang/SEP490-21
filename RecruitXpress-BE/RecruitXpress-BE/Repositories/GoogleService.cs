@@ -27,7 +27,7 @@ public class GoogleService : IGoogleService
             return
                 $"{_configuration["GoogleService:ScopeUrl"]}" +
                 // "prompt=consent" +
-                $"redirect_uri={GoogleHelper.urlEncodeForGoogle(_configuration["Website:ClientUrl"] + "/api/Authentication/auth/callback")}" +
+                $"redirect_uri={GoogleHelper.urlEncodeForGoogle(_configuration["Website:HostUrl"] + "/api/Authentication/auth/callback")}" +
                 $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
                 $"&client_id={_configuration["GoogleService:ClientId"]}" +
                 $"&scope={Constant.GOOGLE_SERVICE.SCOPE.EMAIL}+{Constant.GOOGLE_SERVICE.SCOPE.PROFILE}" +
@@ -43,7 +43,7 @@ public class GoogleService : IGoogleService
     {
         var content = new StringContent(
             $"code={code}" +
-            $"&redirect_uri={Uri.EscapeDataString(_configuration["Website:ClientUrl"] + "/api/Authentication/auth/callback")}" +
+            $"&redirect_uri={Uri.EscapeDataString(_configuration["Website:HostUrl"] + "/api/Authentication/auth/callback")}" +
             $"&response_type={Constant.GOOGLE_SERVICE.RESPONSE_TYPE}" +
             $"&client_id={_configuration["GoogleService:ClientId"]}" +
             $"&client_secret={_configuration["GoogleService:ClientSecret"]}" +
@@ -82,120 +82,3 @@ public class GoogleService : IGoogleService
         }
     }
 }
-
-    // public async Task<string> AddToGoogleCalendar(GoogleCalendarRequestDTO googleCalendarReqDTO) {
-    //     try {
-    //         var token = new TokenResponse {
-    //             RefreshToken = googleCalendarReqDTO.refreshToken
-    //         };
-    //         var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
-    //             new GoogleAuthorizationCodeFlow.Initializer {
-    //                 ClientSecrets = new ClientSecrets {
-    //                     ClientId = Constant.GOOGLE_SERVICE.CLIENT_ID,
-    //                     ClientSecret = Constant.GOOGLE_SERVICE.CLIENT_SERCRET
-    //                 }
-    //
-    //             }), "user", token);
-    //
-    //         var service = new CalendarService(new BaseClientService.Initializer() {
-    //             HttpClientInitializer = credentials,
-    //         });
-    //
-    //         Event newEvent = new Event() {
-    //             Summary = googleCalendarReqDTO.Summary,
-    //             Description = googleCalendarReqDTO.Description,
-    //             Start = new EventDateTime() {
-    //                 DateTime = googleCalendarReqDTO.StartTime,
-    //                 //TimeZone = Method.WindowsToIana();    //user's time zone
-    //             },
-    //             End = new EventDateTime() {
-    //                 DateTime = googleCalendarReqDTO.EndTime,
-    //                 //TimeZone = Method.WindowsToIana();    //user's time zone
-    //             },
-    //             Reminders = new Event.RemindersData() {
-    //                 UseDefault = false,
-    //                 Overrides = new EventReminder[] {
-    //
-    //                     new EventReminder() {
-    //                         Method = "email", Minutes = 30
-    //                     },
-    //
-    //                     new EventReminder() {
-    //                         Method = "popup", Minutes = 15
-    //                     },
-    //
-    //                     new EventReminder() {
-    //                         Method = "popup", Minutes = 1
-    //                     },
-    //                 }
-    //             }
-    //
-    //         };
-    //
-    //         EventsResource.InsertRequest insertRequest = service.Events.Insert(newEvent, googleCalendarReqDTO.CalendarId);
-    //         Event createdEvent = await insertRequest.ExecuteAsync();
-    //         return createdEvent.Id;
-    //     } catch (Exception e) {
-    //         Console.WriteLine(e);
-    //         th row;
-    //     }
-    // }
-    //
-    //  public async Task<CalendarList> GetGoogleCalendar(GoogleCalendarRequestDTO googleCalendarReqDTO) {
-    //     try {
-    //         var token = new TokenResponse {
-    //             RefreshToken = googleCalendarReqDTO.refreshToken
-    //         };
-    //         var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
-    //             new GoogleAuthorizationCodeFlow.Initializer {
-    //                 ClientSecrets = new ClientSecrets {
-    //                     ClientId = Constant.GOOGLE_SERVICE.CLIENT_ID,
-    //                     ClientSecret = Constant.GOOGLE_SERVICE.CLIENT_SERCRET
-    //                 }
-    //
-    //             }), "user", token);
-    //
-    //         var service = new CalendarService(new BaseClientService.Initializer() {
-    //             HttpClientInitializer = credentials,
-    //         });
-    //
-    //         return service.CalendarList.List();
-    //         // Event newEvent = new Event() {
-    //         //     Summary = googleCalendarReqDTO.Summary,
-    //         //     Description = googleCalendarReqDTO.Description,
-    //         //     Start = new EventDateTime() {
-    //         //         DateTime = googleCalendarReqDTO.StartTime,
-    //         //         //TimeZone = Method.WindowsToIana();    //user's time zone
-    //         //     },
-    //         //     End = new EventDateTime() {
-    //         //         DateTime = googleCalendarReqDTO.EndTime,
-    //         //         //TimeZone = Method.WindowsToIana();    //user's time zone
-    //         //     },
-    //         //     Reminders = new Event.RemindersData() {
-    //         //         UseDefault = false,
-    //         //         Overrides = new EventReminder[] {
-    //         //
-    //         //             new EventReminder() {
-    //         //                 Method = "email", Minutes = 30
-    //         //             },
-    //         //
-    //         //             new EventReminder() {
-    //         //                 Method = "popup", Minutes = 15
-    //         //             },
-    //         //
-    //         //             new EventReminder() {
-    //         //                 Method = "popup", Minutes = 1
-    //         //             },
-    //         //         }
-    //         //     }
-    //         //
-    //         // };
-    //         //
-    //         // EventsResource.InsertRequest insertRequest = service.Events.Insert(newEvent, googleCalendarReqDTO.CalendarId);
-    //         // Event createdEvent = await insertRequest.ExecuteAsync();
-    //         // return createdEvent.Id;
-    //     } catch (Exception e) {
-    //         Console.WriteLine(e);
-    //         throw;
-    //     }
-    // }

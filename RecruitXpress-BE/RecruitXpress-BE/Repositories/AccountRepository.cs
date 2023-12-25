@@ -139,7 +139,7 @@ public class AccountRepository : IAccountRepository
             var user = new Account
             {
                 Account1 = account.Account1,
-                Password = HashHelper.Encrypt(account.Password, _configuration),
+                Password = account.Password != null ? HashHelper.Encrypt(account.Password, _configuration) : null,
                 FullName = account.FullName,
                 Gender= account.Gender,
                 Dob = account.Dob,

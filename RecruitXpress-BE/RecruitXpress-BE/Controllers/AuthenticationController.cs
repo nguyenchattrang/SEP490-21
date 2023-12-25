@@ -449,7 +449,7 @@ namespace RecruitXpress_BE.Controllers
                     {
                         Account1 = userInfo.Email,
                         Password = null,
-                        Dob = userInfo.DoB,
+                        Dob = null,
                         CreatedAt = DateTime.Now,
                         Status = 1,
                         Gender = userInfo.Gender,
@@ -457,16 +457,34 @@ namespace RecruitXpress_BE.Controllers
                         FullName = userInfo.Name,
                         Token = token.access_token
                     });
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
+                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                if (user.Account1 == null) return Unauthorized("Có lỗi xảy ra trong quá trình đăng nhập!");
+                var tokeOptions = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Audience"],
+                    audience: _configuration["Jwt:Issuer"],
+                    claims: new List<Claim>()
+                    {
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                        new Claim("UserId", user.AccountId.ToString()),
+                        new Claim(ClaimTypes.Name, user.Account1),
+                        new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "Candidate"),
+                    },
+                    expires: DateTime.Now.AddHours(6),
+                    signingCredentials: signinCredentials
+                );
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
                 return Ok(new
                 {
-                    Token = token,
+                    Token = tokenString,
                     AccountId = user.AccountId,
                     UserName = user.Account1,
                     FullName = user.FullName,
                     RoleId = user.RoleId,
-                    IsProfile = (user.Profiles != null && user.Profiles.Any()).ToString().ToLower(),
-                    IsCV = (user.CandidateCvs != null && user.CandidateCvs.Any()).ToString().ToLower()
+                    IsProfile = (user.Profiles.Any()).ToString().ToLower(),
+                    IsCV = (user.CandidateCvs.Any()).ToString().ToLower()
                 });
             }
             catch (Exception e)
