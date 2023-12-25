@@ -622,7 +622,7 @@ public class ScheduleRepository : IScheduleRepository
                             (int)scheduleCandidate.CandidateId!,
                             null, 5);
                         await _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
-                            (int)scheduleCandidate.CandidateId, "chưa nghĩ ra lý do");
+                            (int)scheduleCandidate.CandidateId, "Lý do bất khả kháng");
                     }
 
                     isUpdated = true;
@@ -678,9 +678,9 @@ public class ScheduleRepository : IScheduleRepository
 
             if (scheduleDetail.CandidateId == null) continue;
             _emailTemplateRepository.SendEmailDeleteInterviewScheduleToCandidate(
-                (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");
+                (int)scheduleDetail.CandidateId, "Lý do bất khả kháng");
             _emailTemplateRepository.SendEmailDeleteScheduleForInterviewer(
-                (int)scheduleDetail.CandidateId, "chưa nghĩ ra lý do");
+                (int)scheduleDetail.CandidateId, "Lý do bất khả kháng");
             _context.Entry(scheduleDetail).State = EntityState.Deleted;
         }
 
