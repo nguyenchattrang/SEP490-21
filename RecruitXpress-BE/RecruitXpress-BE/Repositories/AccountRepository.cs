@@ -79,8 +79,8 @@ public class AccountRepository : IAccountRepository
                     break;
                 default:
                     query = request.OrderByAscending
-                           ? query.OrderBy(j => j.AccountId)
-                           : query.OrderByDescending(j => j.AccountId);
+                           ? query.OrderByDescending(j => j.AccountId)
+                           : query.OrderBy(j => j.AccountId);
                     break;
             }
         }

@@ -11,6 +11,7 @@ namespace RecruitXpress_BE.DTO
     }
     public class AccountInfoDTO
     {
+        public int AccountId { get; set; }
         public string? Username { get; set; }
         public int? RoleId { get; set; }
         public string? Email { get; set; }
