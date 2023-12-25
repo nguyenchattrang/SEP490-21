@@ -61,14 +61,14 @@ public class ScheduleRepository : IScheduleRepository
             {
                 case Constant.ROLE.INTERVIEWER:
                     query = query.Where(s =>
-                        s.Interviewers.Select(i => i.InterviewerNavigation.AccountId).Contains(accountId));
+                        s.Interviewers.Select(i => i.InterviewerId).Contains(accountId));
                     break;
                 case Constant.ROLE.CANDIDATE:
                     query = query.Where(s =>
                         s.ScheduleDetails.Select(sd => sd.Candidate.Profile.AccountId).Contains(accountId));
                     break;
                 default:
-                    query = query.Where(s => s.HumanResource != null && s.HumanResource.AccountId == accountId);
+                    query = query.Where(s => s.HumanResourceId == accountId);
                     break;
             }
 
