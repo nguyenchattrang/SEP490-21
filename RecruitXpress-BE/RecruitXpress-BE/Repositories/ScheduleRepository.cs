@@ -326,6 +326,7 @@ public class ScheduleRepository : IScheduleRepository
                 HumanResourceId = hrAccount.AccountId,
                 Status = scheduleDto.Status,
                 ExamId = scheduleDto.SpecializedExamId,
+                Note = scheduleDto.Note,
                 CreatedTime = DateTime.Now,
                 UpdatedTime = DateTime.Now,
                 CreatedBy = scheduleDto.CreatedBy,
@@ -464,6 +465,7 @@ public class ScheduleRepository : IScheduleRepository
             schedule.HumanResourceId = hrAccount.AccountId;
             schedule.Status = scheduleDto.Status;
             schedule.ExamId = scheduleDto.SpecializedExamId;
+            schedule.Note = scheduleDto.Note;
             schedule.UpdatedTime = DateTime.Now;
             schedule.UpdatedBy = scheduleDto.UpdatedBy;
 
