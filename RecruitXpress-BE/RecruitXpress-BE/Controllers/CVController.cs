@@ -110,7 +110,7 @@ namespace RecruitXpress_BE.Controllers
                 return NotFound("Không tìm thấy file");
             }
 
-            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\JobApplicationsCV"));
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\JobApplicationsCV")); 
             var filePath = path + result.UrlCandidateCV;
 
             if (!System.IO.File.Exists(filePath))
@@ -123,15 +123,18 @@ namespace RecruitXpress_BE.Controllers
 
             string baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
 
-            string documentsLink = Url.Action("GetAddressJobApply", "CV", new { result.UrlCandidateCV });
+            string documentsLink = Url.Action("GetAddressJob", "CV", new { result.UrlCandidateCV } );
+
 
             // Return a JSON object containing the link
             return Ok(baseUrl + documentsLink);
+
+
         }
-        [HttpGet("documentsJobApply/{token}")]
-        public async Task<IActionResult> GetAddressJobApply(string token)
+        [HttpGet("documentsJobApply/{UrlCandidateCV}")]
+        public async Task<IActionResult> GetAddressJob(string UrlCandidateCV)
         {
-            var result = await _context.JobApplications.FirstOrDefaultAsync(x => x.UrlCandidateCV == token);
+            var result = await _context.JobApplications.FirstOrDefaultAsync(x => x.UrlCandidateCV == UrlCandidateCV);
 
             if (result == null)
             {
