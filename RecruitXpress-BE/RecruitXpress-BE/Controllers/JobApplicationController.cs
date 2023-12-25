@@ -142,7 +142,6 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-
                 var query = _context.JobApplications
                 .Include(q => q.Evaluates)
                 .Include(q => q.Exams)
@@ -592,10 +591,11 @@ namespace RecruitXpress_BE.Controllers
         {
             try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
                 var detailJob = await _context.JobApplications
                     .Include(ja => ja.Profile)
                     .ThenInclude(p => p.Account)
+                    .Include(ja => ja.Job)
+                    .ThenInclude(i => i.IndustryNavigation)
                     .FirstOrDefaultAsync(x => x.ApplicationId == jobApplyId);
                 if (detailJob == null)
                 {
@@ -650,8 +650,6 @@ namespace RecruitXpress_BE.Controllers
                     _context.Update(detailJob);
                     await _context.SaveChangesAsync();
                     await _applicationHubContext.NotifyStatusUpgrade(detailJob, (int)status, oldStatus);
-                    stopwatch.Stop();
-                    Console.WriteLine($"Thời gian thực hiện: {stopwatch.ElapsedMilliseconds} ms");
                     return Ok("Cập nhật trạng thái thành công");
                 }
                 return Ok(detailJob);
@@ -765,7 +763,7 @@ namespace RecruitXpress_BE.Controllers
         }
 
         [HttpGet("TopJobPosting")]
-        public async Task<IActionResult> TopJobPosting(DateTime? from, DateTime? to)
+        public async Task<IActionResult> TopJobPosting(DateTime? from, DateTime? to, int? accountId)
         {
             try
             {
@@ -805,6 +803,7 @@ namespace RecruitXpress_BE.Controllers
           EmploymentTypeNavigation = g.First().Job.EmploymentTypeNavigation,
           IndustryNavigation = g.First().Job.IndustryNavigation,
           LocationNavigation = g.First().Job.LocationNavigation,
+          IsPreferred = accountId != null && g.First().Job.WishLists.Any(w => w.AccountId == accountId),
           Count = g.Count()
       })
       .OrderByDescending(j => j.Count)

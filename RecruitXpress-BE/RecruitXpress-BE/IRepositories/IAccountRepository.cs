@@ -1,10 +1,11 @@
-﻿using RecruitXpress_BE.Models;
+﻿using RecruitXpress_BE.DTO;
+using RecruitXpress_BE.Models;
 
 namespace RecruitXpress_BE.IRepositories;
 
 public interface IAccountRepository
 {
-    Task<List<Account>> GetListAccount();
+    Task<ApiResponse<AccountInfoDTO>> GetListAccount(AccountRequest request);
     Task<Account?> GetAccount(int id);
 
     Task<Account> AddAccount(Account account);

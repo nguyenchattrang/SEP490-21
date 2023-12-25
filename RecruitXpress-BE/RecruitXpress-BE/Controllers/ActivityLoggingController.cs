@@ -44,6 +44,7 @@ namespace RecruitXpress_BE.Controllers
                     .Include(x => x.WorkExperiences)
                     .Include(x => x.JobApplications).ThenInclude(x=> x.Exams)
                     .Include(x => x.JobApplications).ThenInclude(x=> x.ScheduleDetails)
+                    .Include(x => x.JobApplications).ThenInclude(x=> x.Job)
                     .AsQueryable(); // Convert to queryable for dynamic filtering
 
                 if (request.Email != null)
@@ -63,6 +64,14 @@ namespace RecruitXpress_BE.Controllers
                     {
                         query = query.Where(p => p.JobApplications.Any());
                     }
+                }
+
+                if (!string.IsNullOrEmpty(request.SearchAll))
+                {
+                    query = query.Where(gt =>
+                        gt.Account.Account1.Contains(request.SearchAll) ||
+                        gt.Account.FullName.Contains(request.SearchAll) 
+                    );
                 }
 
                 if (request.SortBy != null)

@@ -118,8 +118,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddAuthorization();
 var app = builder.Build();
-app.UseCors(option => option.AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-//app.UseCors(option => option.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+app.UseCors(option => option.WithOrigins(builder.Configuration["Website:ClientUrl"]).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{

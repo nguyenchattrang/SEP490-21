@@ -123,12 +123,34 @@ namespace RecruitXpress_BE.Controllers
 
             string baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
 
-            string documentsLink = Url.Action("GetAddress", "CV", new { result.UrlCandidateCV });
+            string documentsLink = Url.Action("GetAddressJobApply", "CV", new { result.UrlCandidateCV });
 
             // Return a JSON object containing the link
             return Ok(baseUrl + documentsLink);
         }
+        [HttpGet("documentsJobApply/{token}")]
+        public async Task<IActionResult> GetAddressJobApply(string token)
+        {
+            var result = await _context.JobApplications.FirstOrDefaultAsync(x => x.UrlCandidateCV == token);
 
+            if (result == null)
+            {
+                return NotFound("Không tìm thấy file");
+            }
+
+            string path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "Upload\\JobApplicationsCV"));
+            var filePath = path + result.UrlCandidateCV;
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Không tìm thấy file" + filePath);
+            }
+
+            var fileContent = await System.IO.File.ReadAllBytesAsync(filePath);
+            var contentType = "application/pdf"; // Set the content type to PDF
+            Response.Headers.Add("Content-Disposition", "inline");
+            return File(fileContent, contentType);
+        }
         [HttpGet("ViewCV/{accId}")]
         public async Task<IActionResult> ViewCV(int accId)
         {

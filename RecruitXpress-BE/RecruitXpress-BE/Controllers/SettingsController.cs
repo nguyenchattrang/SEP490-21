@@ -2,6 +2,7 @@
 using RecruitXpress_BE.Models;
 using RecruitXpress_BE.Helper;
 using Constant = RecruitXpress_BE.Helper.Constant;
+using RecruitXpress_BE.DTO;
 
 namespace RecruitXpress_BE.Controllers
 {
@@ -16,18 +17,23 @@ namespace RecruitXpress_BE.Controllers
             _context = context;
             _configuration = configuration;
         }
-        [HttpGet("GetLevelOfTests")]
-        public async Task<IActionResult> GetLevelOfTests()
+        [HttpGet("GetGeneralSettings")]
+        public async Task<IActionResult> GetGeneralSettings()
         {
             try
             {
 
                 return Ok(new
                 {
-                    easy = ConstantQuestion.easy,
-                    medium = ConstantQuestion.medium,
-                    hard = ConstantQuestion.hard,
-                    totalQuestion = ConstantQuestion.easy + ConstantQuestion.medium + ConstantQuestion.hard,
+                    NumberOfEasyQuestion = ConstantQuestion.easy,
+                    NumberOfMediumQuestion = ConstantQuestion.medium,
+                    NumberOfHardQuestion = ConstantQuestion.hard,
+                    TotalQuestion = ConstantQuestion.easy + ConstantQuestion.medium + ConstantQuestion.hard,
+                    MaxFileSize = Constant.MaxFileSize/1024/1024,
+                    ExpireForgotPasswordDays = Constant.ExpireForgotPasswordDays,
+                    ExpireRegisterAccountDays = Constant.ExpireRegisterAccountDays,
+                    ExpireExamTokenExpert = Constant.ExpireExamDays,
+                   
                 });
             }
             catch (Exception ex)
@@ -35,50 +41,31 @@ namespace RecruitXpress_BE.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("SetLevelOfTests")]
-        public async Task<IActionResult> SetUpLevelOfTests(int easy, int medium, int hard)
+
+        [HttpPut("UpdateGeneralSettings")]
+        public async Task<IActionResult> UpdateGeneralSettings(SettingDTO request)
         {
             try
             {
-                if (easy < 0 || medium < 0 || hard < 0)
+                if (request.NumberOfEasyQuestion < 0 || request.NumberOfMediumQuestion < 0 || request.NumberOfHardQuestion < 0)
                 {
                     throw new ArgumentException("Số lượng câu hỏi phải là số dương");
                 }
-                ConstantQuestion.easy = easy;
-                ConstantQuestion.medium = medium;
-                ConstantQuestion.hard = hard;
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("GetMaxFileSize")]
-        public async Task<IActionResult> GetMaxFileSize()
-        {
-            try
-            {
-                return Ok(Constant.MaxFileSize);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("SetMaxFileSize")]
-        public async Task<IActionResult> SetUpMaxFileSize(int mb)
-        {
-            try
-            {
-
-                if (mb < 0)
+                if (request.MaxFileSize < 0)
                 {
                     throw new ArgumentException("Kích cỡ file (mb) phải là một số dương");
                 }
-                Constant.MaxFileSize = mb;
+                if (request.ExpireExamTokenExpert < 0 || request.ExpireRegisterAccountToken < 0 || request.ExpireForgotPasswordAccountToken < 0 )
+                {
+                    throw new ArgumentException("Số ngày hết hạn token phải là một số dương");
+                }
+                ConstantQuestion.easy = request.NumberOfEasyQuestion;
+                ConstantQuestion.medium = request.NumberOfMediumQuestion;
+                ConstantQuestion.hard = request.NumberOfHardQuestion;
+                Constant.MaxFileSize = request.MaxFileSize*1024*1024;
+                Constant.ExpireForgotPasswordDays = request.ExpireForgotPasswordAccountToken;
+                Constant.ExpireRegisterAccountDays = request.ExpireRegisterAccountToken;
+                Constant.ExpireExamDays = request.ExpireExamTokenExpert;
                 return Ok();
             }
             catch (Exception ex)
@@ -87,113 +74,6 @@ namespace RecruitXpress_BE.Controllers
             }
         }
 
-        [HttpGet("GetExpireExamTokenExpert")]
-        public async Task<IActionResult> GetExpireTokenExpert()
-        {
-            try
-            {
-                {
-                    return Ok(Constant.MaxFileSize);
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-        [HttpGet("SetExpireExamTokenExpert")]
-        public async Task<IActionResult> SetUpExpireTokenExpert(int days)
-        {
-            try
-            {
-
-                {
-                    if (days < 0)
-                    {
-                        throw new ArgumentException("Số ngày hết hạn token phải là một số dương");
-                    }
-                    Constant.MaxFileSize = days;
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("GetExpireRegisterAccountToken")]
-        public async Task<IActionResult> GetExpireRegisterAccountToken()
-        {
-            try
-            {
-
-                {
-                    return Ok(Constant.ExpireRegisterAccountDays);
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-        [HttpGet("SetExpireRegisterAccountToken")]
-        public async Task<IActionResult> SetUpExpireRegisterAccountToken(int days)
-        {
-            try
-            {
-
-                {
-                    if (days < 0)
-                    {
-                        throw new ArgumentException("Số ngày hết hạn token phải là một số dương");
-                    }
-                    Constant.ExpireRegisterAccountDays = days;
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("GetExpireForgotPasswordAccountToken")]
-        public async Task<IActionResult> GetExpireForgotPasswordAccountToken()
-        {
-            try
-            {
-
-                {
-                    return Ok(Constant.ExpireForgotPasswordDays);
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("SetExpireForgotPasswordAccountToken")]
-        public async Task<IActionResult> SetUpExpireForgotPasswordAccountToken(int days)
-        {
-            try
-            {
-
-                {
-                    if (days < 0)
-                    {
-                        throw new ArgumentException("Số ngày hết hạn token phải là một số dương");
-                    }
-                    Constant.ExpireForgotPasswordDays = days;
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
 
     }
 }

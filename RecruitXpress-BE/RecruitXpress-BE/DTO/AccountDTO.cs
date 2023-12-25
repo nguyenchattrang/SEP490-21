@@ -9,13 +9,26 @@ namespace RecruitXpress_BE.DTO
             public int? RoleId { get; set; }
         
     }
+    public class AccountInfoDTO
+    {
+        public string? Username { get; set; }
+        public int? RoleId { get; set; }
+        public string? Email { get; set; }
+        public string? FullName { get; set; }
+        public DateTime? Dob { get; set; }
+        public string? Gender { get; set; }
 
+    }
     public class AccountInformation
     {
         public string? Email { get; set; }
         public string? FullName { get; set; }
         public DateTime? Dob { get; set; }
         public string? Gender { get; set; }
+
+    }
+    public class AccountResponse : ApiResponse<AccountInfoDTO>
+    {
 
     }
 }
