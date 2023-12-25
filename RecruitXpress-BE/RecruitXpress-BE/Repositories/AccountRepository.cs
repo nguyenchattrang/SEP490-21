@@ -50,7 +50,7 @@ public class AccountRepository : IAccountRepository
         }  if (request.Status != null)
         {
             query = query.Where(x => x.Status == request.Status);
-        }
+        }                 
         if (request.SortBy != null)
         {
             switch (request.SortBy)
@@ -95,10 +95,7 @@ public class AccountRepository : IAccountRepository
             if (!string.IsNullOrEmpty(request.SearchAll))
             {
                 query = query.Where(s => s.Account1.Contains(request.SearchAll) ||
-                 s.FullName.Contains(request.SearchAll) ||
-                 s.RoleId == request.RoleId || 
-                 s.Gender.Contains(request.SearchAll));
-
+                 s.FullName.Contains(request.SearchAll));
             }
 
             var totalCount = await query.CountAsync();
