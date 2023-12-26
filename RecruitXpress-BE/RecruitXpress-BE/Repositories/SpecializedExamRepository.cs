@@ -167,7 +167,7 @@ namespace RecruitXpress_BE.Repositories
             {
                 throw new ArgumentException("Code không hợp lệ. Không tìm thấy bài thi");
             }
-            if (specExam.Status == 0)
+            if (specExam.Status == 2)
                 throw new ArgumentException("Code bài thi không hợp lệ");
 
             if (specExam.JobId == null)
