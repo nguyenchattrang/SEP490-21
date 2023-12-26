@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RecruitXpress-BE")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a3ed2da114444809cbe2b40e6875aaa4212007a")]
 [assembly: System.Reflection.AssemblyProductAttribute("RecruitXpress-BE")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RecruitXpress-BE")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

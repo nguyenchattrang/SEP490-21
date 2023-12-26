@@ -120,36 +120,11 @@ namespace RecruitXpress_BE.Controllers
             // Combine the username and extension for the filename
             string fileName = $"{exam.Account.Username}{fileExtension}";
             var contentType = "application/octet-stream";
+            Response.Headers.Add("Content-Disposition", $"attachment; filename={fileName}");
             return File(fileContent, contentType, fileName);
         }
-        /*[HttpGet("Download/{examId}")]
-        public async Task<IActionResult> DownloadFile(int examId)
-        {
-            try
-            {
-                var exam = await _examRepository.GetExamById(examId);
-             
-                if (exam == null)
-                {
-                    return NotFound("Không tìm thấy id");
-                }
 
-                var filePath = Path.Combine(Environment.CurrentDirectory, "Upload\\ExamFiles", exam.FileUrl) ;
-
-                if (!System.IO.File.Exists(filePath))
-                {
-                    return NotFound("Không tìm thấy file");
-                }
-
-                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
-                return File(fileStream, "application/octet-stream", exam.FileUrl);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }*/
+      
 
         [HttpPut("UpdateExam/{examId}")]
         public async Task<IActionResult> UpdateExam(int examId, Exam exam)
