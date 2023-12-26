@@ -35,6 +35,7 @@ namespace RecruitXpress_BE.DTO
         public string? Imperfection { get; set; }
         public string? ResearchWork { get; set; }
         public string? Article { get; set; }
+        public string? Type { get; set; }
 
 
         public virtual MaritalStatusDTO? Status { get; set; }
