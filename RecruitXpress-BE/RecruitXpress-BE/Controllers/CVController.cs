@@ -122,8 +122,9 @@ namespace RecruitXpress_BE.Controllers
             var contentType = "application/pdf"; // Set the content type to PDF
 
             string baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
+            var UrlCandidateCV = result.UrlCandidateCV.TrimStart('\\');
 
-            string documentsLink = Url.Action("GetAddressJob", "CV", new { result.UrlCandidateCV } );
+            string documentsLink = Url.Action("GetAddressJob", "CV", new { UrlCandidateCV } );
 
 
             // Return a JSON object containing the link
@@ -134,7 +135,8 @@ namespace RecruitXpress_BE.Controllers
         [HttpGet("documentsJobApply/{UrlCandidateCV}")]
         public async Task<IActionResult> GetAddressJob(string UrlCandidateCV)
         {
-            var result = await _context.JobApplications.FirstOrDefaultAsync(x => x.UrlCandidateCV == UrlCandidateCV);
+            var url = "\\" + UrlCandidateCV;
+            var result = await _context.JobApplications.FirstOrDefaultAsync(x => x.UrlCandidateCV == url);
 
             if (result == null)
             {
