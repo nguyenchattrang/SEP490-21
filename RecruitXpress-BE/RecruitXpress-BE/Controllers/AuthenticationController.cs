@@ -72,9 +72,21 @@ namespace RecruitXpress_BE.Controllers
                         await _context.SaveChangesAsync();
                     }
 
+                    else if (user != null && user.Token != null)
+                    {
+                        var register = await _context.EmailTokens
+                            .Where(u => u.Token == user.Token)
+                            .FirstOrDefaultAsync();
+                        if(register.ExpiredAt > DateTime.Now)
+                        return Ok("Bạn đã đăng kí tài khoản. Vui lòng kiểm tra email của bạn");
+
+                    }
+
+
                     var token = TokenHelper.GenerateRandomToken(64);
+                    user.Token = token;
                     string url = _configuration["Website:ClientUrl"] + "/verification-success/" + token;
-                    string subject = "Xác nhận địa chỉ Email của bạn";
+                    string subject = "Xác nhận địa chỉ email của bạn";
                     var emailtoken = new EmailToken
                     {
                         Token = token,
@@ -83,8 +95,9 @@ namespace RecruitXpress_BE.Controllers
                         IsRevoked = false,
                         IsUsed = false,
                         AccountId = user.AccountId,
+                        Type = 1,
                     };
-
+                    
                     _context.Add(emailtoken);
                     await _context.SaveChangesAsync();
 
@@ -203,7 +216,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var emailtoken = await _context.EmailTokens.SingleOrDefaultAsync(t => t.Token == token);
-                if (emailtoken != null && (bool)!emailtoken.IsUsed && (bool)!emailtoken.IsRevoked)
+                if (emailtoken != null && (bool)!emailtoken.IsUsed && (bool)!emailtoken.IsRevoked && emailtoken.ExpiredAt > DateTime.Now)
                 {
                     var user = await _context.Accounts.SingleOrDefaultAsync(t => t.AccountId == emailtoken.AccountId);
                     user.Password = HashHelper.Encrypt(newPassword, _configuration);
@@ -230,7 +243,7 @@ namespace RecruitXpress_BE.Controllers
             try
             {
                 var emailtoken = await _context.EmailTokens.SingleOrDefaultAsync(t => t.Token == token);
-                if (emailtoken != null && (bool)!emailtoken.IsUsed && (bool)!emailtoken.IsRevoked)
+                if (emailtoken != null && (bool)!emailtoken.IsUsed && (bool)!emailtoken.IsRevoked && emailtoken.ExpiredAt > DateTime.Now)
                 {
                     var user = await _context.Accounts.SingleOrDefaultAsync(t => t.AccountId == emailtoken.AccountId);
                     user.Status = 1;
