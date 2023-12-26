@@ -54,7 +54,8 @@ namespace RecruitXpress_BE.Contracts
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
                 .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Account.Gender))
-                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob));
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Account.Dob))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.JobApplications.Any() ? 1 : 0));
 
             CreateMap<Models.Profile, ProfileDTO>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Account1))
