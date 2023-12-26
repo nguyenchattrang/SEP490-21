@@ -95,7 +95,6 @@ namespace RecruitXpress_BE.Controllers
                         IsRevoked = false,
                         IsUsed = false,
                         AccountId = user.AccountId,
-                        Type = 1,
                     };
                     
                     _context.Add(emailtoken);
