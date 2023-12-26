@@ -142,56 +142,59 @@ namespace RecruitXpress_BE.Repositories
         public async Task<SpecializedExamDTO> GetSpecializedExamByCode(string code, int accountId)
         {
 
-                if (accountId == 0 || accountId == null)
-                {
-                    throw new ArgumentException("Không có tài khoản");
-                }
+            if (accountId == 0 || accountId == null)
+            {
+                throw new ArgumentException("Không có tài khoản");
+            }
 
-                var profile = _context.Profiles.FirstOrDefault(p => p.AccountId == accountId);
-                if (profile == null)
-                {
-                    throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
-                }
+            var profile = _context.Profiles.FirstOrDefault(p => p.AccountId == accountId);
+            if (profile == null)
+            {
+                throw new ArgumentException("Bạn vẫn chưa cập nhật hồ sơ của mình");
+            }
 
-                if (string.IsNullOrEmpty(code))
-                {
-                    throw new ArgumentException("Bắt buộc phải nhập code cho bài thi");
-                }
+            if (string.IsNullOrEmpty(code))
+            {
+                throw new ArgumentException("Bắt buộc phải nhập code cho bài thi");
+            }
 
 
-                var specExam = await _context.SpecializedExams
-                        .Include(s => s.CreatedByNavigation)
-                        .FirstOrDefaultAsync(s => s.Code.Contains(code));
+            var specExam = await _context.SpecializedExams
+                    .Include(s => s.CreatedByNavigation)
+                    .FirstOrDefaultAsync(s => s.Code.Contains(code));
 
-                if (specExam == null || !specExam.Code.Equals(code))
-                {
-                    throw new ArgumentException("Code không hợp lệ. Không tìm thấy bài thi");
-                }
-                if (specExam.JobId == null)
-                    throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
+            if (specExam == null || !specExam.Code.Equals(code))
+            {
+                throw new ArgumentException("Code không hợp lệ. Không tìm thấy bài thi");
+            }
+            if (specExam.Status == 2)
+                throw new ArgumentException("Code bài thi không hợp lệ");
 
-                var jobApplication = _context.JobApplications.FirstOrDefault(j => j.JobId == specExam.JobId && j.ProfileId == profile.ProfileId);
-                if (jobApplication == null)
-                {
-                    throw new ArgumentException("Bạn chưa đăng kí công việc này");
-                }
+            if (specExam.JobId == null)
+                throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
 
-                if (DateTime.Now < specExam.StartDate)
-                {
-                    throw new ArgumentException("Chưa tới thời gian làm bài thi");
-                }
-                if (DateTime.Now > specExam.EndDate)
-                {
-                    throw new ArgumentException("Đã vượt quá hạn nộp bài thi");
-                }
+            var jobApplication = _context.JobApplications.FirstOrDefault(j => j.JobId == specExam.JobId && j.ProfileId == profile.ProfileId);
+            if (jobApplication == null)
+            {
+                throw new ArgumentException("Bạn chưa đăng kí công việc này");
+            }
+
+            if (DateTime.Now < specExam.StartDate)
+            {
+                throw new ArgumentException("Chưa tới thời gian làm bài thi");
+            }
+            if (DateTime.Now > specExam.EndDate)
+            {
+                throw new ArgumentException("Đã vượt quá hạn nộp bài thi");
+            }
 
             var existExams = _context.Exams.Where(e => e.SpecializedExamId == specExam.ExamId && e.AccountId == accountId).ToList();
             if (existExams != null && existExams.Any())
             {
                 throw new ArgumentException("Bạn chỉ có thể làm bài thi một lần");
             }
-                var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specExam);
-                return specializedExamDTO;
+            var specializedExamDTO = _mapper.Map<SpecializedExamDTO>(specExam);
+            return specializedExamDTO;
 
         }
 

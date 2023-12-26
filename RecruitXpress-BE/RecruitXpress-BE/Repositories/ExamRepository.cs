@@ -353,6 +353,9 @@ namespace RecruitXpress_BE.Repositories
                 }
 
                 var specExam = _context.SpecializedExams.FirstOrDefault(e => e.ExamId == exam.SpecializedExamId);
+
+                if (specExam.Status==null || specExam.Status == 2)
+                    throw new ArgumentException("Code bài thi không hợp lệ");
                 if (specExam.JobId == null)
                     throw new ArgumentException("Không tìm thấy công việc tương ứng gắn với bài thi này");
                 if (DateTime.Now < specExam.StartDate)
