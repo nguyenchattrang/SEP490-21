@@ -212,7 +212,7 @@ namespace RecruitXpress_BE.Repositories
 
         public async Task<ExamDTO> GetExamById(int examId)
         {
-            var exam = await _context.Exams.FirstOrDefaultAsync(e => e.ExamId == examId);
+            var exam = await _context.Exams.Include(e=> e.Account).FirstOrDefaultAsync(e => e.ExamId == examId);
             return _mapper.Map<ExamDTO>(exam);
         }
 
