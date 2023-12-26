@@ -115,7 +115,10 @@ namespace RecruitXpress_BE.Controllers
             }
 
             var fileContent = System.IO.File.ReadAllBytes(filePath);
-            string fileName = Path.GetFileName(filePath);
+            string fileExtension = Path.GetExtension(filePath);
+
+            // Combine the username and extension for the filename
+            string fileName = $"{exam.Account.Username}{fileExtension}";
             var contentType = "application/octet-stream";
             return File(fileContent, contentType, fileName);
         }
