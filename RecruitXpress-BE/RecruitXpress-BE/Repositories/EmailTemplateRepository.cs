@@ -392,7 +392,7 @@ namespace RecruitXpress_BE.Repositories
                 var candidateNames = scheduleDetails.Aggregate<ScheduleDetail?, string?>(null,
                     (current, scheduleDetail) =>
                         current + (scheduleDetail?.Candidate?.Profile?.Account?.FullName + ", "));
-                var interviewer = await _context.Accounts.FirstOrDefaultAsync(a =>
+                var interviewer = _context.Accounts.FirstOrDefault(a =>
                     scheduleDetails.First().Candidate != null &&
                     a.AccountId == scheduleDetails.First().Candidate.AssignedFor);
                 var job = scheduleDetails.First().Candidate?.Job;
@@ -413,7 +413,7 @@ namespace RecruitXpress_BE.Repositories
                 emailCopy.Body = emailCopy.Body.Replace("@name", interviewerName);
                 emailCopy.Body = emailCopy.Body.Replace("@jobTitle", job.Title);
                 emailCopy.Body = emailCopy.Body.Replace("@company", job.Company);
-                emailCopy.Body = emailCopy.Body.Replace("@candidatename", candidateNames);
+                emailCopy.Body = emailCopy.Body.Replace("@candidatename", candidateNames[..^2]);
                 emailCopy.Body = emailCopy.Body.Replace("@time", time);
                 emailCopy.Body = emailCopy.Body.Replace("@location", location);
                 emailCopy.Body = emailCopy.Body.Replace("@link", _configuration["Website:ClientUrl"]);

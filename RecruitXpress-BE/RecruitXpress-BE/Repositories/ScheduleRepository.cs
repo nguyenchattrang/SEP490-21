@@ -374,13 +374,6 @@ public class ScheduleRepository : IScheduleRepository
                         var interviewerId = scheduleDto.Interviewers.FirstOrDefault()?.InterviewerId ?? null;
                         await _jobApplicationRepository.UpdateJobApplicationStatus((int)scheduleDetail.ApplicationId,
                             interviewerId, 6);
-
-                        _emailTemplateRepository.SendEmailInterviewSchedule((int)scheduleDetail.ApplicationId,
-                            scheduleDetail.StartDate.ToString() ??
-                            throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
-                            scheduleDetail.Location ??
-                            throw new InvalidOperationException("Địa điểm phỏng vấn không được để trống!"),
-                            interviewerNames[..^2]);
                     }
                     else if (scheduleDetail.ScheduleType == Constant.SCHEDULE_TYPE.EXAM)
                     {
@@ -414,12 +407,12 @@ public class ScheduleRepository : IScheduleRepository
                     };
                     _context.Entry(scheduleDetailEntity).State = EntityState.Added;
                 }
-
+                await _context.SaveChangesAsync();
                 if (scheduleDto.ScheduleDetails.Count > 0 && scheduleDto.ScheduleDetails.First().ScheduleType ==
                     Constant.SCHEDULE_TYPE.INTERVIEW)
                 {
                     _emailTemplateRepository.SendEmailScheduleForInterviewer2(
-                        scheduleDto.ScheduleId,
+                        schedule.ScheduleId,
                         scheduleDto.ScheduleDetails.First().StartDate.ToString() ??
                         throw new InvalidOperationException("Thời gian phỏng vấn không được để trống!"),
                         scheduleDto.ScheduleDetails.First().Location ??
@@ -429,7 +422,6 @@ public class ScheduleRepository : IScheduleRepository
 
             Task.WaitAll();
 
-            await _context.SaveChangesAsync();
             await transaction.CommitAsync();
             return scheduleDto;
         }
