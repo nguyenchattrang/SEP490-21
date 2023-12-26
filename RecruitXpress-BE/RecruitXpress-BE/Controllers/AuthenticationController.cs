@@ -329,7 +329,7 @@ namespace RecruitXpress_BE.Controllers
                 });
             }
 
-            return Unauthorized();
+            return Unauthorized("Đăng nhập không thành công");
         }
 
         [HttpPost("LoginExpert")]
@@ -380,7 +380,7 @@ namespace RecruitXpress_BE.Controllers
                 });
             }
 
-            return Unauthorized();
+            return Unauthorized("Đăng nhập không thành công");
         }
 
 
