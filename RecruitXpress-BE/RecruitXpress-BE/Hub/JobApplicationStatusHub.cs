@@ -23,10 +23,16 @@ public class JobApplicationStatusHub : Hub
     {
         try
         {
-            var notification = Constant.APPLICAION_STATUS_NOTIFICATION[new StatusChange()
+            var notificationTemplate = Constant.APPLICAION_STATUS_NOTIFICATION[new StatusChange()
             {
                 NewStatus = newStatus, OldStatus = oldStatus
             }];
+            var notification = new NotificationMessage()
+            {
+                Description = notificationTemplate.Description,
+                TargetUrl = notificationTemplate.TargetUrl,
+                Title = notificationTemplate.Title
+            };
             if (notification.Description!.Contains("@candidateName"))
             {
                 notification.Description =
